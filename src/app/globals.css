@@ -126,5 +126,17 @@
   }
   html {
     @apply font-sans;
+    scrollbar-gutter: stable;
+  }
+}
+
+@layer utilities {
+  .docs-sidebar-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .docs-sidebar-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }

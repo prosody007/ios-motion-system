@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## iOS Motion System
 
-## Getting Started
+一个面向 iOS 交互动效的参考库：
 
-First, run the development server:
+- 给人看：Web 文档站，直接预览动画、调参数、复制 SwiftUI / UIKit 代码
+- 给工具看：内置 MCP server，供 agent / IDE 按章节、卡片、平台和意图查询动效代码
+
+## Web 本地预览
+
+先启动开发服务器：
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+然后访问 [http://localhost:3000](http://localhost:3000)。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## MCP 本地运行
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+正常接入时，MCP client 会自动拉起服务。
 
-## Learn More
+发布到 npm 后，推荐直接运行：
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx ios-motion-system@latest mcp init --client cursor
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+或者：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx ios-motion-system@latest mcp init --client claude
+```
 
-## Deploy on Vercel
+如果你还在本地仓库里调试，可以运行：
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+node ./bin/ios-motion-system.cjs mcp init --client cursor --local
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+手动配置时，可使用：
+
+```json
+{
+  "mcpServers": {
+    "ios-motion-system": {
+      "command": "npx",
+      "args": ["ios-motion-system@latest", "mcp"]
+    }
+  }
+}
+```
+
+如果需要手动调试或排查客户端连接问题，再执行：
+
+```bash
+npm run mcp
+```
+
+当前提供的核心 tools：
+
+- `list_categories`
+- `get_section`
+- `list_cards`
+- `get_code`
+- `search_motions`
+- `recommend_motion`
+
+站内文档页面：
+
+- `/mcp-server`：MCP 协议、架构、tool 契约、请求/响应样例
+
+### `get_code` 示例
+
+```json
+{
+  "previewId": "ios-spring-playground",
+  "platform": "swift",
+  "params": {
+    "response": "0.45",
+    "damping": "0.82"
+  }
+}
+```
+
+### 动态模板参数
+
+MCP 会自动给部分动态代码片段注入默认参数：
+
+- `ios-spring-playground`
+  - `response`
+  - `damping`
+  - `bounce`
+  - `stiffness`
+  - `dampingCoef`
+  - `duration`
+  - `swiftProps`
+  - `uikitProps`
+- `ios-carousel*`
+  - `speedSec`
+
+你也可以在 `get_code` 里传 `params` 覆盖这些默认值。
+
+## 数据结构
+
+现有内容主要来自：
+
+- `src/data/*.ts`：各章节数据
+- `src/data/index.ts`：`slug -> section`
+- `src/types/motion.ts`：类型定义
+- `src/mcp/catalog.ts`：MCP 查询与代码适配层
+- `src/mcp/server.ts`：MCP server 入口
+
+## 后续可扩展方向
+
+- 给卡片补 `keywords` / `scenarios`
+- 增加 `recommend_motion` 之类的意图推荐 tool
+- 给 MCP 增加资源型输出，例如章节摘要、参数参考表
