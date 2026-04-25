@@ -23,13 +23,8 @@ export function AppSidebar() {
             >
               组件总览
             </Link>
-            <div className="flex items-center justify-between px-3 py-1.5">
-              <span className="text-[14px] font-medium leading-7 text-[rgba(0,0,0,0.88)]">
-                更新日志
-              </span>
-              <span className="rounded-md bg-[rgba(82,196,26,0.10)] px-2 py-[1px] text-[12px] font-medium leading-5 text-[#52C41A]">
-                v1.0
-              </span>
+            <div className="px-3 py-1.5 text-[14px] font-medium leading-7 text-[rgba(0,0,0,0.88)]">
+              更新日志
             </div>
           </div>
 

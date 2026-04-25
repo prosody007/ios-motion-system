@@ -31,7 +31,7 @@ export function SiteHeader() {
             <button
               type="button"
               className="inline-flex h-8 items-center gap-2 rounded-md border border-[rgba(5,5,5,0.06)] bg-white px-3 text-[12px] font-medium text-[rgba(0,0,0,0.65)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors hover:bg-[rgba(0,0,0,0.015)]"
-              aria-label="GitHub Star placeholder"
+              aria-label="GitHub Star"
             >
               <svg
                 width="14"
