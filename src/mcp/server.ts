@@ -13,7 +13,7 @@ import {
   searchMotions,
 } from "@/mcp/catalog";
 
-function asResult(data: unknown, text?: string) {
+function asResult<T extends Record<string, unknown>>(data: T, text?: string) {
   return {
     content: [
       {
