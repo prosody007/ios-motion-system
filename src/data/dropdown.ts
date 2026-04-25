@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const dropdownSection: CardsSection = {
   type: "cards",
   title: "Dropdown Menu",
-  description: "下拉菜单弹出动画，包含缩放与透明度过渡。",
+  description: "下拉菜单展开与收起过渡。",
   cards: [
     {
       title: "Menu 下拉菜单",

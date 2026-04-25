@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const alertSection: CardsSection = {
   type: "cards",
   title: "Alert Dialog",
-  description: "系统 Alert 弹窗动画，包含缩放和透明度过渡。",
+  description: "Alert 对话框过渡与反馈。",
   cards: [
     {
       title: "Alert 弹窗",

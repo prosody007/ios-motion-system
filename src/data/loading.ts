@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const loadingSection: CardsSection = {
   type: "cards",
   title: "Loading 加载态",
-  description: "加载指示器和骨架屏动画。",
+  description: "加载指示与等待反馈。",
   cards: [
     {
       title: "Activity Indicator",

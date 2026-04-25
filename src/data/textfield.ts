@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const textfieldSection: CardsSection = {
   type: "cards",
   title: "TextField / Input",
-  description: "输入框动画参数：聚焦浮动标签与校验抖动。",
+  description: "输入焦点、占位与校验反馈。",
   cards: [
     {
       title: "浮动标签 Focus",

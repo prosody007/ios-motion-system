@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const cardFlipSection: CardsSection = {
   type: "cards",
   title: "卡片展开与翻转",
-  description: "卡片展开过渡与 3D 翻转动画效果。",
+  description: "卡片展开、翻转与详情切换。",
   cards: [
     {
       title: "卡片展开",

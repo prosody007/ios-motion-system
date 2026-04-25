@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const tabbarSection: CardsSection = {
   type: "cards",
   title: "Tab Bar",
-  description: "底部标签栏切换与角标动画参数（基于 Scan / Study / Me 三 Tab 设计）。",
+  description: "标签栏切换与角标反馈。",
   cards: [
     {
       title: "Tab 切换弹跳",

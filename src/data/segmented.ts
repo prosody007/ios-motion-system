@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const segmentedSection: CardsSection = {
   type: "cards",
   title: "Segmented Control",
-  description: "分段控件切换动画：点击 tab 切换。",
+  description: "分段控件切换与指示器运动。",
   cards: [
     {
       title: "Segmented Control",

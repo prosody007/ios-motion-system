@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const keyframeSection: CardsSection = {
   type: "cards",
   title: "Keyframe 动画",
-  description: "使用 KeyframeAnimator 定义多属性、多关键帧的复杂动画序列。",
+  description: "关键帧动画与多属性编排。",
   cards: [
     {
       title: "KeyframeAnimator (iOS 17+)",

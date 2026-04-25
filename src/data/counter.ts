@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const counterSection: CardsSection = {
   type: "cards",
   title: "数字滚动",
-  description: "数值变化时的过渡动画，包括内置 contentTransition 和自定义插值。",
+  description: "数字过渡与计数变化效果。",
   cards: [
     {
       title: "ContentTransition 数字",

@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const scrollDrivenSection: CardsSection = {
   type: "cards",
   title: "滚动驱动动画",
-  description: "根据滚动位置实时驱动视图变换，无固定 duration。",
+  description: "滚动驱动的位移、缩放与视差。",
   cards: [
     {
       title: "Header 缩放",

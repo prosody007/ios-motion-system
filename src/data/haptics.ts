@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const hapticsSection: CardsSection = {
   type: "cards",
   title: "Haptic Feedback",
-  description: "iOS 触觉反馈与动画配对。iOS 17+ 使用 .sensoryFeedback() 修饰器，iOS 16 及以下用 UIFeedbackGenerator。",
+  description: "触觉反馈与动画配合方式。",
   cards: [
     {
       title: ".sensoryFeedback (iOS 17+)",

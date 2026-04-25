@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const heroTransitionSection: CardsSection = {
   type: "cards",
   title: "Hero 图片转场",
-  description: "缩略图与详情页之间的共享元素转场动画。",
+  description: "共享元素与图片转场。",
   cards: [
     {
       title: "图片 Hero 转场",

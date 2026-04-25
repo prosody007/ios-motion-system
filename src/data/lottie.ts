@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const lottieSection: CardsSection = {
   type: "cards",
   title: "Lottie 动画",
-  description: "通过 lottie-ios 库播放 After Effects 导出的 JSON 动画。",
+  description: "Lottie 动画集成与播放。",
   cards: [
     {
       title: "Lottie 接入",

@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const actionSheetSection: CardsSection = {
   type: "cards",
   title: "Action Sheet",
-  description: "底部弹出操作菜单的滑入/滑出动画。",
+  description: "Action Sheet 过渡与选项反馈。",
   cards: [
     {
       title: "Action Sheet",

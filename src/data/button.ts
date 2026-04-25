@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const buttonSection: CardsSection = {
   type: "cards",
   title: "Button / Tap 反馈",
-  description: "按钮按下时的缩放、高亮、厚度下沉等反馈动效。",
+  description: "按钮按压反馈与点击状态。",
   cards: [
     {
       title: "Scale Down Press",

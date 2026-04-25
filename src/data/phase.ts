@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const phaseSection: CardsSection = {
   type: "cards",
   title: "Phase 动画",
-  description: "PhaseAnimator 在多个状态之间自动循环，每个阶段有独立动画曲线。",
+  description: "阶段状态动画与序列过渡。",
   cards: [
     {
       title: "PhaseAnimator (iOS 17+)",

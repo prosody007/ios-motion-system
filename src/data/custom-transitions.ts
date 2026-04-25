@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const customTransitionsSection: CardsSection = {
   type: "cards",
   title: "自定义转场",
-  description: "SwiftUI AnyTransition 组合与自定义、UIKit UIViewControllerAnimatedTransitioning 完全控制。",
+  description: "自定义过渡与视图控制器转场。",
   cards: [
     {
       title: "AnyTransition 内置组合",

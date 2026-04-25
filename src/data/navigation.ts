@@ -114,7 +114,7 @@ import type { CardsSection } from "@/types/motion";
 export const navigationSection: CardsSection = {
   type: "cards",
   title: "Navigation 转场",
-  description: "Push / Pop 导航转场与系统级导航切换反馈。",
+  description: "Push / Pop 导航转场。",
   cards: [
     {
       title: "Push / Pop 转场",

@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const swipeDismissSection: CardsSection = {
   type: "cards",
   title: "滑动关闭",
-  description: "垂直滑动超过阈值后关闭视图，否则弹簧回弹。",
+  description: "滑动关闭与回弹反馈。",
   cards: [
     {
       title: "Swipe to Dismiss",

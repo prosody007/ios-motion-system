@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const skeletonSection: CardsSection = {
   type: "cards",
   title: "骨架屏 Shimmer",
-  description: "内容加载中的骨架屏闪光占位动画。",
+  description: "骨架占位与加载反馈。",
   cards: [
     {
       title: "Skeleton Loading",

@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const swipeCardsSection: CardsSection = {
   type: "cards",
   title: "滑动切换卡片",
-  description: "Tinder 风格卡片堆栈，左右滑动切换，带旋转和缩放层次感。",
+  description: "卡片堆栈与滑动切换。",
   cards: [
     {
       title: "Swipe Card Stack",

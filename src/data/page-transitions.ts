@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const pageTransitionsSection: CardsSection = {
   type: "cards",
   title: "页面转场",
-  description: "iOS 页面级转场动画。iOS 18+ 的 zoom transition、matchedGeometryEffect 共享元素、fullScreenCover 全屏弹出。",
+  description: "页面级缩放、共享元素与全屏过渡。",
   cards: [
     {
       title: "Zoom Transition (iOS 18+)",

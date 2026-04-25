@@ -3,7 +3,7 @@ import type { TokenSection } from "@/types/motion";
 export const tokensSection: TokenSection = {
   type: "tokens",
   title: "Duration & Curve Tokens",
-  description: "iOS 系统推荐的标准时长和曲线参数，建议全局复用以保证一致体验。",
+  description: "标准时长、曲线与参数基线。",
   tokens: [
     { name: "ultraFast", value: "0.1s", bar: 10, desc: "即时反馈（按下高亮）" },
     { name: "fast", value: "0.2s", bar: 20, desc: "小元素切换（toggle、checkbox）" },

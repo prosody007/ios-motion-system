@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const progressSection: CardsSection = {
   type: "cards",
   title: "进度指示器",
-  description: "线性进度条与环形进度指示器动画。",
+  description: "线性与环形进度反馈。",
   cards: [
     {
       title: "线性 Progress Bar",

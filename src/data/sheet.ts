@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const sheetSection: CardsSection = {
   type: "cards",
   title: "Sheet / Modal",
-  description: "底部弹出面板，iOS 标准交互模式。",
+  description: "Sheet 与模态面板过渡。",
   cards: [
     {
       title: "Bottom Sheet",

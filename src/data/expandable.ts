@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const expandableSection: CardsSection = {
   type: "cards",
   title: "展开/折叠",
-  description: "内容区域展开与折叠的过渡动画。",
+  description: "内容展开与折叠过渡。",
   cards: [
     /* Matched Geometry 卡片折叠/展开 — 共享元素式的展开/折叠 */
     {

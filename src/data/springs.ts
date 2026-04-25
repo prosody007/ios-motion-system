@@ -4,7 +4,7 @@ export const springCurvesSection: SpringCurveSection = {
   type: "spring-curves",
   title: "Spring & Timing 曲线",
   description:
-    "iOS 动画体系以 Spring（弹簧物理模型）为核心。iOS 17+ 起系统默认动画均为 spring，不再是传统 easeInOut。Spring 通过物理参数（质量、刚度、阻尼）驱动，比贝塞尔曲线更自然。",
+    "Spring 预设与 timing 曲线参考。",
   springs: [
     { name: ".smooth", response: 0.5, damping: 1.0, description: "无过冲，丝滑停止", swift: ".smooth", swiftLegacy: ".spring(response: 0.5, dampingFraction: 1.0)", uikit: "dampingRatio: 1.0", badge: "iOS 17+" },
     { name: ".smooth (extraBouncy)", response: 0.5, damping: 0.7, description: "轻微过冲后平滑", swift: ".smooth(extraBounce: 0.3)", swiftLegacy: ".spring(response: 0.5, dampingFraction: 0.7)", uikit: "dampingRatio: 0.7", badge: "iOS 17+" },

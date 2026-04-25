@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const toggleSection: CardsSection = {
   type: "cards",
   title: "Toggle / Switch",
-  description: "开关切换动画，iOS 系统风格及常见变体。",
+  description: "开关控件的切换动画。",
   cards: [
     {
       title: "Standard Switch",

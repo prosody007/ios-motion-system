@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const checkboxSection: CardsSection = {
   type: "cards",
   title: "Checkbox / Selection",
-  description: "勾选动画和 iOS 标准 List 选择行。iOS 不使用 Radio Button，而是用 List Row + checkmark。",
+  description: "勾选、单选与列表选择反馈。",
   cards: [
     {
       title: "Todo Checkbox",

@@ -4,7 +4,7 @@ export const carouselSection: CardsSection = {
   type: "cards",
   title: "轮播 / Pager",
   description:
-    "分页轮播的几种常见形态：全屏翻页、卡片露边、缩放渐隐、Cover Flow。覆盖 SwiftUI TabView / iOS 17+ ScrollView paging / iOS 18 scrollTransition。预览右下角切换速度后，下方代码片段中的 autoplay 间隔会同步更新，可直接复制使用。",
+    "分页轮播与焦点切换效果。",
   cards: [
     {
       title: "全屏 Pager 翻页",

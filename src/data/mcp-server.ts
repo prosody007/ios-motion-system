@@ -4,12 +4,12 @@ export const mcpServerSection: DocsSection = {
   type: "docs",
   title: "MCP Server",
   description:
-    "配置 MCP client 后，Motion System MCP server 会由客户端自动拉起。接入后可直接查询动效分类、卡片和 SwiftUI / UIKit 代码。",
+    "适用于 Cursor、Claude、VS Code、Codex 等支持 MCP 的客户端。接入后可直接查询动效分类、卡片和 SwiftUI / UIKit 代码。",
   sections: [
     {
       title: "Quick Start",
       paragraphs: [
-        "先选择你的 MCP client，然后运行对应的初始化命令。配置写入后，重启客户端即可。正常使用时不需要手动执行 `npm run mcp`。",
+        "选择客户端并执行对应的初始化命令。配置写入后，重启客户端即可。",
       ],
       codeBlocks: [
         {
@@ -37,7 +37,7 @@ export const mcpServerSection: DocsSection = {
     {
       title: "Local Repository",
       paragraphs: [
-        "如果你还没有把包发布到 npm，可以直接在仓库里运行本地版 init 命令。加上 `--local` 后，生成的配置会直接指向当前仓库里的 launcher 脚本。",
+        "如果当前使用的是本地仓库版本，可以通过 `--local` 生成指向本地脚本的配置。",
       ],
       codeBlocks: [
         {
@@ -55,7 +55,7 @@ export const mcpServerSection: DocsSection = {
     {
       title: "Manual Debug",
       paragraphs: [
-        "`npm run mcp` 只用于手动调试或排查客户端连接问题，不是正常接入步骤。",
+        "`npm run mcp` 用于本地调试或排查连接问题。",
       ],
       codeBlocks: [
         {
@@ -122,7 +122,7 @@ args = ["ios-motion-system@latest", "mcp"]`,
         "`get_code`：返回最终 SwiftUI / UIKit 代码",
         "`search_motions`：按关键词搜索动效",
         "`recommend_motion`：按意图返回推荐候选",
-        "所有 tools 都返回 `structuredContent`",
+        "所有工具均返回 `structuredContent`",
       ],
     },
     {
@@ -223,7 +223,7 @@ args = ["ios-motion-system@latest", "mcp"]`,
       bullets: [
         "`ios-spring-playground`：支持 `response`、`damping`、`bounce`、`stiffness`、`dampingCoef`、`duration`、`swiftProps`、`uikitProps`",
         "`ios-carousel*`：支持 `speedSec`",
-        "调用 `get_code` 时可以用 `params` 覆盖默认值",
+        "`get_code` 支持通过 `params` 覆盖默认值",
       ],
     },
     {
@@ -232,7 +232,7 @@ args = ["ios-motion-system@latest", "mcp"]`,
         "服务启动失败：先在终端单独运行 `npm run mcp`",
         "拿不到代码：检查 `previewId` 是否真实存在",
         "动态参数没生效：确认 `params` 传的是字符串键值对",
-        "安装依赖失败：优先检查本机代理环境变量",
+        "安装依赖失败：检查本机代理环境变量",
       ],
     },
   ],

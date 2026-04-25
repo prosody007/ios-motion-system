@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const toastSection: CardsSection = {
   type: "cards",
   title: "Toast / Snackbar",
-  description: "轻量通知提示。Toast 从顶部滑入自动消失，Snackbar 从底部弹出可带操作按钮。",
+  description: "轻提示与短暂通知反馈。",
   cards: [
     {
       title: "顶部 Toast",

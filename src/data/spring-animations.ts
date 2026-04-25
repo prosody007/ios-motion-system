@@ -4,7 +4,7 @@ export const springAnimationsSection: CardsSection = {
   type: "cards",
   title: "Spring 弹性动画",
   description:
-    "iOS 弹性动画完整手册：Playground 一张卡覆盖预设 / 临界 / 过冲 / 物理参数 / 多属性协同。直接在右侧面板调试，下方代码会同步更新，复制即用。",
+    "Spring 预设、参数与运动反馈。",
   cards: [
     /* Spring Playground — 合并 presets / critical / physics / overshoot / gentle / bouncy / duration+bounce / choreography */
     {

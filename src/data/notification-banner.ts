@@ -3,7 +3,7 @@ import type { CardsSection } from "@/types/motion";
 export const notificationBannerSection: CardsSection = {
   type: "cards",
   title: "通知横幅",
-  description: "顶部通知横幅从屏幕顶部滑入的 spring 动画。",
+  description: "顶部横幅通知过渡。",
   cards: [
     {
       title: "Notification Banner",
