@@ -1,6 +1,6 @@
 ## iOS Motion System
 
-iOS 交互动效参考库，提供可预览示例、参数说明与 SwiftUI / UIKit 实现代码。
+iOS 交互动效参考库，提供可预览示例、参数说明与可直接使用的 SwiftUI / UIKit 实现代码。
 
 ## Web 本地预览
 
