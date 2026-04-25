@@ -3,7 +3,7 @@
 import { ButtonScalePreview, ButtonHighlightPreview, ButtonDepthPreview } from "./button-previews";
 import { SpringMatchedGeometryPreview } from "./spring-previews";
 import { SpringPlaygroundPreview } from "./spring-playground/preview";
-import { SheetPreview } from "./sheet-preview";
+import { SheetPreview, SheetSwitchPreview } from "./sheet-preview";
 import { NavPushPreview } from "./nav-preview";
 import {
   TogglePreview,
@@ -52,6 +52,7 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-spring-playground": SpringPlaygroundPreview,
   "ios-spring-matched-geometry": SpringMatchedGeometryPreview,
   "ios-sheet-bottom": SheetPreview,
+  "ios-sheet-switch": SheetSwitchPreview,
   "ios-nav-push": NavPushPreview,
   "ios-toggle-demo": TogglePreview,
   "ios-toggle-icon": ToggleIconPreview,

@@ -44,5 +44,101 @@ present(vc, animated: true)
 // curve ≈ cubic-bezier(0.32, 0.72, 0, 1)`,
       },
     },
+    {
+      title: "Sheet Flow · A → B",
+      tags: [
+        { text: "dismiss + present", variant: "duration" },
+        { text: "open: 0.6s", variant: "duration" },
+        { text: "close: 0.3s", variant: "duration" },
+      ],
+      previewId: "ios-sheet-switch",
+      codes: {
+        swift: `// SwiftUI — Sheet A 选择后，收起再弹出 Sheet B
+enum ActiveSheet: Identifiable {
+    case picker
+    case detail(String)
+
+    var id: String {
+        switch self {
+        case .picker: return "picker"
+        case .detail(let value): return "detail-\\(value)"
+        }
+    }
+}
+
+@State private var activeSheet: ActiveSheet?
+@State private var pendingSelection: String?
+
+Button("Show Flow") {
+    activeSheet = .picker
+}
+.sheet(item: $activeSheet, onDismiss: {
+    guard let pendingSelection else { return }
+    // 等 A 完全收起，再弹出 B，避免系统 sheet 冲突
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.30) {
+        activeSheet = .detail(pendingSelection)
+        self.pendingSelection = nil
+    }
+}) { route in
+    switch route {
+    case .picker:
+        PickerSheet { choice in
+            pendingSelection = choice
+            activeSheet = nil
+        }
+        .presentationDetents([.medium])
+        .presentationCornerRadius(20)
+
+    case .detail(let choice):
+        DetailSheet(choice: choice)
+            .presentationDetents([.medium, .large])
+            .presentationCornerRadius(20)
+    }
+}
+
+struct PickerSheet: View {
+    var onSelect: (String) -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Button("Family") { onSelect("Family") }
+            Button("Friends") { onSelect("Friends") }
+            Button("Work") { onSelect("Work") }
+        }
+        .padding()
+    }
+}`,
+        uikit: `// UIKit — dismiss Sheet A, then present Sheet B
+final class PickerSheetViewController: UIViewController {
+    var onSelect: ((String) -> Void)?
+}
+
+func presentPickerFlow() {
+    let picker = PickerSheetViewController()
+
+    if let sheet = picker.sheetPresentationController {
+        sheet.detents = [.medium()]
+        sheet.prefersGrabberVisible = true
+        sheet.preferredCornerRadius = 20
+    }
+
+    picker.onSelect = { [weak self, weak picker] choice in
+        guard let self, let picker else { return }
+
+        picker.dismiss(animated: true) {
+            let detail = DetailSheetViewController(choice: choice)
+            if let sheet = detail.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+                sheet.prefersGrabberVisible = true
+                sheet.preferredCornerRadius = 20
+            }
+            self.present(detail, animated: true)
+        }
+    }
+
+    present(picker, animated: true)
+}`,
+      },
+    },
   ],
 };

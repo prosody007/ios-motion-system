@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function SiteHeader() {
   return (
@@ -6,9 +7,13 @@ export function SiteHeader() {
       <div className="flex h-full w-full items-center px-10">
         <div className="flex w-[304px] shrink-0 items-center">
           <Link href="/" className="flex min-w-0 items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1677FF] text-[12px] font-bold text-white shadow-[0_6px_18px_rgba(22,119,255,0.18)]">
-              M
-            </div>
+            <Image
+              src="/brand/logo-mark.png"
+              alt="Motion System logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 shrink-0"
+            />
             <div className="min-w-0">
               <div className="truncate text-[15px] font-medium leading-6 text-[rgba(0,0,0,0.88)]">
                 Motion System

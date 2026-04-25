@@ -37,8 +37,8 @@ export default function RootLayout({
           <div className="flex w-full pt-16">
             <AppSidebar />
             <main className="flex min-w-0 flex-1 justify-center">
-              <div className="w-full max-w-[1280px] px-10 pb-20 pt-10">
-                {children}
+              <div className="flex min-h-[calc(100svh-4rem)] w-full max-w-[1280px] flex-col px-10 pb-20 pt-10">
+                <div className="flex-1">{children}</div>
                 <SiteFooter />
               </div>
             </main>
