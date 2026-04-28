@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const sheetSection: CardsSection = {
   type: "cards",
-  title: "Sheet / Modal",
+  title: "Sheet / Modal · 底部弹层",
   description: "Sheet 与模态面板过渡。",
   cards: [
     {

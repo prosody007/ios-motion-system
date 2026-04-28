@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const lottieSection: CardsSection = {
   type: "cards",
-  title: "Lottie 动画",
+  title: "Lottie · 矢量动画",
   description: "Lottie 动画集成与播放。",
   cards: [
     {

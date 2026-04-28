@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const buttonSection: CardsSection = {
   type: "cards",
-  title: "Button / Tap 反馈",
+  title: "Button / Tap · 按钮反馈",
   description: "按钮按压反馈与点击状态。",
   cards: [
     {

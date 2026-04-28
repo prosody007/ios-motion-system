@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const carouselSection: CardsSection = {
   type: "cards",
-  title: "轮播 / Pager",
+  title: "Carousel · 轮播",
   description:
     "分页轮播与焦点切换效果。",
   cards: [

@@ -28,6 +28,7 @@ import { ScrollHeaderPreview, ScrollParallaxPreview } from "./scroll-driven-prev
 import { KeyframePreview } from "./keyframe-preview";
 import { PhasePreview } from "./phase-preview";
 import { LottiePreview } from "./lottie-preview";
+import { BorderGlowPreview } from "./border-glow/preview";
 import { ActionSheetPreview } from "./action-sheet-preview";
 import { TooltipPreview } from "./tooltip-preview";
 import { DropdownPreview } from "./dropdown-preview";
@@ -36,7 +37,7 @@ import { NotificationBannerPreview } from "./notification-banner-preview";
 import { SuccessCheckPreview, ErrorShakePreview } from "./success-error-preview";
 import { ToastPreview, SnackbarPreview } from "./toast-preview";
 import { AlertPreview } from "./alert-preview";
-import { CardExpandPreview, CardFlipPreview } from "./card-flip-preview";
+import { CardExpandPreview, CardFlipPreview, FlashCardTransitionPreview } from "./card-flip-preview";
 import { CarouselPreview, CarouselPeekPreview, CarouselScalePreview, CarouselCoverFlowPreview } from "./carousel-preview";
 import { SkeletonPreview } from "./skeleton-preview";
 import { ProgressBarPreview, ProgressRingPreview } from "./progress-preview";
@@ -88,6 +89,7 @@ const previewMap: Record<string, React.ComponentType> = {
   // Batch 4
   "ios-card-expand": CardExpandPreview,
   "ios-card-flip": CardFlipPreview,
+  "ios-card-flash-stack": FlashCardTransitionPreview,
   "ios-carousel": CarouselPreview,
   "ios-carousel-peek": CarouselPeekPreview,
   "ios-carousel-scale": CarouselScalePreview,
@@ -118,6 +120,7 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-keyframe": KeyframePreview,
   "ios-phase": PhasePreview,
   "ios-lottie": LottiePreview,
+  "ios-border-glow": BorderGlowPreview,
 };
 
 export function AnimationPreview({ id }: { id: string }) {

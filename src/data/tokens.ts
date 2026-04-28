@@ -2,7 +2,7 @@ import type { TokenSection } from "@/types/motion";
 
 export const tokensSection: TokenSection = {
   type: "tokens",
-  title: "Duration & Curve Tokens",
+  title: "Duration & Curve · 时长与曲线",
   description: "标准时长、曲线与参数基线。",
   tokens: [
     { name: "ultraFast", value: "0.1s", bar: 10, desc: "即时反馈（按下高亮）" },

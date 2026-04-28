@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const swipeDismissSection: CardsSection = {
   type: "cards",
-  title: "滑动关闭",
+  title: "Swipe Dismiss · 滑动关闭",
   description: "滑动关闭与回弹反馈。",
   cards: [
     {

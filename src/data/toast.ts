@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const toastSection: CardsSection = {
   type: "cards",
-  title: "Toast / Snackbar",
+  title: "Toast · 轻提示",
   description: "轻提示与短暂通知反馈。",
   cards: [
     {

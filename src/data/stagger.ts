@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const staggerSection: CardsSection = {
   type: "cards",
-  title: "Stagger 列表入场",
+  title: "Stagger · 列表入场",
   description: "列表与内容的分段入场。",
   cards: [
     {

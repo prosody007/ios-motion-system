@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const pullRefreshSection: CardsSection = {
   type: "cards",
-  title: "Pull to Refresh",
+  title: "Pull to Refresh · 下拉刷新",
   description: "下拉刷新与回弹过程。",
   cards: [
     {

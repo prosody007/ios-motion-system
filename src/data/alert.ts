@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const alertSection: CardsSection = {
   type: "cards",
-  title: "Alert Dialog",
+  title: "Alert · 对话框",
   description: "Alert 对话框过渡与反馈。",
   cards: [
     {

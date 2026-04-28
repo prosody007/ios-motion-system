@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const checkboxSection: CardsSection = {
   type: "cards",
-  title: "Checkbox / Selection",
+  title: "Checkbox · 勾选",
   description: "勾选、单选与列表选择反馈。",
   cards: [
     {

@@ -2,7 +2,7 @@ import type { DocsSection } from "@/types/motion";
 
 export const mcpServerSection: DocsSection = {
   type: "docs",
-  title: "MCP Server",
+  title: "MCP Server · 服务接入",
   description:
     "适用于 Cursor、Claude、VS Code、Codex 等支持 MCP 的客户端。接入后可直接查询动效分类、卡片和 SwiftUI / UIKit 代码。",
   sections: [

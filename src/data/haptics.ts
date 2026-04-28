@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const hapticsSection: CardsSection = {
   type: "cards",
-  title: "Haptic Feedback",
+  title: "Haptics · 触觉反馈",
   description: "触觉反馈与动画配合方式。",
   cards: [
     {

@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const textfieldSection: CardsSection = {
   type: "cards",
-  title: "TextField / Input",
+  title: "Text Field · 输入框",
   description: "输入焦点、占位与校验反馈。",
   cards: [
     {

@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const dropdownSection: CardsSection = {
   type: "cards",
-  title: "Dropdown Menu",
+  title: "Dropdown · 下拉菜单",
   description: "下拉菜单展开与收起过渡。",
   cards: [
     {

@@ -46,6 +46,7 @@ import { scrollDrivenSection } from "./scroll-driven";
 import { keyframeSection } from "./keyframe";
 import { phaseSection } from "./phase";
 import { lottieSection } from "./lottie";
+import { borderGlowSection } from "./border-glow";
 
 export const sectionMap: Record<string, SectionData> = {
   "mcp-server": mcpServerSection,
@@ -95,4 +96,5 @@ export const sectionMap: Record<string, SectionData> = {
   keyframe: keyframeSection,
   phase: phaseSection,
   lottie: lottieSection,
+  "border-glow": borderGlowSection,
 };

@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const skeletonSection: CardsSection = {
   type: "cards",
-  title: "骨架屏 Shimmer",
+  title: "Skeleton · 骨架屏",
   description: "骨架占位与加载反馈。",
   cards: [
     {

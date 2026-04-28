@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const successErrorSection: CardsSection = {
   type: "cards",
-  title: "成功/错误状态",
+  title: "Success / Error · 状态反馈",
   description: "成功与错误状态反馈。",
   cards: [
     {

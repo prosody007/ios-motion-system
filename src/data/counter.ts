@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const counterSection: CardsSection = {
   type: "cards",
-  title: "数字滚动",
+  title: "Counter · 数字滚动",
   description: "数字过渡与计数变化效果。",
   cards: [
     {

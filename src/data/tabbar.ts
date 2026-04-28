@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const tabbarSection: CardsSection = {
   type: "cards",
-  title: "Tab Bar",
+  title: "Tab Bar · 标签栏",
   description: "标签栏切换与角标反馈。",
   cards: [
     {

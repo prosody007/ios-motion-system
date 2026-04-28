@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const notificationBannerSection: CardsSection = {
   type: "cards",
-  title: "通知横幅",
+  title: "Notification · 通知横幅",
   description: "顶部横幅通知过渡。",
   cards: [
     {

@@ -146,3 +146,17 @@
     display: none;
   }
 }
+
+/* Border Glow — animated conic-gradient angle.
+   Registering --bg-angle as <angle> lets browsers smoothly interpolate it. */
+@property --bg-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes border-glow-spin {
+  to {
+    --bg-angle: 360deg;
+  }
+}

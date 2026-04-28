@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const tooltipSection: CardsSection = {
   type: "cards",
-  title: "Tooltip / Popover",
+  title: "Tooltip · 提示气泡",
   description: "提示层与 Popover 过渡。",
   cards: [
     {

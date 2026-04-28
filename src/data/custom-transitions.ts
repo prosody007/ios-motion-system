@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const customTransitionsSection: CardsSection = {
   type: "cards",
-  title: "自定义转场",
+  title: "Custom Transitions · 自定义转场",
   description: "自定义过渡与视图控制器转场。",
   cards: [
     {

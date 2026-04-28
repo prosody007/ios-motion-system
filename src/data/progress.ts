@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const progressSection: CardsSection = {
   type: "cards",
-  title: "进度指示器",
+  title: "Progress · 进度指示",
   description: "线性与环形进度反馈。",
   cards: [
     {

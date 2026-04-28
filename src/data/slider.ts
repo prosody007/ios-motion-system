@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const sliderSection: CardsSection = {
   type: "cards",
-  title: "Slider / Stepper",
+  title: "Slider / Stepper · 滑动与步进",
   description: "Slider 与 Stepper 交互反馈。",
   cards: [
     {
