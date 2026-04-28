@@ -1,4 +1,4 @@
-# Pull to Refresh · 下拉刷新
+# Pull to Refresh
 
 下拉刷新与回弹过程。
 

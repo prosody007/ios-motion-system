@@ -1,4 +1,4 @@
-# Button / Tap · 按钮反馈
+# Button / Tap
 
 按钮按压反馈与点击状态。
 

@@ -1,8 +1,8 @@
-# Text Field · 输入框
+# Text Field
 
 输入焦点、占位与校验反馈。
 
-## 浮动标签 Focus
+## Floating Label Focus
 
 - Preview ID：`ios-textfield-focus`
 - Tags：`0.25s` (duration) · `.smooth` (spring)
@@ -81,7 +81,7 @@ final class FloatingTextField: UITextField {
 
 ---
 
-## 校验失败 Shake
+## Validation Shake
 
 - Preview ID：`ios-textfield-shake`
 - Tags：`0.45s` (duration) · `.easeInOut` (easing)

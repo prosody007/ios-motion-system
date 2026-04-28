@@ -1,8 +1,8 @@
-# Navigation · 导航转场
+# Navigation
 
 Push / Pop 导航转场。
 
-## Push / Pop 转场
+## Push / Pop Transition
 
 - Preview ID：`ios-nav-push`
 - Tags：`0.35s` (duration) · `.default curve` (easing)

@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const textfieldSection: CardsSection = {
   type: "cards",
-  title: "Text Field · 输入框",
+  title: "Text Field",
   description: "输入焦点、占位与校验反馈。",
   cards: [
     {
-      title: "浮动标签 Focus",
+      title: "Floating Label Focus",
       tags: [
         { text: "0.25s", variant: "duration" },
         { text: ".smooth", variant: "spring" },
@@ -78,7 +78,7 @@ final class FloatingTextField: UITextField {
       },
     },
     {
-      title: "校验失败 Shake",
+      title: "Validation Shake",
       tags: [
         { text: "0.45s", variant: "duration" },
         { text: ".easeInOut", variant: "easing" },

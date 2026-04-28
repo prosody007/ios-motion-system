@@ -2,7 +2,7 @@ import type { DocsSection } from "@/types/motion";
 
 export const skillsSection: DocsSection = {
   type: "docs",
-  title: "Skills · 技能接入",
+  title: "Skills",
   description:
     "通过 Agent Skill 把整个动效库直接装进你的 AI 编程客户端。Cursor / Claude Code / Codex 都支持，零服务、零安装、纯 markdown 文件夹。",
   sections: [
@@ -13,47 +13,47 @@ export const skillsSection: DocsSection = {
       ],
       codeBlocks: [
         {
-          title: "1. Clone 仓库",
+          title: "1. Clone the repo",
           language: "bash",
           code: "git clone https://github.com/prosody007/ios-motion-system.git\ncd ios-motion-system",
         },
         {
-          title: "2A. 链到 Cursor",
+          title: "2A. Link to Cursor",
           language: "bash",
           code: 'mkdir -p ~/.cursor/skills-cursor\nln -s "$(pwd)/skill" ~/.cursor/skills-cursor/ios-motion-system',
         },
         {
-          title: "2B. 链到 Claude Code",
+          title: "2B. Link to Claude Code",
           language: "bash",
           code: 'mkdir -p ~/.claude/skills\nln -s "$(pwd)/skill" ~/.claude/skills/ios-motion-system',
         },
         {
-          title: "2C. 链到 Codex",
+          title: "2C. Link to Codex",
           language: "bash",
           code: 'mkdir -p ~/.codex/skills\nln -s "$(pwd)/skill" ~/.codex/skills/ios-motion-system',
         },
         {
-          title: "3. 重启客户端",
+          title: "3. Restart the client",
           language: "bash",
-          code: "# Cursor / Claude Code / Codex 重启后 Skill 自动生效",
+          code: "# Skill 在客户端重启后自动生效",
         },
       ],
     },
     {
-      title: "项目内安装（仅当前项目可用）",
+      title: "Project-Local Install",
       paragraphs: [
         "如果只想在某个 iOS 项目里启用，把 skill 放进项目内的 .cursor/skills/ 即可，无需全局软链。",
       ],
       codeBlocks: [
         {
-          title: "项目级安装",
+          title: "Project install",
           language: "bash",
           code: 'mkdir -p .cursor/skills\ngit clone --depth 1 https://github.com/prosody007/ios-motion-system.git /tmp/ims\ncp -r /tmp/ims/skill .cursor/skills/ios-motion-system',
         },
       ],
     },
     {
-      title: "如何触发",
+      title: "Trigger Examples",
       paragraphs: [
         "重启客户端后，在对话里直接描述需求。AI 会读 skill 里的 SKILL.md，根据需求加载对应分类的 references/<slug>.md，然后给出该库的标准 SwiftUI / UIKit 代码。",
       ],
@@ -68,7 +68,7 @@ export const skillsSection: DocsSection = {
       ],
     },
     {
-      title: "Skill 内容",
+      title: "What's Inside",
       bullets: [
         "`SKILL.md` —— Skill 元信息与触发指引（AI 客户端入口）",
         "`references/_catalog.md` —— 分类索引（slug / 标题 / 用途）",
@@ -77,33 +77,33 @@ export const skillsSection: DocsSection = {
       ],
     },
     {
-      title: "更新",
+      title: "Updating",
       paragraphs: [
         "用软链方式安装的话，仓库 git pull 就自动同步。复制方式则需要重新执行复制命令。",
       ],
       codeBlocks: [
         {
-          title: "拉取最新",
+          title: "Pull latest",
           language: "bash",
           code: "cd ios-motion-system && git pull",
         },
       ],
     },
     {
-      title: "本地二次生成",
+      title: "Regenerate Locally",
       paragraphs: [
         "如果你 fork 了仓库或自己改了 src/data/*.ts，可以重新生成 skill 内容。",
       ],
       codeBlocks: [
         {
-          title: "重新生成 skill/",
+          title: "Regenerate skill/",
           language: "bash",
           code: "npm install\nnpm run export-skill",
         },
       ],
     },
     {
-      title: "为什么用 Agent Skill",
+      title: "Why Agent Skill",
       bullets: [
         "**零服务**：纯 markdown 文件夹，不用跑进程、不用配 URL、不用装包",
         "**离线可用**：装完即可用，不依赖网络",

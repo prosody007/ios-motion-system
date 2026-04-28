@@ -1,4 +1,4 @@
-# Swipe Cards · 卡片切换
+# Swipe Cards
 
 卡片堆栈与滑动切换。
 

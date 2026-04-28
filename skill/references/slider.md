@@ -1,8 +1,8 @@
-# Slider / Stepper · 滑动与步进
+# Slider / Stepper
 
 Slider 与 Stepper 交互反馈。
 
-## Slider 拖拽
+## Slider Drag
 
 - Preview ID：`ios-slider`
 - Tags：`跟手` (duration) · `.selection` (easing)
@@ -58,7 +58,7 @@ var lastDetent: Float = 0
 
 ---
 
-## Stepper 步进
+## Stepper
 
 - Preview ID：`ios-stepper`
 - Tags：`长按加速` (duration)

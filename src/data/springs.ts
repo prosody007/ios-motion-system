@@ -2,7 +2,7 @@ import type { SpringCurveSection } from "@/types/motion";
 
 export const springCurvesSection: SpringCurveSection = {
   type: "spring-curves",
-  title: "Spring & Timing · 弹簧与曲线",
+  title: "Spring & Timing",
   description:
     "Spring 预设与 timing 曲线参考。",
   springs: [

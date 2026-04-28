@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const alertSection: CardsSection = {
   type: "cards",
-  title: "Alert · 对话框",
+  title: "Alert",
   description: "Alert 对话框过渡与反馈。",
   cards: [
     {
-      title: "Alert 弹窗",
+      title: "Alert Dialog",
       tags: [
         { text: "0.25s", variant: "duration" },
         { text: "系统 spring", variant: "spring" },

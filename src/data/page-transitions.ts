@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const pageTransitionsSection: CardsSection = {
   type: "cards",
-  title: "Page Transitions · 页面转场",
+  title: "Page Transitions",
   description: "页面级缩放、共享元素与全屏过渡。",
   cards: [
     {

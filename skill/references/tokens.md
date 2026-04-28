@@ -1,4 +1,4 @@
-# Duration & Curve · 时长与曲线
+# Duration & Curve
 
 标准时长、曲线与参数基线。
 

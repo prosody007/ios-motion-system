@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const checkboxSection: CardsSection = {
   type: "cards",
-  title: "Checkbox · 勾选",
+  title: "Checkbox",
   description: "勾选、单选与列表选择反馈。",
   cards: [
     {
@@ -174,7 +174,7 @@ class ConsentView: UIView {
       },
     },
     {
-      title: "List Selection (iOS 标准单选)",
+      title: "List Selection",
       tags: [
         { text: "0.32s", variant: "duration" },
         { text: "stroke draw", variant: "easing" },

@@ -1,4 +1,4 @@
-# Action Sheet · 操作面板
+# Action Sheet
 
 Action Sheet 过渡与选项反馈。
 

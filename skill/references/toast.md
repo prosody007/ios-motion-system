@@ -1,8 +1,8 @@
-# Toast · 轻提示
+# Toast
 
 轻提示与短暂通知反馈。
 
-## 顶部 Toast
+## Top Toast
 
 - Preview ID：`ios-toast`
 - Tags：`0.4s` (duration) · `.snappy` (spring)
@@ -99,7 +99,7 @@ class ToastManager {
 
 ---
 
-## 底部 Snackbar（带操作）
+## Bottom Snackbar with Action
 
 - Preview ID：`ios-snackbar`
 - Tags：`0.35s` (duration) · `.spring` (spring)

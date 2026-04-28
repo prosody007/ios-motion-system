@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const actionSheetSection: CardsSection = {
   type: "cards",
-  title: "Action Sheet · 操作面板",
+  title: "Action Sheet",
   description: "Action Sheet 过渡与选项反馈。",
   cards: [
     {

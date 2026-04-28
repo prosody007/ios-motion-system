@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const scrollDrivenSection: CardsSection = {
   type: "cards",
-  title: "Scroll Driven · 滚动驱动",
+  title: "Scroll-Driven",
   description: "滚动驱动的位移、缩放与视差。",
   cards: [
     {
-      title: "Header 缩放",
+      title: "Header Scale",
       tags: [
         { text: "实时跟随", variant: "easing" },
         { text: "无 duration", variant: "duration" },
@@ -113,7 +113,7 @@ class ScrollHeaderViewController: UIViewController,
       },
     },
     {
-      title: "Parallax 视差",
+      title: "Parallax",
       tags: [
         { text: "0.5x 系数", variant: "easing" },
         { text: "实时", variant: "duration" },

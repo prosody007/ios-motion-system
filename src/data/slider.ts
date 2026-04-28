@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const sliderSection: CardsSection = {
   type: "cards",
-  title: "Slider / Stepper · 滑动与步进",
+  title: "Slider / Stepper",
   description: "Slider 与 Stepper 交互反馈。",
   cards: [
     {
-      title: "Slider 拖拽",
+      title: "Slider Drag",
       tags: [
         { text: "跟手", variant: "duration" },
         { text: ".selection", variant: "easing" },
@@ -55,7 +55,7 @@ var lastDetent: Float = 0
       },
     },
     {
-      title: "Stepper 步进",
+      title: "Stepper",
       tags: [
         { text: "长按加速", variant: "duration" },
       ],

@@ -1,4 +1,4 @@
-# Toggle / Switch · 开关
+# Toggle / Switch
 
 开关控件的切换动画。
 

@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const tooltipSection: CardsSection = {
   type: "cards",
-  title: "Tooltip · 提示气泡",
+  title: "Tooltip",
   description: "提示层与 Popover 过渡。",
   cards: [
     {
-      title: "Popover 弹出",
+      title: "Popover",
       tags: [
         { text: "0.25s", variant: "duration" },
         { text: ".spring", variant: "spring" },

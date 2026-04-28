@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const hapticsSection: CardsSection = {
   type: "cards",
-  title: "Haptics · 触觉反馈",
+  title: "Haptics",
   description: "触觉反馈与动画配合方式。",
   cards: [
     {
@@ -85,7 +85,7 @@ selection.selectionChanged()  // Picker/Slider 每档切换调用
       },
     },
     {
-      title: "动画 + 触觉配对模式",
+      title: "Animation + Haptic Pairing",
       tags: [{ text: "最佳实践", variant: "duration" }, { text: "配对参考", variant: "easing" }],
       previewId: "ios-haptic-notification",
       codes: {
@@ -203,7 +203,7 @@ func deleteRow(at indexPath: IndexPath) {
       },
     },
     {
-      title: "Selection 连续选择反馈",
+      title: "Selection Feedback",
       tags: [{ text: ".selection", variant: "easing" }, { text: "Picker / Segmented", variant: "duration" }],
       previewId: "ios-haptic-selection",
       codes: {
@@ -280,7 +280,7 @@ func collectionView(_ cv: UICollectionView, didSelectItemAt indexPath: IndexPath
       },
     },
     {
-      title: "Increase / Decrease 数值反馈",
+      title: "Increase / Decrease",
       tags: [{ text: ".increase / .decrease", variant: "spring" }, { text: "iOS 17+", variant: "easing" }],
       previewId: "ios-haptic-increase-decrease",
       codes: {

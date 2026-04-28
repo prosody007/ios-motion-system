@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const counterSection: CardsSection = {
   type: "cards",
-  title: "Counter · 数字滚动",
+  title: "Counter",
   description: "数字过渡与计数变化效果。",
   cards: [
     {
-      title: "ContentTransition 数字",
+      title: "ContentTransition Counter",
       tags: [
         { text: "0.3s", variant: "duration" },
         { text: ".snappy", variant: "spring" },
@@ -65,7 +65,7 @@ class NumericCounterViewController: UIViewController {
       },
     },
     {
-      title: "自定义计数器",
+      title: "Custom Counter",
       tags: [
         { text: "1.0s", variant: "duration" },
         { text: "easeOutCubic", variant: "easing" },

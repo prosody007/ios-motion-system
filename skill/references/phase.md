@@ -1,4 +1,4 @@
-# Phase · 阶段动画
+# Phase Animator
 
 阶段状态动画与序列过渡。
 

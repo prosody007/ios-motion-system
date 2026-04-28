@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const lottieSection: CardsSection = {
   type: "cards",
-  title: "Lottie · 矢量动画",
+  title: "Lottie",
   description: "Lottie 动画集成与播放。",
   cards: [
     {
-      title: "Lottie 接入",
+      title: "Lottie Integration",
       tags: [
         { text: "lottie-ios", variant: "easing" },
         { text: "自定义 speed", variant: "duration" },

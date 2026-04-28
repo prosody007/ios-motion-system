@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const keyframeSection: CardsSection = {
   type: "cards",
-  title: "Keyframe · 关键帧动画",
+  title: "Keyframes",
   description: "关键帧动画与多属性编排。",
   cards: [
     {

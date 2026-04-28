@@ -1,8 +1,8 @@
-# Alert · 对话框
+# Alert
 
 Alert 对话框过渡与反馈。
 
-## Alert 弹窗
+## Alert Dialog
 
 - Preview ID：`ios-alert`
 - Tags：`0.25s` (duration) · `系统 spring` (spring)

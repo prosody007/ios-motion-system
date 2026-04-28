@@ -1,4 +1,4 @@
-# Spring & Timing · 弹簧与曲线
+# Spring & Timing
 
 Spring 预设与 timing 曲线参考。
 

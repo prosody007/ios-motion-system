@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const segmentedSection: CardsSection = {
   type: "cards",
-  title: "Segmented Control · 分段控件",
+  title: "Segmented Control",
   description: "分段控件切换与指示器运动。",
   cards: [
     {

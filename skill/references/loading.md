@@ -1,4 +1,4 @@
-# Loading · 加载态
+# Loading
 
 加载指示与等待反馈。
 

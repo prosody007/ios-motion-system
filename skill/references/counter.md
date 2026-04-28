@@ -1,8 +1,8 @@
-# Counter · 数字滚动
+# Counter
 
 数字过渡与计数变化效果。
 
-## ContentTransition 数字
+## ContentTransition Counter
 
 - Preview ID：`ios-counter-text`
 - Tags：`0.3s` (duration) · `.snappy` (spring)
@@ -68,7 +68,7 @@ class NumericCounterViewController: UIViewController {
 
 ---
 
-## 自定义计数器
+## Custom Counter
 
 - Preview ID：`ios-counter-custom`
 - Tags：`1.0s` (duration) · `easeOutCubic` (easing)

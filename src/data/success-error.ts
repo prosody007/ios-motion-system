@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const successErrorSection: CardsSection = {
   type: "cards",
-  title: "Success / Error · 状态反馈",
+  title: "Success & Error",
   description: "成功与错误状态反馈。",
   cards: [
     {
-      title: "成功勾号绘制",
+      title: "Success Check",
       tags: [
         { text: "0.5s", variant: "duration" },
         { text: ".easeOut", variant: "easing" },
@@ -110,7 +110,7 @@ class CheckmarkAnimationView: UIView {
       },
     },
     {
-      title: "错误抖动",
+      title: "Error Shake",
       tags: [
         { text: "0.4s", variant: "duration" },
         { text: ".easeInOut", variant: "easing" },

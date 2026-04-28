@@ -1,8 +1,8 @@
-# Tab Bar · 标签栏
+# Tab Bar
 
 标签栏切换与角标反馈。
 
-## Tab 切换弹跳
+## Tab Switch Bounce
 
 - Preview ID：`ios-tabbar-bounce`
 - Tags：`0.22s` (duration) · `.bouncy` (spring)
@@ -106,7 +106,7 @@ topLine.backgroundColor = UIColor(white: 0.965, alpha: 1) // #F6F8FA
 
 ---
 
-## Badge 脉冲
+## Badge Pulse
 
 - Preview ID：`ios-tabbar-badge`
 - Tags：`0.3s` (duration) · `spring overshoot` (easing)

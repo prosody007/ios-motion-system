@@ -1,8 +1,8 @@
-# Lottie · 矢量动画
+# Lottie
 
 Lottie 动画集成与播放。
 
-## Lottie 接入
+## Lottie Integration
 
 - Preview ID：`ios-lottie`
 - Tags：`lottie-ios` (easing) · `自定义 speed` (duration)

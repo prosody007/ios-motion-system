@@ -2,12 +2,12 @@ import type { CardsSection } from "@/types/motion";
 
 export const carouselSection: CardsSection = {
   type: "cards",
-  title: "Carousel · 轮播",
+  title: "Carousel",
   description:
     "分页轮播与焦点切换效果。",
   cards: [
     {
-      title: "全屏 Pager 翻页",
+      title: "Full-Screen Pager",
       tags: [
         { text: "0.4s", variant: "duration" },
         { text: "easeOutQuint", variant: "easing" },
@@ -67,7 +67,7 @@ class PagerVC: UIPageViewController {
       },
     },
     {
-      title: "卡片露边轮播 (Peek)",
+      title: "Peek Carousel",
       tags: [
         { text: "0.45s", variant: "duration" },
         { text: "spring", variant: "spring" },
@@ -136,7 +136,7 @@ autoplayTimer = Timer.scheduledTimer(
       },
     },
     {
-      title: "缩放渐隐 (scrollTransition)",
+      title: "Scale Fade (scrollTransition)",
       tags: [
         { text: "iOS 18+", variant: "duration" },
         { text: "scale + opacity", variant: "easing" },
@@ -210,7 +210,7 @@ autoplayTimer = Timer.scheduledTimer(
       },
     },
     {
-      title: "Cover Flow 3D 旋转",
+      title: "Cover Flow",
       tags: [
         { text: "0.5s", variant: "duration" },
         { text: "rotate3D + perspective", variant: "easing" },

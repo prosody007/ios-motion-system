@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const progressSection: CardsSection = {
   type: "cards",
-  title: "Progress · 进度指示",
+  title: "Progress",
   description: "线性与环形进度反馈。",
   cards: [
     {
-      title: "线性 Progress Bar",
+      title: "Linear Progress Bar",
       tags: [
         { text: "0.3s", variant: "duration" },
         { text: ".snappy", variant: "spring" },
@@ -81,7 +81,7 @@ class ProgressBarVC: UIViewController {
       },
     },
     {
-      title: "环形 Progress Ring",
+      title: "Circular Progress Ring",
       tags: [
         { text: "1.0s", variant: "duration" },
         { text: ".easeOut", variant: "easing" },

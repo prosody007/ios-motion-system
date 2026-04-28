@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const skeletonSection: CardsSection = {
   type: "cards",
-  title: "Skeleton · 骨架屏",
+  title: "Skeleton",
   description: "骨架占位与加载反馈。",
   cards: [
     {

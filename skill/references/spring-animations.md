@@ -1,4 +1,4 @@
-# Spring · 弹性动画
+# Spring Animations
 
 Spring 预设、参数与运动反馈。
 

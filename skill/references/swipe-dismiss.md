@@ -1,4 +1,4 @@
-# Swipe Dismiss · 滑动关闭
+# Swipe to Dismiss
 
 滑动关闭与回弹反馈。
 

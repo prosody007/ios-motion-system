@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const reorderSection: CardsSection = {
   type: "cards",
-  title: "Reorder · 拖拽排序",
+  title: "Reorder",
   description: "列表重排与拖拽占位反馈。",
   cards: [
     {

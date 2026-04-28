@@ -1,4 +1,4 @@
-# Sheet / Modal · 底部弹层
+# Sheet
 
 Sheet 与模态面板过渡。
 
@@ -51,7 +51,7 @@ present(vc, animated: true)
 
 ---
 
-## Sheet Flow · A → B
+## Sheet Flow (A → B)
 
 - Preview ID：`ios-sheet-switch`
 - Tags：`dismiss + present` (duration) · `open: 0.6s` (duration) · `close: 0.3s` (duration)

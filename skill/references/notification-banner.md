@@ -1,4 +1,4 @@
-# Notification · 通知横幅
+# Notification Banner
 
 顶部横幅通知过渡。
 

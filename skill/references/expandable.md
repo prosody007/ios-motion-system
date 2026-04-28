@@ -1,4 +1,4 @@
-# Expandable · 展开/折叠
+# Expandable
 
 内容展开与折叠过渡。
 

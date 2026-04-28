@@ -1,8 +1,8 @@
-# Card · 卡片
+# Card
 
 卡片展开、翻转与堆叠切换。
 
-## Card Expand · 卡片展开
+## Card Expand
 
 - Preview ID：`ios-card-expand`
 - Tags：`0.4s` (duration) · `.spring` (spring)
@@ -114,7 +114,7 @@ class CardTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
 ---
 
-## Matched Geometry · 卡片折叠展开
+## Matched Geometry
 
 - Preview ID：`ios-spring-matched-geometry`
 - Tags：`open: 0.40s` (spring) · `close: 0.24s` (spring)
@@ -206,7 +206,7 @@ struct HabitCard: View {
 
 ---
 
-## 3D Flip · 卡片翻转
+## 3D Flip
 
 - Preview ID：`ios-card-flip`
 - Tags：`0.5s` (duration) · `.easeInOut` (easing)
@@ -298,7 +298,7 @@ class FlipCardVC: UIViewController {
 
 ---
 
-## Flash Card Stack · 卡牌堆叠
+## Flash Card Stack
 
 - Preview ID：`ios-card-flash-stack`
 - Tags：`0.36s` (duration) · `.smooth` (spring)

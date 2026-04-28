@@ -1,8 +1,8 @@
-# Hero · 图片转场
+# Hero Transition
 
 共享元素与图片转场。
 
-## 图片 Hero 转场
+## Hero Image Transition
 
 - Preview ID：`ios-hero`
 - Tags：`iOS 18+` (easing) · `0.4s` (duration)

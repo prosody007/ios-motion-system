@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const heroTransitionSection: CardsSection = {
   type: "cards",
-  title: "Hero · 图片转场",
+  title: "Hero Transition",
   description: "共享元素与图片转场。",
   cards: [
     {
-      title: "图片 Hero 转场",
+      title: "Hero Image Transition",
       tags: [
         { text: "iOS 18+", variant: "easing" },
         { text: "0.4s", variant: "duration" },

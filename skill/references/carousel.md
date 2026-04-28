@@ -1,8 +1,8 @@
-# Carousel · 轮播
+# Carousel
 
 分页轮播与焦点切换效果。
 
-## 全屏 Pager 翻页
+## Full-Screen Pager
 
 - Preview ID：`ios-carousel`
 - Tags：`0.4s` (duration) · `easeOutQuint` (easing)
@@ -69,7 +69,7 @@ class PagerVC: UIPageViewController {
 
 ---
 
-## 卡片露边轮播 (Peek)
+## Peek Carousel
 
 - Preview ID：`ios-carousel-peek`
 - Tags：`0.45s` (duration) · `spring` (spring)
@@ -145,7 +145,7 @@ autoplayTimer = Timer.scheduledTimer(
 
 ---
 
-## 缩放渐隐 (scrollTransition)
+## Scale Fade (scrollTransition)
 
 - Preview ID：`ios-carousel-scale`
 - Tags：`iOS 18+` (duration) · `scale + opacity` (easing)
@@ -226,7 +226,7 @@ autoplayTimer = Timer.scheduledTimer(
 
 ---
 
-## Cover Flow 3D 旋转
+## Cover Flow
 
 - Preview ID：`ios-carousel-coverflow`
 - Tags：`0.5s` (duration) · `rotate3D + perspective` (easing)

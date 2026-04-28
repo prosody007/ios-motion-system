@@ -1,4 +1,4 @@
-# Skeleton · 骨架屏
+# Skeleton
 
 骨架占位与加载反馈。
 

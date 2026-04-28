@@ -2,12 +2,12 @@ import type { CardsSection } from "@/types/motion";
 
 export const borderGlowSection: CardsSection = {
   type: "cards",
-  title: "Border Glow · 流光边框",
+  title: "Border Glow",
   description:
     "基于 CSS @property + conic-gradient 旋转角度的彩色流光边框，无需 JS，自动播放。所有视觉参数可实时调节。",
   cards: [
     {
-      title: "Border Glow · 流光边框",
+      title: "Border Glow",
       tags: [
         { text: "{{duration}}s", variant: "duration" },
         { text: "linear", variant: "easing" },

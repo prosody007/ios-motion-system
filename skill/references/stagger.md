@@ -1,8 +1,8 @@
-# Stagger · 列表入场
+# Stagger
 
 列表与内容的分段入场。
 
-## Stagger 延迟入场
+## Stagger Entry
 
 - Preview ID：`ios-stagger`
 - Tags：`50ms 间隔` (duration) · `.spring` (spring)

@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const customTransitionsSection: CardsSection = {
   type: "cards",
-  title: "Custom Transitions · 自定义转场",
+  title: "Custom Transitions",
   description: "自定义过渡与视图控制器转场。",
   cards: [
     {
-      title: "AnyTransition 内置组合",
+      title: "Built-in AnyTransition",
       tags: [{ text: ".combined", variant: "easing" }, { text: ".asymmetric", variant: "easing" }],
       previewId: "ios-custom-any-transition",
       codes: {
@@ -106,7 +106,7 @@ UIView.animate(
       },
     },
     {
-      title: "自定义 ViewModifier Transition",
+      title: "Custom ViewModifier Transition",
       tags: [{ text: "自定义", variant: "spring" }, { text: ".modifier(active:identity:)", variant: "easing" }],
       previewId: "ios-custom-modifier",
       codes: {

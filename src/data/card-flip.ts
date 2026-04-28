@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const cardFlipSection: CardsSection = {
   type: "cards",
-  title: "Card · 卡片",
+  title: "Card",
   description: "卡片展开、翻转与堆叠切换。",
   cards: [
     {
-      title: "Card Expand · 卡片展开",
+      title: "Card Expand",
       tags: [
         { text: "0.4s", variant: "duration" },
         { text: ".spring", variant: "spring" },
@@ -112,7 +112,7 @@ class CardTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     },
     /* Matched Geometry 卡片折叠/展开 — 共享元素式的展开/折叠 */
     {
-      title: "Matched Geometry · 卡片折叠展开",
+      title: "Matched Geometry",
       tags: [
         { text: "open: 0.40s", variant: "spring" },
         { text: "close: 0.24s", variant: "spring" },
@@ -197,7 +197,7 @@ struct HabitCard: View {
       },
     },
     {
-      title: "3D Flip · 卡片翻转",
+      title: "3D Flip",
       tags: [
         { text: "0.5s", variant: "duration" },
         { text: ".easeInOut", variant: "easing" },
@@ -282,7 +282,7 @@ class FlipCardVC: UIViewController {
       },
     },
     {
-      title: "Flash Card Stack · 卡牌堆叠",
+      title: "Flash Card Stack",
       tags: [
         { text: "0.36s", variant: "duration" },
         { text: ".smooth", variant: "spring" },

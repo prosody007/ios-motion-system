@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const springAnimationsSection: CardsSection = {
   type: "cards",
-  title: "Spring · 弹性动画",
+  title: "Spring Animations",
   description:
     "Spring 预设、参数与运动反馈。",
   cards: [

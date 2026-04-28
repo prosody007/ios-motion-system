@@ -1,8 +1,8 @@
-# Tooltip · 提示气泡
+# Tooltip
 
 提示层与 Popover 过渡。
 
-## Popover 弹出
+## Popover
 
 - Preview ID：`ios-tooltip`
 - Tags：`0.25s` (duration) · `.spring` (spring)

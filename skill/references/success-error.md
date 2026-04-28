@@ -1,8 +1,8 @@
-# Success / Error · 状态反馈
+# Success & Error
 
 成功与错误状态反馈。
 
-## 成功勾号绘制
+## Success Check
 
 - Preview ID：`ios-success-check`
 - Tags：`0.5s` (duration) · `.easeOut` (easing)
@@ -113,7 +113,7 @@ class CheckmarkAnimationView: UIView {
 
 ---
 
-## 错误抖动
+## Error Shake
 
 - Preview ID：`ios-error-shake`
 - Tags：`0.4s` (duration) · `.easeInOut` (easing)

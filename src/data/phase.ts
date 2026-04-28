@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const phaseSection: CardsSection = {
   type: "cards",
-  title: "Phase · 阶段动画",
+  title: "Phase Animator",
   description: "阶段状态动画与序列过渡。",
   cards: [
     {

@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const expandableSection: CardsSection = {
   type: "cards",
-  title: "Expandable · 展开/折叠",
+  title: "Expandable",
   description: "内容展开与折叠过渡。",
   cards: [
     {

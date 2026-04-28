@@ -1,8 +1,8 @@
-# Custom Transitions · 自定义转场
+# Custom Transitions
 
 自定义过渡与视图控制器转场。
 
-## AnyTransition 内置组合
+## Built-in AnyTransition
 
 - Preview ID：`ios-custom-any-transition`
 - Tags：`.combined` (easing) · `.asymmetric` (easing)
@@ -112,7 +112,7 @@ UIView.animate(
 
 ---
 
-## 自定义 ViewModifier Transition
+## Custom ViewModifier Transition
 
 - Preview ID：`ios-custom-modifier`
 - Tags：`自定义` (spring) · `.modifier(active:identity:)` (easing)

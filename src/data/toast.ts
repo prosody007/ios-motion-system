@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const toastSection: CardsSection = {
   type: "cards",
-  title: "Toast · 轻提示",
+  title: "Toast",
   description: "轻提示与短暂通知反馈。",
   cards: [
     {
-      title: "顶部 Toast",
+      title: "Top Toast",
       tags: [
         { text: "0.4s", variant: "duration" },
         { text: ".snappy", variant: "spring" },
@@ -96,7 +96,7 @@ class ToastManager {
       },
     },
     {
-      title: "底部 Snackbar（带操作）",
+      title: "Bottom Snackbar with Action",
       tags: [
         { text: "0.35s", variant: "duration" },
         { text: ".spring", variant: "spring" },

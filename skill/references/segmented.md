@@ -1,4 +1,4 @@
-# Segmented Control · 分段控件
+# Segmented Control
 
 分段控件切换与指示器运动。
 

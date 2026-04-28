@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const tabbarSection: CardsSection = {
   type: "cards",
-  title: "Tab Bar · 标签栏",
+  title: "Tab Bar",
   description: "标签栏切换与角标反馈。",
   cards: [
     {
-      title: "Tab 切换弹跳",
+      title: "Tab Switch Bounce",
       tags: [
         { text: "0.22s", variant: "duration" },
         { text: ".bouncy", variant: "spring" },
@@ -103,7 +103,7 @@ topLine.backgroundColor = UIColor(white: 0.965, alpha: 1) // #F6F8FA`,
       },
     },
     {
-      title: "Badge 脉冲",
+      title: "Badge Pulse",
       tags: [
         { text: "0.3s", variant: "duration" },
         { text: "spring overshoot", variant: "easing" },

@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const swipeCardsSection: CardsSection = {
   type: "cards",
-  title: "Swipe Cards · 卡片切换",
+  title: "Swipe Cards",
   description: "卡片堆栈与滑动切换。",
   cards: [
     {

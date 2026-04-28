@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const staggerSection: CardsSection = {
   type: "cards",
-  title: "Stagger · 列表入场",
+  title: "Stagger",
   description: "列表与内容的分段入场。",
   cards: [
     {
-      title: "Stagger 延迟入场",
+      title: "Stagger Entry",
       tags: [
         { text: "50ms 间隔", variant: "duration" },
         { text: ".spring", variant: "spring" },

@@ -1,4 +1,4 @@
-# Checkbox · 勾选
+# Checkbox
 
 勾选、单选与列表选择反馈。
 
@@ -184,7 +184,7 @@ class ConsentView: UIView {
 
 ---
 
-## List Selection (iOS 标准单选)
+## List Selection
 
 - Preview ID：`ios-radio`
 - Tags：`0.32s` (duration) · `stroke draw` (easing)

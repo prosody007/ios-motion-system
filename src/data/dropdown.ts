@@ -2,11 +2,11 @@ import type { CardsSection } from "@/types/motion";
 
 export const dropdownSection: CardsSection = {
   type: "cards",
-  title: "Dropdown · 下拉菜单",
+  title: "Dropdown",
   description: "下拉菜单展开与收起过渡。",
   cards: [
     {
-      title: "Menu 下拉菜单",
+      title: "Dropdown Menu",
       tags: [
         { text: "0.2s", variant: "duration" },
         { text: "系统 spring", variant: "spring" },

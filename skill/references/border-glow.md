@@ -1,8 +1,8 @@
-# Border Glow · 流光边框
+# Border Glow
 
 基于 CSS @property + conic-gradient 旋转角度的彩色流光边框，无需 JS，自动播放。所有视觉参数可实时调节。
 
-## Border Glow · 流光边框
+## Border Glow
 
 - Preview ID：`ios-border-glow`
 - Controls ID：`ios-border-glow` (含动态参数，见 `templates/dynamic-params.md`)

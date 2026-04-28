@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const sheetSection: CardsSection = {
   type: "cards",
-  title: "Sheet / Modal · 底部弹层",
+  title: "Sheet",
   description: "Sheet 与模态面板过渡。",
   cards: [
     {
@@ -45,7 +45,7 @@ present(vc, animated: true)
       },
     },
     {
-      title: "Sheet Flow · A → B",
+      title: "Sheet Flow (A → B)",
       tags: [
         { text: "dismiss + present", variant: "duration" },
         { text: "open: 0.6s", variant: "duration" },

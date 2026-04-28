@@ -1,8 +1,8 @@
-# Scroll Driven · 滚动驱动
+# Scroll-Driven
 
 滚动驱动的位移、缩放与视差。
 
-## Header 缩放
+## Header Scale
 
 - Preview ID：`ios-scroll-header`
 - Tags：`实时跟随` (easing) · `无 duration` (duration)
@@ -116,7 +116,7 @@ class ScrollHeaderViewController: UIViewController,
 
 ---
 
-## Parallax 视差
+## Parallax
 
 - Preview ID：`ios-scroll-parallax`
 - Tags：`0.5x 系数` (easing) · `实时` (duration)

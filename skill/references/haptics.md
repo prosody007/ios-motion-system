@@ -1,4 +1,4 @@
-# Haptics · 触觉反馈
+# Haptics
 
 触觉反馈与动画配合方式。
 
@@ -91,7 +91,7 @@ selection.selectionChanged()  // Picker/Slider 每档切换调用
 
 ---
 
-## 动画 + 触觉配对模式
+## Animation + Haptic Pairing
 
 - Preview ID：`ios-haptic-notification`
 - Tags：`最佳实践` (duration) · `配对参考` (easing)
@@ -219,7 +219,7 @@ func deleteRow(at indexPath: IndexPath) {
 
 ---
 
-## Selection 连续选择反馈
+## Selection Feedback
 
 - Preview ID：`ios-haptic-selection`
 - Tags：`.selection` (easing) · `Picker / Segmented` (duration)
@@ -306,7 +306,7 @@ func collectionView(_ cv: UICollectionView, didSelectItemAt indexPath: IndexPath
 
 ---
 
-## Increase / Decrease 数值反馈
+## Increase / Decrease
 
 - Preview ID：`ios-haptic-increase-decrease`
 - Tags：`.increase / .decrease` (spring) · `iOS 17+` (easing)

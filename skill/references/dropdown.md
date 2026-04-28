@@ -1,8 +1,8 @@
-# Dropdown · 下拉菜单
+# Dropdown
 
 下拉菜单展开与收起过渡。
 
-## Menu 下拉菜单
+## Dropdown Menu
 
 - Preview ID：`ios-dropdown`
 - Tags：`0.2s` (duration) · `系统 spring` (spring)

@@ -1,8 +1,8 @@
-# Progress · 进度指示
+# Progress
 
 线性与环形进度反馈。
 
-## 线性 Progress Bar
+## Linear Progress Bar
 
 - Preview ID：`ios-progress-bar`
 - Tags：`0.3s` (duration) · `.snappy` (spring)
@@ -84,7 +84,7 @@ class ProgressBarVC: UIViewController {
 
 ---
 
-## 环形 Progress Ring
+## Circular Progress Ring
 
 - Preview ID：`ios-progress-ring`
 - Tags：`1.0s` (duration) · `.easeOut` (easing)

@@ -1,4 +1,4 @@
-# Page Transitions · 页面转场
+# Page Transitions
 
 页面级缩放、共享元素与全屏过渡。
 

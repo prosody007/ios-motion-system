@@ -2,7 +2,7 @@ import type { CardsSection } from "@/types/motion";
 
 export const toggleSection: CardsSection = {
   type: "cards",
-  title: "Toggle / Switch · 开关",
+  title: "Toggle / Switch",
   description: "开关控件的切换动画。",
   cards: [
     {
