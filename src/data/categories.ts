@@ -2,7 +2,7 @@ import type { Category } from "@/types/motion";
 
 export const categories: Category[] = [
   // 基础
-  { slug: "mcp-server", title: "MCP Server · 服务接入", icon: "⌘", description: "MCP 配置、调用方式与示例" },
+  { slug: "skills", title: "Skills · 技能接入", icon: "⌘", description: "把动效库接入 Cursor / Claude Code / Codex 的 Agent Skill" },
   { slug: "tokens", title: "Duration & Curve · 时长与曲线", icon: "⏱", description: "标准时长、曲线与参数基线" },
   { slug: "spring-curves", title: "Spring & Timing · 弹簧与曲线", icon: "📈", description: "Spring 与 timing 曲线参考" },
 

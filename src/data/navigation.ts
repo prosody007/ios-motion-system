@@ -10,7 +10,7 @@ export type DocsNavMeta = {
 };
 
 export const docsNavGroups: DocsNavGroup[] = [
-  { label: "接入", slugs: ["mcp-server"] },
+  { label: "接入", slugs: ["skills"] },
   { label: "基础", slugs: ["tokens", "spring-curves"] },
   {
     label: "组件微交互",
@@ -70,7 +70,7 @@ export const docsNavGroups: DocsNavGroup[] = [
 ];
 
 export const docsNavMetaMap: Record<string, DocsNavMeta> = {
-  "mcp-server": { primary: "MCP Server", secondary: "服务接入" },
+  skills: { primary: "Skills", secondary: "技能接入" },
   tokens: { primary: "Duration & Curve", secondary: "时长与曲线" },
   "spring-curves": { primary: "Spring & Timing", secondary: "弹簧与曲线" },
   button: { primary: "Button / Tap", secondary: "按钮反馈" },

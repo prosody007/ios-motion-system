@@ -1,6 +1,6 @@
 import type { SectionData } from "@/types/motion";
 import { tokensSection } from "./tokens";
-import { mcpServerSection } from "./mcp-server";
+import { skillsSection } from "./skills";
 import { springCurvesSection } from "./springs";
 import { buttonSection } from "./button";
 import { springAnimationsSection } from "./spring-animations";
@@ -49,7 +49,7 @@ import { lottieSection } from "./lottie";
 import { borderGlowSection } from "./border-glow";
 
 export const sectionMap: Record<string, SectionData> = {
-  "mcp-server": mcpServerSection,
+  skills: skillsSection,
   tokens: tokensSection,
   "spring-curves": springCurvesSection,
   button: buttonSection,
