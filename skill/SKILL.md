@@ -51,13 +51,21 @@ description: iOS 动效实现库 —— SwiftUI / UIKit 的 Spring、Sheet、Tab
 - **触觉**：`haptics`
 - **高级动效**：`counter` · `scroll-driven` · `keyframe` · `phase` · `lottie` · `border-glow`
 
-## 重要约定
+## 落地到用户项目
 
-- **平台**：每张卡都同时提供 SwiftUI（iOS 16+）和 UIKit 两套实现。优先 SwiftUI，除非用户明确要 UIKit。
-- **iOS 17+ 推荐**：Spring 优先用 `.smooth` / `.snappy` / `.bouncy` 三个预设。
-- **Spring 参数语义**：response（周期，越大越慢）+ damping（阻尼比，1.0=无过冲，越小越弹）。
-- **不要改代码注释里的中文**——那些是给最终用户看的设计说明。
-- **不要凭空发明 API**——本库的代码已经过验证；如用户要扩展，明确告知"基于本库的 X 模板增加 Y 修改"。
+不是只回一段代码，而是**直接动手**：
+
+1. **定位目标文件**：扫一遍当前 workspace，找到合适落地的 SwiftUI / UIKit 文件（比如用户提到的视图、最近编辑的、或者 `Views/` 目录下的对应文件）。如果不存在，新建。
+2. **粘贴模板，按项目命名调整**：模板里 `struct CardExpandView: View` 这类示例名要改成符合用户项目命名约定的名字；`@State` 绑定如果用户已有 model / store 要接进去而不是新建。
+3. **保留代码注释里的中文**——那些是给最终用户看的设计说明，不要翻译或删除。
+4. **不要凭空发明 API**：本库代码已验证过；要扩展时显式说明"基于本库的 X 模板，新加 Y"，让用户能追溯。
+
+## 平台与 API 选择
+
+- **优先 SwiftUI**（iOS 16+ 已是主流）。除非用户项目是纯 UIKit 或明确指定。
+- **iOS 17+ 推荐**：Spring 优先用 `.smooth` / `.snappy` / `.bouncy` 三个预设而不是 `.spring(response:dampingFraction:)`。
+- **Spring 语义**：response（周期，越大越慢）+ damping（阻尼比，1.0=无过冲，越小越弹）。
+- **deployment target 检测**：能看到 `Package.swift` / `.xcodeproj` 时，优先匹配项目实际的 iOS 版本；不确定时默认 iOS 17+。
 
 ## 在线预览与原始仓库
 
