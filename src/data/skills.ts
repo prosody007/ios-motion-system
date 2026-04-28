@@ -9,12 +9,12 @@ export const skillsSection: DocsSection = {
     {
       title: "Install",
       paragraphs: [
-        "一行装好，自动 clone 仓库并软链到 Cursor / Claude Code / Codex 的 Skills 目录。",
+        "通过 skills.sh 的官方 CLI 一行装好。会自动 clone 仓库并把 skill 软链到 Cursor / Claude Code / Codex 的 Skills 目录。",
       ],
       codeBlocks: [
         {
           language: "bash",
-          code: "curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash",
+          code: "npx skills add prosody007/ios-motion-system",
         },
       ],
     },
@@ -51,53 +51,67 @@ export const skillsSection: DocsSection = {
       ],
     },
     {
-      title: "Manual Install",
+      title: "Install Options",
       paragraphs: [
-        "不想用 install.sh 也行：clone 仓库后手动软链到对应客户端的 Skills 目录。",
+        "skills CLI 支持几个常用 flag：",
+      ],
+      bullets: [
+        "`-g, --global` —— 装到用户级目录（默认是当前项目级）",
+        "`-a, --agent <name>` —— 只装到指定客户端（cursor / claude / codex），用 `*` 全部",
+        "`-y, --yes` —— 跳过确认 prompts",
+        "`--all` —— 等价 `--skill '*' --agent '*' -y`，最常用",
+        "`--copy` —— 复制文件而不是软链（适合不能用 symlink 的环境）",
       ],
       codeBlocks: [
         {
-          title: "Cursor",
+          title: "全局安装到所有客户端",
           language: "bash",
-          code: 'git clone https://github.com/prosody007/ios-motion-system.git\nmkdir -p ~/.cursor/skills-cursor\nln -s "$(pwd)/ios-motion-system/skill" ~/.cursor/skills-cursor/ios-motion-system',
+          code: "npx skills add prosody007/ios-motion-system --global --all",
         },
         {
-          title: "Claude Code",
+          title: "只装到 Cursor",
           language: "bash",
-          code: 'mkdir -p ~/.claude/skills\nln -s "$(pwd)/ios-motion-system/skill" ~/.claude/skills/ios-motion-system',
-        },
-        {
-          title: "Codex",
-          language: "bash",
-          code: 'mkdir -p ~/.codex/skills\nln -s "$(pwd)/ios-motion-system/skill" ~/.codex/skills/ios-motion-system',
+          code: "npx skills add prosody007/ios-motion-system -g -a cursor",
         },
       ],
     },
     {
-      title: "Project-Local",
+      title: "Alternative: curl Installer",
       paragraphs: [
-        "只在某个项目里启用，把 skill 放进项目内的 .cursor/skills/，不影响其它项目。",
+        "不想用 npx 也可以走我们自己的脚本，效果一样（clone + symlink 到三个客户端目录）。",
       ],
       codeBlocks: [
         {
           language: "bash",
-          code: 'mkdir -p .cursor/skills\ngit clone --depth 1 https://github.com/prosody007/ios-motion-system.git /tmp/ims\ncp -r /tmp/ims/skill .cursor/skills/ios-motion-system',
+          code: "curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash",
         },
       ],
     },
     {
       title: "Update",
+      paragraphs: [
+        "skills CLI 自带 update 命令，会重新拉所有已安装 skill 的最新版。",
+      ],
       codeBlocks: [
         {
           language: "bash",
-          code: "cd ~/.local/share/ios-motion-system && git pull",
+          code: "npx skills update ios-motion-system",
+        },
+      ],
+    },
+    {
+      title: "Uninstall",
+      codeBlocks: [
+        {
+          language: "bash",
+          code: "npx skills remove ios-motion-system",
         },
       ],
     },
     {
       title: "Customize",
       paragraphs: [
-        "fork 仓库后改 src/data/*.ts，跑一次 npm run export-skill 就重新生成 skill/。",
+        "fork 仓库后改 src/data/*.ts，跑一次 npm run export-skill 就重新生成 skill/。然后让自己 / 团队从你的 fork 安装：`npx skills add <your-username>/ios-motion-system`。",
       ],
       codeBlocks: [
         {

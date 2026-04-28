@@ -1,81 +1,56 @@
 # iOS Motion System Skill
 
-把这个文件夹放进你的 AI 编程客户端的 Skills 目录，让 AI 在写 iOS 动画代码时直接引用本库的标准实现。
+让 Cursor / Claude Code / Codex 在写 iOS 动画代码时直接引用本库的 SwiftUI / UIKit 标准实现。
 
-## 内容
+## Install
 
-- `SKILL.md` —— Skill 元信息与使用指引（AI 客户端的入口）
+通过 [skills.sh](https://skills.sh) 的官方 CLI 一行装好：
+
+```bash
+npx skills add prosody007/ios-motion-system
+```
+
+或者用我们自己的 curl 脚本（功能等价）：
+
+```bash
+curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash
+```
+
+装完**重启客户端**即可生效。
+
+## What's Inside
+
+- `SKILL.md` —— Skill 元信息与触发指引（AI 入口）
 - `references/_catalog.md` —— 所有分类索引
 - `references/<slug>.md` —— 各分类详情（含 SwiftUI + UIKit 完整代码）
-- `templates/dynamic-params.md` —— 动态参数（spring / carousel 等）说明
+- `templates/dynamic-params.md` —— spring / carousel / border-glow 等可调参数
 
-## 安装
+## Try It
 
-### 方式 A：从 GitHub 直接 clone
+在客户端对话里直接表达需求：
 
-```bash
-# 1. 克隆仓库
-git clone https://github.com/prosody007/ios-motion-system.git
-
-# 2. 链接到对应客户端的 skills 目录（任选）
-# Cursor:
-mkdir -p ~/.cursor/skills-cursor
-ln -s "$(pwd)/ios-motion-system/skill" ~/.cursor/skills-cursor/ios-motion-system
-
-# Claude Code:
-mkdir -p ~/.claude/skills
-ln -s "$(pwd)/ios-motion-system/skill" ~/.claude/skills/ios-motion-system
-
-# Codex:
-mkdir -p ~/.codex/skills
-ln -s "$(pwd)/ios-motion-system/skill" ~/.codex/skills/ios-motion-system
-```
-
-### 方式 B：直接复制 skill 文件夹
-
-```bash
-git clone https://github.com/prosody007/ios-motion-system.git /tmp/ims
-cp -r /tmp/ims/skill ~/.cursor/skills-cursor/ios-motion-system
-```
-
-### 方式 C：项目内 Skills（仅当前项目可用）
-
-```bash
-# 在你的 iOS 项目根目录下
-mkdir -p .cursor/skills
-git clone --depth 1 https://github.com/prosody007/ios-motion-system.git /tmp/ims
-cp -r /tmp/ims/skill .cursor/skills/ios-motion-system
-```
-
-安装完成后**重启客户端**。
-
-## 触发示例
-
-在 Cursor / Claude Code 内对话：
-
-- "实现 iOS 风格的按钮按压反馈，要求 spring"
+- "实现 iOS 风格的按钮按压反馈，要 spring"
 - "我要一个底部弹出 Sheet，可以拖拽缩放"
 - "卡片翻转效果，要真 3D 透视"
 - "Spring 参数怎么选？我想要轻微回弹"
 - "给我一段流光边框 CSS"
-- "iOS 17 的 .snappy 和 .smooth 有什么区别"
-- "tab 切换有 badge 弹跳效果"
+- "Tab 切换有 badge 弹跳效果"
 
-AI 会自动加载本 Skill 并引用对应的 SwiftUI / UIKit 实现。
+AI 会自动加载本 Skill 并引用对应的代码模板。
 
-## 更新
-
-```bash
-cd ios-motion-system && git pull
-```
-
-软链方式无需任何额外操作，复制方式需要重新执行复制命令。
-
-## 自定义 / 二次生成
+## Update
 
 ```bash
-git clone https://github.com/prosody007/ios-motion-system.git
-cd ios-motion-system
-npm install
-npm run export-skill   # 重新从 src/data/*.ts 生成 skill/
+npx skills update ios-motion-system
 ```
+
+或：
+
+```bash
+cd ~/.local/share/ios-motion-system && git pull
+```
+
+## Customize
+
+fork 仓库后改 `src/data/*.ts`，跑一次 `npm run export-skill` 重新生成 skill/，
+然后让自己 / 团队从你的 fork 装：`npx skills add <your-username>/ios-motion-system`。

@@ -2,28 +2,21 @@
 
 iOS 交互动效参考库 —— 40 个分类、80+ 标准动效，每个都附完整可粘贴的 SwiftUI / UIKit 代码。在线预览：[ios-motion-system.vercel.app](https://ios-motion-system.vercel.app)
 
-## 给最终用户：直接装进 AI 编程客户端
+## 给最终用户：装进 AI 编程客户端
 
-把仓库里的 `skill/` 文件夹接入 Cursor / Claude Code / Codex 的 Agent Skills 目录，AI 写 iOS 动画时就能直接引用本库的标准实现。
+通过 [skills.sh](https://skills.sh) 的官方 CLI，一行装好（自动 clone + 软链到 Cursor / Claude Code / Codex）：
 
 ```bash
-git clone https://github.com/prosody007/ios-motion-system.git
-cd ios-motion-system
-
-# Cursor
-mkdir -p ~/.cursor/skills-cursor
-ln -s "$(pwd)/skill" ~/.cursor/skills-cursor/ios-motion-system
-
-# 或 Claude Code
-mkdir -p ~/.claude/skills
-ln -s "$(pwd)/skill" ~/.claude/skills/ios-motion-system
-
-# 或 Codex
-mkdir -p ~/.codex/skills
-ln -s "$(pwd)/skill" ~/.codex/skills/ios-motion-system
+npx skills add prosody007/ios-motion-system
 ```
 
-重启客户端后即可生效。详细安装与触发示例见 [`skill/README.md`](./skill/README.md) 或站内 [Skills · 技能接入](https://ios-motion-system.vercel.app/skills) 页面。
+或者用我们自己的 curl 脚本：
+
+```bash
+curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash
+```
+
+重启客户端即可生效。完整安装选项 / 触发示例见站内 [Skills](https://ios-motion-system.vercel.app/skills) 页面或 [`skill/README.md`](./skill/README.md)。
 
 ## 给开发者：本地预览
 
