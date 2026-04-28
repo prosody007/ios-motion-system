@@ -301,183 +301,206 @@ class FlipCardVC: UIViewController {
 ## Flash Card Stack
 
 - Preview ID：`ios-card-flash-stack`
-- Tags：`0.36s` (duration) · `.smooth` (spring)
+- Tags：`0.32s` (duration) · `.smooth` (spring)
 
 ### SwiftUI
 
 ```swift
-// SwiftUI — 3 张卡片堆叠轮换
+// SwiftUI — 3 张卡片堆叠 + 抛掷式翻面
+//   · 顶部卡片可拖拽跟手；松手位移 ≥ 60pt 进入下一张
+//   · "Need to Review" 把当前卡向左抛出 → 落到堆栈底
+//   · "Mastered" 把当前卡向右抛出 → 落到堆栈底
+//   两颗按钮都是「下一张」，只是抛出方向相反
+
 struct FlashCardStackView: View {
-    struct FlashCard: Identifiable {
-        let id: String
-        let indexLabel: String
-        let title: String
-        let accent: Color
-        let image: LinearGradient
-    }
-
     @State private var order = [0, 1, 2]
+    @State private var dragOffset: CGSize = .zero
+    @State private var fling: CGFloat = 0   // -1 / 0 / +1
+    @State private var phase: Phase = .idle
 
-    let cards: [FlashCard] = [
-        .init(
-            id: "scan",
-            indexLabel: "1/3",
-            title: "The sum of two negative integers is always negative.",
-            accent: Color(hex: 0x007AFF),
-            image: .init(colors: [Color(hex: 0xE3EEFF), Color(hex: 0xBCD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-        .init(
-            id: "study",
-            indexLabel: "2/3",
-            title: "Choose the correct verb form to complete the sentence.",
-            accent: Color(hex: 0xAF52DE),
-            image: .init(colors: [Color(hex: 0xF4E8FF), Color(hex: 0xDEC3FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-        .init(
-            id: "focus",
-            indexLabel: "3/3",
-            title: "Review the highlighted term before moving to the next card.",
-            accent: Color(hex: 0x34C759),
-            image: .init(colors: [Color(hex: 0xE5F8EB), Color(hex: 0xBFE9CB)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-    ]
+    enum Phase { case idle, animating }
 
-    private let stack = [
-        (offsetY: 0.0,  scale: 1.00, z: 3.0),
-        (offsetY: 12.0, scale: 0.95, z: 2.0),
-        (offsetY: 24.0, scale: 0.90, z: 1.0),
+    private let cards = ["card-1", "card-2", "card-3"]
+    private let slots: [(tx: CGFloat, ty: CGFloat, s: CGFloat)] = [
+        (0,   0,   1.000),
+        (14,  66,  0.913),
+        (28, 101,  0.826),
     ]
 
     var body: some View {
-        VStack(spacing: 20) {
-            ZStack(alignment: .top) {
-                ForEach(Array(order.enumerated()), id: \.offset) { stackIndex, cardIndex in
-                    let item = cards[cardIndex]
-                    let style = stack[stackIndex]
+        VStack(spacing: 16) {
+            ZStack(alignment: .topLeading) {
+                ForEach(0..<3) { itemIndex in
+                    let stackIndex = order.firstIndex(of: itemIndex)!
+                    let slot = slots[stackIndex]
+                    let isTop = stackIndex == 0
 
-                    VStack(spacing: 0) {
-                        Rectangle()
-                            .fill(item.image)
-                            .frame(height: 140)
-
-                        VStack(spacing: 12) {
-                            Text(item.indexLabel)
-                                .font(.system(size: 14, weight: .regular))
-                                .foregroundStyle(Color(hex: 0x595C60))
-
-                            Text(item.title)
-                                .font(.system(size: 14, weight: .semibold))
-                                .multilineTextAlignment(.center)
-                                .foregroundStyle(.black)
-
-                            Text("Tap to reveal")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(item.accent)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
-                        .padding(.bottom, 20)
-                    }
-                    .frame(width: 210)
-                    .background(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .shadow(color: .black.opacity(0.08), radius: 12, y: 8)
-                    .frame(width: 321, height: 325, alignment: .top)
-                    .scaleEffect(style.scale)
-                    .offset(y: style.offsetY)
-                    .zIndex(style.z)
+                    FlashCardShell(label: cards[itemIndex])
+                        .frame(width: 321, height: 325)
+                        .offset(x: isTop ? dragOffset.width : 0,
+                                y: isTop ? dragOffset.height * 0.4 : 0)
+                        .rotationEffect(isTop ? .degrees(dragOffset.width * 0.06) : .zero)
+                        .scaleEffect(slot.s)
+                        .offset(x: slot.tx, y: slot.ty)
+                        .zIndex(Double(3 - stackIndex))
+                        .gesture(isTop ? dragGesture : nil)
                 }
             }
-            .frame(width: 321, height: 280)
+            .frame(width: 321, height: 345)
 
             HStack(spacing: 8) {
-                Button {
-                    withAnimation(.smooth(duration: 0.42)) {
-                        order = [order[2], order[0], order[1]]
-                    }
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .frame(width: 40, height: 40)
-                        .background(Color(hex: 0xE9ECF5), in: Circle())
-                }
-
-                Button {
-                    withAnimation(.smooth(duration: 0.42)) {
-                        order = [order[1], order[2], order[0]]
-                    }
-                } label: {
-                    Image(systemName: "chevron.right")
-                        .frame(width: 40, height: 40)
-                        .background(Color(hex: 0xE9ECF5), in: Circle())
-                }
+                pillButton(title: "Need to Review",
+                           accent: Color(hex: 0xF6A507),
+                           bg:     Color(hex: 0xFFF6D9),
+                           system: "xmark") { fling(direction: -1) }
+                pillButton(title: "Mastered",
+                           accent: Color(hex: 0x40C700),
+                           bg:     Color(hex: 0xEAFFEA),
+                           system: "checkmark") { fling(direction: +1) }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(Color(hex: 0xEDEEF3), in: Capsule())
+            .frame(width: 321, height: 40)
         }
     }
-}
 
-// 交互规则：
-// • 共 3 张卡片，后两张逐级缩小并向下堆叠
-// • Next  = 第一张移到最后，第二张放大到最前
-// • Prev  = 最后一张移到最前，第一张退到第二位
-// • 全部卡片在同一段 smooth 动画中交换位置
+    // MARK: 手势 —— 跟手平移
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { dragOffset = $0.translation }
+            .onEnded { value in
+                if abs(value.translation.width) >= 60 {
+                    advance()                  // 越过阈值 → 下一张
+                } else {
+                    withAnimation(.smooth(duration: 0.45)) {
+                        dragOffset = .zero      // 弹回原位
+                    }
+                }
+            }
+    }
+
+    // MARK: 按钮 —— 抛出 + 进入下一张
+    private func fling(direction: CGFloat) {
+        guard phase == .idle else { return }
+        phase = .animating
+        withAnimation(.easeIn(duration: 0.32)) {
+            dragOffset = CGSize(width: direction * 480, height: 0)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+            advance()
+            phase = .idle
+        }
+    }
+
+    private func advance() {
+        var transaction = Transaction(animation: .smooth(duration: 0.58))
+        transaction.disablesAnimations = false
+        withTransaction(transaction) {
+            order = [order[1], order[2], order[0]]
+            dragOffset = .zero
+        }
+    }
+
+    // MARK: 按钮样式
+    private func pillButton(title: String, accent: Color, bg: Color,
+                            system: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: system)
+                Text(title)
+            }
+            .font(.system(size: 14, weight: .medium))
+            .foregroundStyle(accent)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(bg, in: Capsule())
+            .overlay(Capsule().stroke(accent, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+}
 ```
 
 ### UIKit
 
 ```swift
-// UIKit — Flash Card 堆叠轮换
+// UIKit — Flash Card 堆叠 + 抛掷式翻面
 final class FlashCardStackView: UIView {
-    private let cards: [UIView] = [UIView(), UIView(), UIView()]
+    private let cards: [UIView] = (0..<3).map { _ in UIView() }
     private var order = [0, 1, 2]
+    private var isAnimating = false
 
-    private let stack: [(y: CGFloat, scale: CGFloat, z: CGFloat)] = [
-        (0, 1.00, 3),
-        (12, 0.95, 2),
-        (24, 0.90, 1),
+    // 三个槽位（与 SwiftUI 版本一致）
+    private let slots: [(tx: CGFloat, ty: CGFloat, s: CGFloat)] = [
+        (0,   0,   1.000),
+        (14,  66,  0.913),
+        (28, 101,  0.826),
     ]
 
-    func moveForward() {
-        order = [order[1], order[2], order[0]]
-        applyStack(animated: true)
+    func setupGestures() {
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(onPan(_:)))
+        cards[0].addGestureRecognizer(pan)
     }
 
-    func moveBackward() {
-        order = [order[2], order[0], order[1]]
-        applyStack(animated: true)
-    }
+    // MARK: 拖拽跟手 + 阈值释放
+    @objc private func onPan(_ g: UIPanGestureRecognizer) {
+        guard let top = topCard else { return }
+        let t = g.translation(in: self)
 
-    private func applyStack(animated: Bool) {
-        for (stackIndex, cardIndex) in order.enumerated() {
-            let view = cards[cardIndex]
-            let style = stack[stackIndex]
+        switch g.state {
+        case .changed:
+            top.transform = CGAffineTransform(translationX: t.x, y: t.y * 0.4)
+                .rotated(by: t.x * 0.06 * .pi / 180)
 
-            let updates = {
-                view.transform = CGAffineTransform(translationX: 0, y: style.y)
-                    .scaledBy(x: style.scale, y: style.scale)
-                view.layer.zPosition = style.z
+        case .ended, .cancelled:
+            if abs(t.x) >= 60 {
+                advance(animated: true)
+            } else {
+                UIView.animate(withDuration: 0.45,
+                               delay: 0, usingSpringWithDamping: 0.85,
+                               initialSpringVelocity: 0) {
+                    top.transform = .identity
+                }
             }
-
-            guard animated else {
-                updates()
-                continue
-            }
-
-            let timing = UISpringTimingParameters(dampingRatio: 1.0)
-            let animator = UIViewPropertyAnimator(duration: 0.42, timingParameters: timing)
-            animator.addAnimations(updates)
-            animator.startAnimation()
+        default: break
         }
     }
-}
 
-// 交互规则：
-// • 3 张卡片保持堆叠
-// • 后两张逐级缩小并向下露出
-// • Next  = 顶层卡片移到最后
-// • Prev  = 底层卡片提到最前
-// • 所有卡片在同一段动画中交换位置
+    // MARK: 按钮 —— 抛出 + 进入下一张
+    func fling(direction sign: CGFloat) {
+        guard !isAnimating, let top = topCard else { return }
+        isAnimating = true
+
+        UIView.animate(withDuration: 0.32, delay: 0,
+                       options: [.curveEaseIn]) {
+            top.transform = CGAffineTransform(translationX: sign * 480, y: 0)
+                .rotated(by: sign * 18 * .pi / 180)
+        } completion: { _ in
+            self.advance(animated: true)
+            self.isAnimating = false
+        }
+    }
+
+    // MARK: 推进顺序 + 让所有卡同步到新槽位
+    private func advance(animated: Bool) {
+        order = [order[1], order[2], order[0]]
+        let updates = {
+            for (stackIndex, cardIndex) in self.order.enumerated() {
+                let view = self.cards[cardIndex]
+                let slot = self.slots[stackIndex]
+                view.transform = CGAffineTransform(translationX: slot.tx, y: slot.ty)
+                    .scaledBy(x: slot.s, y: slot.s)
+                view.layer.zPosition = CGFloat(3 - stackIndex)
+            }
+        }
+        if animated {
+            UIView.animate(withDuration: 0.58, delay: 0,
+                           usingSpringWithDamping: 1.0,
+                           initialSpringVelocity: 0,
+                           animations: updates)
+        } else {
+            updates()
+        }
+    }
+
+    private var topCard: UIView? { cards[order[0]] }
+}
 ```
 

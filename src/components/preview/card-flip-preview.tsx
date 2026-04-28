@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /* ----------------------------------------------------------------
  *  CardExpandPreview · 卡片展开
@@ -396,29 +396,39 @@ export function CardFlipPreview() {
 }
 
 /* ----------------------------------------------------------------
- *  FlashCardTransitionPreview · 1:1 还原 Figma 781:14407
+ *  FlashCardTransitionPreview · 1:1 还原 Figma 673:10425
  *
- *  舞台尺寸：321 × 409（不渲染外层 frame 灰底）
- *  卡片基础尺寸：321 × 325
- *  三层位置（与设计稿一致）：
+ *  Panel = stage（卡片堆）+ 16gap + buttons
+ *    stage   : 321 × 345  （三层卡片堆叠区域）
+ *    buttons : 321 × 40   （Need to Review · Mastered 两颗 pill）
+ *  整个 panel 用 transform: scale 自适应预览容器尺寸
+ *
+ *  三层卡片位置（与设计稿一致）：
  *    - top    : (0,   0)   scale(1.000, 1.000)
  *    - middle : (14,  66)  scale(0.913, 0.828)
  *    - bottom : (28, 101)  scale(0.826, 0.751)
- *  按钮：两颗 40×40，间距 24，整体居中位于 y=369
+ *
+ *  交互
+ *    · 拖动顶部卡片：跟手平移 + 旋转，松手如位移 ≥ 60px 算"下一张"
+ *    · 点击 Need to Review（黄）：顶部卡片向左飞出 → 落回堆栈底
+ *    · 点击 Mastered（绿）：顶部卡片向右飞出 → 落回堆栈底
+ *    两颗按钮都是"下一张"，只是抛出方向相反
  * ---------------------------------------------------------------- */
 const FLASH_STAGE_W = 321;
-const FLASH_STAGE_H = 409;
+const FLASH_STAGE_H = 345;
+const FLASH_BTN_H = 40;
+const FLASH_GAP = 16;
+const FLASH_PANEL_H = FLASH_STAGE_H + FLASH_GAP + FLASH_BTN_H;
 const FLASH_CARD_W = 321;
 const FLASH_CARD_H = 325;
 
-const FLASH_BUTTON_SIZE = 40;
-const FLASH_BUTTON_GAP = 24;
-const FLASH_BUTTONS_W = FLASH_BUTTON_SIZE * 2 + FLASH_BUTTON_GAP;
-const FLASH_BUTTONS_Y = 369;
-
 const FLASH_DURATION = 580;
-const FLASH_EASE = "linear";
 const FLASH_FOLLOW_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+const FLASH_FLING_DURATION = 320;
+const FLASH_FLING_EASE = "cubic-bezier(0.4, 0, 1, 1)";
+const FLASH_FLING_DISTANCE = 480;
+const FLASH_FLING_ROT = 18;
 
 const FLASH_SLOTS = [
   { tx: 0, ty: 0, sx: 1, sy: 1, zIndex: 30 },
@@ -440,25 +450,50 @@ function FlashCardShell() {
   );
 }
 
-function ChevronIcon({ direction }: { direction: "left" | "right" }) {
+function FlashPillButton({
+  variant,
+  label,
+  iconSrc,
+  onClick,
+}: {
+  variant: "review" | "mastered";
+  label: string;
+  iconSrc: string;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  const theme =
+    variant === "review"
+      ? { bg: "#FFF6D9", border: "#F6A507", color: "#F6A507" }
+      : { bg: "#EAFFEA", border: "#40C700", color: "#40C700" };
+
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="#595C60"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex flex-1 items-center justify-center gap-1 rounded-full cursor-pointer transition-transform duration-100 active:scale-[0.97]"
+      style={{
+        height: FLASH_BTN_H,
+        background: theme.bg,
+        border: `1px solid ${theme.border}`,
+        color: theme.color,
+        fontFamily:
+          "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+        fontWeight: 500,
+        fontSize: 14,
+        lineHeight: 1,
+      }}
     >
-      {direction === "left" ? (
-        <path d="M15 18l-6-6 6-6" />
-      ) : (
-        <path d="M9 18l6-6-6-6" />
-      )}
-    </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={iconSrc}
+        alt=""
+        width={16}
+        height={16}
+        draggable={false}
+        style={{ display: "block" }}
+      />
+      <span>{label}</span>
+    </button>
   );
 }
 
@@ -472,11 +507,9 @@ type DragState = {
 
 export function FlashCardTransitionPreview() {
   const [order, setOrder] = useState([0, 1, 2]);
-  const [phase, setPhase] = useState<{
-    direction: "next" | "prev";
-    cardId: string;
-  } | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
+  const [fling, setFling] = useState<{ sign: -1 | 1 } | null>(null);
+  const [snapId, setSnapId] = useState<number | null>(null);
   const [scale, setScale] = useState(0.62);
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -488,10 +521,7 @@ export function FlashCardTransitionPreview() {
     initDy: number;
     initRot: number;
   } | null>(null);
-  const phaseTimeoutRef = useRef<number | null>(null);
-
-  const rawId = useId();
-  const id = `flash-${rawId.replace(/:/g, "")}`;
+  const flingTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const updateScale = () => {
@@ -499,7 +529,7 @@ export function FlashCardTransitionPreview() {
       if (!el) return;
       const next = Math.min(
         (el.clientWidth - 16) / FLASH_STAGE_W,
-        (el.clientHeight - 16) / FLASH_STAGE_H,
+        (el.clientHeight - 16) / FLASH_PANEL_H,
       );
       setScale(Math.max(0.34, Math.min(1, next)));
     };
@@ -512,36 +542,28 @@ export function FlashCardTransitionPreview() {
 
   useEffect(() => {
     return () => {
-      if (phaseTimeoutRef.current !== null) {
-        clearTimeout(phaseTimeoutRef.current);
+      if (flingTimerRef.current !== null) {
+        clearTimeout(flingTimerRef.current);
       }
     };
   }, []);
 
-  const schedulePhaseClear = (duration: number) => {
-    if (phaseTimeoutRef.current !== null) {
-      clearTimeout(phaseTimeoutRef.current);
+  const triggerFling = (sign: -1 | 1) => {
+    if (drag || fling) return;
+    if (flingTimerRef.current !== null) {
+      clearTimeout(flingTimerRef.current);
     }
-    phaseTimeoutRef.current = window.setTimeout(() => {
-      setPhase(null);
-      phaseTimeoutRef.current = null;
-    }, duration);
-  };
-
-  const rotateForward = () => {
-    if (phase || drag) return;
-    const exitingId = FLASH_ITEMS[order[0]];
-    setPhase({ direction: "next", cardId: exitingId });
-    setOrder(([first, second, third]) => [second, third, first]);
-    schedulePhaseClear(FLASH_DURATION + 20);
-  };
-
-  const rotateBackward = () => {
-    if (phase || drag) return;
-    const enteringId = FLASH_ITEMS[order[2]];
-    setPhase({ direction: "prev", cardId: enteringId });
-    setOrder(([first, second, third]) => [third, first, second]);
-    schedulePhaseClear(FLASH_DURATION + 20);
+    const exitingIndex = order[0];
+    setFling({ sign });
+    flingTimerRef.current = window.setTimeout(() => {
+      setSnapId(exitingIndex);
+      setOrder(([first, second, third]) => [second, third, first]);
+      setFling(null);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setSnapId(null));
+      });
+      flingTimerRef.current = null;
+    }, FLASH_FLING_DURATION);
   };
 
   const readTopCardTransform = (): {
@@ -571,8 +593,7 @@ export function FlashCardTransitionPreview() {
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (drag) return;
-    if (phase) return;
+    if (drag || fling) return;
     if ((e.target as HTMLElement).closest("button")) return;
 
     const { initDx, initDy, initRot } = readTopCardTransform();
@@ -622,8 +643,6 @@ export function FlashCardTransitionPreview() {
     }
   };
 
-  const slotThird = FLASH_SLOTS[2];
-
   return (
     <div
       ref={containerRef}
@@ -634,135 +653,108 @@ export function FlashCardTransitionPreview() {
       onPointerCancel={handlePointerCancel}
       style={{ touchAction: "pan-y", cursor: drag ? "grabbing" : "grab" }}
     >
-      <style>{`
-        @keyframes ${id}-exit-next {
-          0%    { transform: translate(0px, 0px) rotateY(0deg) rotate(0deg) scale(1, 1); z-index: 40; }
-          18%   { transform: translate(-78px, 2px) rotateY(-14deg) rotate(-2deg) scale(0.97, 0.96); z-index: 40; }
-          35%   { transform: translate(-145px, 18px) rotateY(-26deg) rotate(-4deg) scale(0.94, 0.92); z-index: 40; }
-          49.9% { transform: translate(-168px, 42px) rotateY(-34deg) rotate(-5deg) scale(0.91, 0.88); z-index: 40; }
-          50.1% { transform: translate(-168px, 42px) rotateY(-34deg) rotate(-5deg) scale(0.91, 0.88); z-index: 5; }
-          65%   { transform: translate(-138px, 68px) rotateY(-26deg) rotate(-4deg) scale(0.89, 0.85); z-index: 5; }
-          82%   { transform: translate(-58px, 90px) rotateY(-12deg) rotate(-2deg) scale(0.86, 0.81); z-index: 5; }
-          100%  { transform: translate(${slotThird.tx}px, ${slotThird.ty}px) rotateY(0deg) rotate(0deg) scale(${slotThird.sx}, ${slotThird.sy}); z-index: 5; }
-        }
-        @keyframes ${id}-enter-prev {
-          0%    { transform: translate(${slotThird.tx}px, ${slotThird.ty}px) rotateY(0deg) rotate(0deg) scale(${slotThird.sx}, ${slotThird.sy}); z-index: 5; }
-          18%   { transform: translate(58px, 90px) rotateY(12deg) rotate(2deg) scale(0.86, 0.81); z-index: 5; }
-          35%   { transform: translate(138px, 68px) rotateY(26deg) rotate(4deg) scale(0.89, 0.85); z-index: 5; }
-          49.9% { transform: translate(168px, 42px) rotateY(34deg) rotate(5deg) scale(0.91, 0.88); z-index: 5; }
-          50.1% { transform: translate(168px, 42px) rotateY(34deg) rotate(5deg) scale(0.91, 0.88); z-index: 40; }
-          65%   { transform: translate(145px, 18px) rotateY(26deg) rotate(4deg) scale(0.94, 0.92); z-index: 40; }
-          82%   { transform: translate(78px, 2px) rotateY(14deg) rotate(2deg) scale(0.97, 0.96); z-index: 40; }
-          100%  { transform: translate(0px, 0px) rotateY(0deg) rotate(0deg) scale(1, 1); z-index: 40; }
-        }
-      `}</style>
-
       <div
         style={{
           width: FLASH_STAGE_W * scale,
-          height: FLASH_STAGE_H * scale,
+          height: FLASH_PANEL_H * scale,
         }}
       >
         <div
-          ref={stageRef}
-          className="relative"
           style={{
             width: FLASH_STAGE_W,
-            height: FLASH_STAGE_H,
+            height: FLASH_PANEL_H,
             transform: `scale(${scale})`,
             transformOrigin: "top left",
-            perspective: "1400px",
-            perspectiveOrigin: "50% 40%",
           }}
         >
-          {FLASH_ITEMS.map((itemKey, itemIndex) => {
-            const stackIndex = order.indexOf(itemIndex);
-            const slot = FLASH_SLOTS[stackIndex];
-            const isTop = stackIndex === 0;
-            const isPhaseCard = phase?.cardId === itemKey;
-            const isDragFollow = drag !== null && isTop;
-
-            const animationName = isPhaseCard
-              ? phase?.direction === "next"
-                ? `${id}-exit-next`
-                : `${id}-enter-prev`
-              : undefined;
-
-            let transformValue: string;
-            let transition: string;
-            let zIndex = slot.zIndex;
-
-            if (isDragFollow) {
-              transformValue = `translate(${drag.dx}px, ${drag.dy}px) rotate(${drag.rot}deg) scale(1, 1)`;
-              transition = "none";
-              zIndex = 40;
-            } else {
-              transformValue = `translate(${slot.tx}px, ${slot.ty}px) rotate(0deg) scale(${slot.sx}, ${slot.sy})`;
-              transition = animationName
-                ? "none"
-                : `transform ${FLASH_DURATION}ms ${FLASH_FOLLOW_EASE}`;
-            }
-
-            return (
-              <div
-                key={itemKey}
-                data-flash-card={itemKey}
-                className="absolute left-0 top-0 will-change-transform"
-                style={{
-                  width: FLASH_CARD_W,
-                  height: FLASH_CARD_H,
-                  transform: transformValue,
-                  transformOrigin: "top left",
-                  zIndex,
-                  transition,
-                  animation: animationName
-                    ? `${animationName} ${FLASH_DURATION}ms ${FLASH_EASE} both`
-                    : undefined,
-                }}
-              >
-                <FlashCardShell />
-              </div>
-            );
-          })}
-
+          {/* 卡片堆 */}
           <div
-            className="absolute"
+            ref={stageRef}
+            className="relative"
             style={{
-              top: FLASH_BUTTONS_Y,
-              left: (FLASH_STAGE_W - FLASH_BUTTONS_W) / 2,
-              width: FLASH_BUTTONS_W,
-              height: FLASH_BUTTON_SIZE,
-              zIndex: 100,
+              width: FLASH_STAGE_W,
+              height: FLASH_STAGE_H,
+              perspective: "1400px",
+              perspectiveOrigin: "50% 40%",
             }}
           >
-            <button
-              type="button"
-              className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90"
-              onClick={(e) => {
-                e.stopPropagation();
-                rotateBackward();
-              }}
-              aria-label="Previous card"
-              style={{ background: "#EDEEF3" }}
-            >
-              <ChevronIcon direction="left" />
-            </button>
+            {FLASH_ITEMS.map((itemKey, itemIndex) => {
+              const stackIndex = order.indexOf(itemIndex);
+              const slot = FLASH_SLOTS[stackIndex];
+              const isTop = stackIndex === 0;
+              const isDragFollow = drag !== null && isTop;
+              const isFlingCard = fling !== null && isTop;
+              const isSnap = snapId === itemIndex;
 
-            <button
-              type="button"
-              className="absolute top-0 flex h-10 w-10 items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90"
+              let transformValue: string;
+              let transition: string;
+              let zIndex = slot.zIndex;
+
+              if (isFlingCard && fling) {
+                const tx = fling.sign * FLASH_FLING_DISTANCE;
+                const rot = fling.sign * FLASH_FLING_ROT;
+                transformValue = `translate(${tx}px, 0px) rotate(${rot}deg) scale(1, 1)`;
+                transition = `transform ${FLASH_FLING_DURATION}ms ${FLASH_FLING_EASE}`;
+                zIndex = 40;
+              } else if (isDragFollow && drag) {
+                transformValue = `translate(${drag.dx}px, ${drag.dy}px) rotate(${drag.rot}deg) scale(1, 1)`;
+                transition = "none";
+                zIndex = 40;
+              } else {
+                transformValue = `translate(${slot.tx}px, ${slot.ty}px) rotate(0deg) scale(${slot.sx}, ${slot.sy})`;
+                transition = isSnap
+                  ? "none"
+                  : `transform ${FLASH_DURATION}ms ${FLASH_FOLLOW_EASE}`;
+              }
+
+              return (
+                <div
+                  key={itemKey}
+                  data-flash-card={itemKey}
+                  className="absolute left-0 top-0 will-change-transform"
+                  style={{
+                    width: FLASH_CARD_W,
+                    height: FLASH_CARD_H,
+                    transform: transformValue,
+                    transformOrigin: "top left",
+                    zIndex,
+                    transition,
+                  }}
+                >
+                  <FlashCardShell />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 按钮行 */}
+          <div
+            className="flex items-stretch"
+            style={{
+              width: FLASH_STAGE_W,
+              height: FLASH_BTN_H,
+              marginTop: FLASH_GAP,
+              gap: 8,
+            }}
+          >
+            <FlashPillButton
+              variant="review"
+              label="Need to Review"
+              iconSrc="/figma/card-flip/flash-btn-review.svg"
               onClick={(e) => {
                 e.stopPropagation();
-                rotateForward();
+                triggerFling(-1);
               }}
-              aria-label="Next card"
-              style={{
-                left: FLASH_BUTTON_SIZE + FLASH_BUTTON_GAP,
-                background: "#EDEEF3",
+            />
+            <FlashPillButton
+              variant="mastered"
+              label="Mastered"
+              iconSrc="/figma/card-flip/flash-btn-mastered.svg"
+              onClick={(e) => {
+                e.stopPropagation();
+                triggerFling(1);
               }}
-            >
-              <ChevronIcon direction="right" />
-            </button>
+            />
           </div>
         </div>
       </div>
