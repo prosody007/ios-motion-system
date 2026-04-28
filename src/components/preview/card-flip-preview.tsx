@@ -430,6 +430,9 @@ const FLASH_FLING_EASE = "cubic-bezier(0.4, 0, 1, 1)";
 const FLASH_FLING_DISTANCE = 480;
 const FLASH_FLING_ROT = 18;
 
+/** 拖动到这个距离时，意图描边 + 文字达到 100% 不透明度 */
+const FLASH_INTENT_FULL_PX = 120;
+
 const FLASH_SLOTS = [
   { tx: 0, ty: 0, sx: 1, sy: 1, zIndex: 30 },
   { tx: 14, ty: 66, sx: 293 / 321, sy: 269 / 325, zIndex: 20 },
@@ -438,15 +441,57 @@ const FLASH_SLOTS = [
 
 const FLASH_ITEMS = ["card-1", "card-2", "card-3"] as const;
 
-function FlashCardShell() {
+type FlashIntent = "review" | "mastered" | null;
+
+const FLASH_INTENT_COLORS: Record<NonNullable<FlashIntent>, string> = {
+  review: "246, 165, 7", // #F6A507
+  mastered: "64, 199, 0", // #40C700
+};
+
+function FlashCardShell({
+  intent,
+  intensity,
+}: {
+  intent?: FlashIntent;
+  intensity?: number;
+}) {
+  const i = Math.max(0, Math.min(1, intensity ?? 0));
+  const rgb = intent ? FLASH_INTENT_COLORS[intent] : null;
+
+  const borderShadow = rgb
+    ? `inset 0 0 0 4px rgba(${rgb}, ${i})`
+    : "inset 0 0 0 4px rgba(0,0,0,0)";
+
   return (
     <div
-      className="h-full w-full bg-white"
+      className="relative h-full w-full bg-white overflow-hidden"
       style={{
         borderRadius: 20,
-        boxShadow: "0 12px 24px rgba(0,0,0,0.08)",
+        boxShadow: `${borderShadow}, 0 12px 24px rgba(0,0,0,0.08)`,
       }}
-    />
+    >
+      {intent && (
+        <div
+          aria-hidden
+          className="absolute"
+          style={{
+            top: 24,
+            left: 16,
+            right: 16,
+            textAlign: "center",
+            color: intent === "review" ? "#F6A507" : "#40C700",
+            opacity: i,
+            fontFamily:
+              "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+            fontWeight: 500,
+            fontSize: 14,
+            lineHeight: 1,
+          }}
+        >
+          {intent === "review" ? "Need to Review" : "Mastered"}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -690,6 +735,22 @@ export function FlashCardTransitionPreview() {
               let transition: string;
               let zIndex = slot.zIndex;
 
+              // Drag/fling 时按方向显示意图描边 + 文字标签
+              let intent: FlashIntent = null;
+              let intensity = 0;
+              if (isTop) {
+                if (drag && Math.abs(drag.dx) > 1) {
+                  intent = drag.dx < 0 ? "review" : "mastered";
+                  intensity = Math.min(
+                    Math.abs(drag.dx) / FLASH_INTENT_FULL_PX,
+                    1,
+                  );
+                } else if (fling) {
+                  intent = fling.sign < 0 ? "review" : "mastered";
+                  intensity = 1;
+                }
+              }
+
               if (isFlingCard && fling) {
                 const tx = fling.sign * FLASH_FLING_DISTANCE;
                 const rot = fling.sign * FLASH_FLING_ROT;
@@ -721,7 +782,7 @@ export function FlashCardTransitionPreview() {
                     transition,
                   }}
                 >
-                  <FlashCardShell />
+                  <FlashCardShell intent={intent} intensity={intensity} />
                 </div>
               );
             })}
