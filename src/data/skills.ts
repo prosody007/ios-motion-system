@@ -103,12 +103,12 @@ export const skillsSection: DocsSection = {
       ],
     },
     {
-      title: "为什么用 Skill 而非 MCP？",
+      title: "为什么用 Agent Skill",
       bullets: [
         "**零服务**：纯 markdown 文件夹，不用跑进程、不用配 URL、不用装包",
         "**离线可用**：装完即可用，不依赖网络",
         "**多客户端通用**：Cursor / Claude Code / Codex 一份文件全适配",
-        "**易调试**：直接打开 markdown 看里面是什么，比 MCP 工具调用透明",
+        "**透明可读**：直接打开 markdown 看里面是什么，所见即所得",
         "**易自定义**：改任何 reference 文件立即生效",
       ],
     },

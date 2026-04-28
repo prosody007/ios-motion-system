@@ -1,94 +1,64 @@
-## iOS Motion System
+# iOS Motion System
 
-iOS 交互动效参考库，提供可预览示例、参数说明与可直接使用的 SwiftUI / UIKit 实现代码。
+iOS 交互动效参考库 —— 40 个分类、80+ 标准动效，每个都附完整可粘贴的 SwiftUI / UIKit 代码。在线预览：[ios-motion-system.vercel.app](https://ios-motion-system.vercel.app)
 
-## Web 本地预览
+## 给最终用户：直接装进 AI 编程客户端
 
-先启动开发服务器：
-
-```bash
-npm run dev
-```
-
-然后访问 [http://localhost:3000](http://localhost:3000)。
-
-## MCP 本地运行
-
-配置完成后，支持 MCP 的客户端会自动拉起服务。
-
-发布到 npm 后，推荐直接运行：
+把仓库里的 `skill/` 文件夹接入 Cursor / Claude Code / Codex 的 Agent Skills 目录，AI 写 iOS 动画时就能直接引用本库的标准实现。
 
 ```bash
-npx ios-motion-system@latest mcp init --client cursor
+git clone https://github.com/prosody007/ios-motion-system.git
+cd ios-motion-system
+
+# Cursor
+mkdir -p ~/.cursor/skills-cursor
+ln -s "$(pwd)/skill" ~/.cursor/skills-cursor/ios-motion-system
+
+# 或 Claude Code
+mkdir -p ~/.claude/skills
+ln -s "$(pwd)/skill" ~/.claude/skills/ios-motion-system
+
+# 或 Codex
+mkdir -p ~/.codex/skills
+ln -s "$(pwd)/skill" ~/.codex/skills/ios-motion-system
 ```
 
-或者：
+重启客户端后即可生效。详细安装与触发示例见 [`skill/README.md`](./skill/README.md) 或站内 [Skills · 技能接入](https://ios-motion-system.vercel.app/skills) 页面。
+
+## 给开发者：本地预览
 
 ```bash
-npx ios-motion-system@latest mcp init --client claude
+npm install
+npm run dev   # http://localhost:3000
 ```
 
-如果当前使用的是本地仓库，可以运行：
+## 给开发者：自定义 / 二次生成 Skill
+
+`skill/` 内容由 `scripts/export-skill.ts` 自动从 `src/data/*.ts` 生成。改了 cards 后跑一下：
 
 ```bash
-node ./bin/ios-motion-system.cjs mcp init --client cursor --local
+npm run export-skill
 ```
 
-手动配置时，可使用：
+会重新生成 `skill/SKILL.md`、`skill/references/*.md`、`skill/templates/dynamic-params.md`。
 
-```json
-{
-  "mcpServers": {
-    "ios-motion-system": {
-      "command": "npx",
-      "args": ["ios-motion-system@latest", "mcp"]
-    }
-  }
-}
+## 项目结构
+
+```
+src/
+├── app/                    Next.js App Router 页面
+├── components/preview/     各 demo 的预览组件
+└── data/
+    ├── categories.ts       分类清单
+    ├── navigation.ts       侧栏导航分组
+    ├── skills.ts           站内 Skills 接入文档
+    ├── <slug>.ts           各分类 cards 数据（标题 / 标签 / 完整代码）
+    └── index.ts            sectionMap 汇总
+scripts/
+└── export-skill.ts         skill/ 生成脚本
+skill/                      给 AI 客户端用的 Agent Skill（已 commit）
 ```
 
-用于本地调试或排查连接问题：
+## License
 
-```bash
-npm run mcp
-```
-
-当前提供的 tools：
-
-- `list_categories`
-- `get_section`
-- `list_cards`
-- `get_code`
-- `search_motions`
-- `recommend_motion`
-
-### `get_code` 示例
-
-```json
-{
-  "previewId": "ios-spring-playground",
-  "platform": "swift",
-  "params": {
-    "response": "0.45",
-    "damping": "0.82"
-  }
-}
-```
-
-### 动态模板参数
-
-MCP 会自动给部分动态代码片段注入默认参数：
-
-- `ios-spring-playground`
-  - `response`
-  - `damping`
-  - `bounce`
-  - `stiffness`
-  - `dampingCoef`
-  - `duration`
-  - `swiftProps`
-  - `uikitProps`
-- `ios-carousel*`
-  - `speedSec`
-
-可以在 `get_code` 中通过 `params` 覆盖默认值。
+MIT
