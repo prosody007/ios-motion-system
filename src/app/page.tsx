@@ -9,7 +9,7 @@ export default function Home() {
         <h1 className="text-[38px] font-semibold leading-[1.2] tracking-[-0.02em] text-[rgba(0,0,0,0.88)]">
           组件总览
         </h1>
-        <p className="mt-4 max-w-[880px] text-[14px] leading-7 text-[rgba(0,0,0,0.65)]">
+        <p className="mt-4 text-[14px] leading-7 text-[rgba(0,0,0,0.65)]">
           面向 iOS 商业应用的交互动效参考库，覆盖按钮、表单、列表、弹层、手势、转场与高级动效。
           每个分类都附带可直接复制的 SwiftUI / UIKit 示例代码，帮助开发统一实现时长、曲线与反馈表现。
         </p>
@@ -37,7 +37,9 @@ export default function Home() {
                   <Link
                     key={item.slug}
                     href={`/${item.slug}`}
-                    className="group block py-0.5 transition-colors"
+                    className={`group block py-0.5 transition-colors ${
+                      groupItems.length === 1 ? "sm:col-span-2 xl:col-span-3" : ""
+                    }`}
                   >
                     <div className="text-[16px] font-medium leading-7 text-[rgba(0,0,0,0.88)] transition-colors group-hover:text-[#1677FF]">
                       {item.title}

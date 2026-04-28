@@ -85,7 +85,7 @@ export function DocsSectionView({ section }: { section: DocsSection }) {
             {item.paragraphs?.map((paragraph) => (
               <p
                 key={paragraph}
-                className="max-w-[920px] text-[14px] leading-7 text-[rgba(0,0,0,0.65)]"
+                className="text-[14px] leading-7 text-[rgba(0,0,0,0.65)]"
               >
                 {renderInlineCode(paragraph)}
               </p>
