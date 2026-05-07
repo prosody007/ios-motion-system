@@ -37,7 +37,12 @@ import { NotificationBannerPreview } from "./notification-banner-preview";
 import { SuccessCheckPreview, ErrorShakePreview } from "./success-error-preview";
 import { ToastPreview, SnackbarPreview } from "./toast-preview";
 import { AlertPreview } from "./alert-preview";
-import { CardExpandPreview, CardFlipPreview, FlashCardTransitionPreview } from "./card-flip-preview";
+import {
+  CardExpandPreview,
+  CardFlipPreview,
+  FlashCardFlipSwipeAwayPreview,
+  FlashCardTransitionPreview,
+} from "./card-flip-preview";
 import { CarouselPreview, CarouselPeekPreview, CarouselScalePreview, CarouselCoverFlowPreview } from "./carousel-preview";
 import { SkeletonPreview } from "./skeleton-preview";
 import { ProgressBarPreview, ProgressRingPreview } from "./progress-preview";
@@ -90,6 +95,7 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-card-expand": CardExpandPreview,
   "ios-card-flip": CardFlipPreview,
   "ios-card-flash-stack": FlashCardTransitionPreview,
+  "ios-card-flip-swipe-away": FlashCardFlipSwipeAwayPreview,
   "ios-carousel": CarouselPreview,
   "ios-carousel-peek": CarouselPeekPreview,
   "ios-carousel-scale": CarouselScalePreview,
