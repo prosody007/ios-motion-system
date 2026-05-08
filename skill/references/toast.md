@@ -7,6 +7,23 @@
 - Preview ID：`ios-toast`
 - Tags：`0.4s` (duration) · `.snappy` (spring)
 
+### AI Motion Spec
+
+顶部 toast 短暂出现再离开，强调轻量通知。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| placement | top overlay |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry | 从顶部小位移进入 + opacity |
+| exit | 停留后按相反方向离开 |
+
 ### SwiftUI
 
 ```swift
@@ -103,6 +120,23 @@ class ToastManager {
 
 - Preview ID：`ios-snackbar`
 - Tags：`0.35s` (duration) · `.spring` (spring)
+
+### AI Motion Spec
+
+底部 snackbar 贴近安全区出现，可带操作按钮，停留后离开。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| placement | bottom overlay near safe area |
+| action | 可带一个 clear action button |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry_exit | 底部上移进入、下移退出 |
 
 ### SwiftUI
 

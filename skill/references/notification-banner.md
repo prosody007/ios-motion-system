@@ -7,6 +7,23 @@
 - Preview ID：`ios-notification`
 - Tags：`0.4s` (duration) · `.spring` (spring)
 
+### AI Motion Spec
+
+顶部 banner 像系统通知一样从顶部滑入，短暂停留后离开。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| placement | top edge / below status area |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry_exit | slide down in, slide up out |
+| content | banner body keeps shape stable during motion |
+
 ### SwiftUI
 
 ```swift

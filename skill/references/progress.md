@@ -7,6 +7,24 @@
 - Preview ID：`ios-progress-bar`
 - Tags：`0.3s` (duration) · `.snappy` (spring)
 
+### AI Motion Spec
+
+线性进度条通过填充宽度连续增长表达完成度。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | progress value changes |
+| states | 0..1 continuous value |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| fill | 前景条宽度随 value 连续插值 |
+| direction | 从左向右增长，不回抽 |
+
 ### SwiftUI
 
 ```swift
@@ -88,6 +106,24 @@ class ProgressBarVC: UIViewController {
 
 - Preview ID：`ios-progress-ring`
 - Tags：`1.0s` (duration) · `.easeOut` (easing)
+
+### AI Motion Spec
+
+环形进度通过圆弧 sweep 增长表达完成度，保持端点干净。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | progress value changes |
+| states | 0..1 continuous value |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| arc | trim / strokeEnd 连续增长 |
+| cap | 圆头端点时要避免抖动 |
 
 ### SwiftUI
 

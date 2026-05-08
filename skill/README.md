@@ -22,7 +22,7 @@ curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash
 
 - `SKILL.md` —— Skill 元信息与触发指引（AI 入口）
 - `references/_catalog.md` —— 所有分类索引
-- `references/<slug>.md` —— 各分类详情（含 SwiftUI + UIKit 完整代码）
+- `references/<slug>.md` —— 各分类详情（含 AI Motion Spec + SwiftUI + UIKit 完整代码）
 - `templates/dynamic-params.md` —— spring / carousel / border-glow 等可调参数
 
 ## Try It

@@ -7,6 +7,22 @@
 - Preview ID：`ios-counter-text`
 - Tags：`0.3s` (duration) · `.snappy` (spring)
 
+### AI Motion Spec
+
+数字文本过渡：数字更新时做内容替换动画，而不是整块闪烁。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | numeric value changes |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| content_transition | 仅数字内容变化，容器尽量稳定 |
+
 ### SwiftUI
 
 ```swift
@@ -72,6 +88,17 @@ class NumericCounterViewController: UIViewController {
 
 - Preview ID：`ios-counter-custom`
 - Tags：`1.0s` (duration) · `easeOutCubic` (easing)
+
+### AI Motion Spec
+
+自定义 counter：按位或分段处理数字变化，强调可控的数字滚动/替换。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| digit_rule | 数字变化按位或按片段执行，不整块抖动 |
+| continuity | 旧值到新值的方向感明确 |
 
 ### SwiftUI
 

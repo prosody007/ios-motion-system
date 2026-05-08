@@ -7,6 +7,30 @@
 - Preview ID：`ios-skeleton`
 - Tags：`1.5s` (duration) · `linear infinite` (easing)
 
+### AI Motion Spec
+
+骨架屏以占位结构 + shimmer 横向扫光组成，重点是版式像真实内容。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| placeholder | 骨架块尺寸接近真实内容布局 |
+| shape | 文字用圆角短条，头像/封面按真实比例 |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| shimmer | 高光从一侧扫到另一侧 |
+| loop | 低存在感循环，不抢主体 |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| do_not_change | 不要改成单纯 pulse opacity |
+
 ### SwiftUI
 
 ```swift

@@ -7,6 +7,22 @@
 - Preview ID：`ios-haptic-impact`
 - Tags：`iOS 17+` (easing) · `声明式` (spring)
 
+### AI Motion Spec
+
+单次 impact haptic 要与视觉瞬间对齐，通常发生在接触/完成时刻。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | button press or impact moment |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| sync | haptic fires on the exact visual impact frame |
+
 ### SwiftUI
 
 ```swift
@@ -95,6 +111,17 @@ selection.selectionChanged()  // Picker/Slider 每档切换调用
 
 - Preview ID：`ios-haptic-notification`
 - Tags：`最佳实践` (duration) · `配对参考` (easing)
+
+### AI Motion Spec
+
+动画 + notification haptic 配对：成功/警告/失败触感要和视觉结果一致。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| pairing | haptic type matches outcome semantics |
+| sync | trigger on result confirmation, not too early |
 
 ### SwiftUI
 
@@ -224,6 +251,22 @@ func deleteRow(at indexPath: IndexPath) {
 - Preview ID：`ios-haptic-selection`
 - Tags：`.selection` (easing) · `Picker / Segmented` (duration)
 
+### AI Motion Spec
+
+selection feedback 用于轻量切换或滚动停靠，每次变化给一个轻触感。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | selection index changes |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| frequency | 每次离散切换触发一次，不能连续狂震 |
+
 ### SwiftUI
 
 ```swift
@@ -310,6 +353,22 @@ func collectionView(_ cv: UICollectionView, didSelectItemAt indexPath: IndexPath
 
 - Preview ID：`ios-haptic-increase-decrease`
 - Tags：`.increase / .decrease` (spring) · `iOS 17+` (easing)
+
+### AI Motion Spec
+
+Increase / Decrease 触感用于数值或强度变化，方向感要明确。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | value increases or decreases |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| semantic | increase 和 decrease 使用不同语义反馈 |
 
 ### SwiftUI
 

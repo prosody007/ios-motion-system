@@ -30,6 +30,7 @@ description: iOS 动效实现库 —— SwiftUI / UIKit 的 Spring、Sheet、Tab
 - 标题（中英）
 - Tags（duration / easing / spring）
 - Preview ID（与在线网站一一对应）
+- 结构化 AI Motion Spec（如该 card 已补齐）
 - 完整 SwiftUI 代码
 - 完整 UIKit 代码
 

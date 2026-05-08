@@ -7,6 +7,17 @@
 - Preview ID：`ios-page-nav-transition`
 - Tags：`iOS 18+` (easing) · `系统 spring` (spring)
 
+### AI Motion Spec
+
+页面级 zoom transition：缩放感比普通 push 更强，但仍有明确前后层级。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry | destination zooms in while source recedes |
+| continuity | shared source point or focal element helps orientation |
+
 ### SwiftUI
 
 ```swift
@@ -120,6 +131,23 @@ class ZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
 - Preview ID：`ios-page-matched-geometry`
 - Tags：`iOS 14+` (easing) · `.spring(response:0.35)` (spring)
+
+### AI Motion Spec
+
+页面级 matched geometry：至少一个共享元素在两个页面之间连续过渡。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| shared_element | same element interpolates frame/shape between pages |
+| page_content | rest of content fades or slides around the shared element |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| do_not_change | 不要丢掉 shared element，单纯 fade 不算 matched geometry |
 
 ### SwiftUI
 
@@ -242,6 +270,22 @@ class SharedElementTransition: NSObject, UIViewControllerAnimatedTransitioning {
 
 - Preview ID：`ios-page-fullscreen`
 - Tags：`~0.5s` (duration) · `系统 spring` (spring)
+
+### AI Motion Spec
+
+fullScreenCover / fullscreen modal：整页从底部或前景覆盖进入。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| placement | full screen overlay above current page |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry_exit | cover enters as a whole, exits as a whole |
 
 ### SwiftUI
 

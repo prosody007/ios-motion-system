@@ -7,6 +7,24 @@
 - Preview ID：`ios-dropdown`
 - Tags：`0.2s` (duration) · `系统 spring` (spring)
 
+### AI Motion Spec
+
+Dropdown 菜单围绕按钮展开，菜单项以统一容器出现而不是逐项乱飞。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | tap trigger button toggles open/close |
+| states | closed / open |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| container | menu container scales/fades from trigger edge |
+| items | items can stagger slightly but remain within one menu panel |
+
 ### SwiftUI
 
 ```swift

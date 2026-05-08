@@ -8,6 +8,30 @@
 - Controls ID：`ios-border-glow` (含动态参数，见 `templates/dynamic-params.md`)
 - Tags：`{{duration}}s` (duration) · `linear` (easing)
 
+### AI Motion Spec
+
+Border Glow 通过 conic-gradient + 旋转光晕表现高光边框，重点是边框本身在转，不是整卡旋转。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| host | content card stays still; glow lives on border/halo layers |
+| shape | follow card radius exactly |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| rotation | animated conic gradient or angle variable rotates continuously |
+| glow | outer blur halo should feel soft, not neon block |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| do_not_change | 不要把整个卡片本体转起来 |
+
 ### SwiftUI
 
 ```swift

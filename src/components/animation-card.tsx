@@ -23,18 +23,19 @@ export function AnimationCardView({ card }: { card: AnimationCardType }) {
   const Provider: ComponentType<{ children: ReactNode }> =
     controlsEntry?.Provider ?? FragmentProvider;
   const Controls = controlsEntry?.Controls;
-  const isTallPreview = card.previewId === "ios-card-flip";
+  const previewClassName =
+    card.previewId === "ios-card-flip"
+      ? "relative flex h-[369px] min-h-[200px] items-center justify-center overflow-hidden rounded-xl p-4"
+      : card.previewId === "ios-card-flash-stack"
+        ? "relative flex h-[588px] min-h-[588px] items-center justify-center overflow-hidden rounded-xl p-4"
+        : "relative flex aspect-[16/10] min-h-[200px] items-center justify-center overflow-hidden rounded-xl p-6";
 
   return (
     <CardProvider>
       <Provider>
         <div>
           <div
-            className={
-              isTallPreview
-                ? "relative flex h-[369px] min-h-[200px] items-center justify-center overflow-hidden rounded-xl p-4"
-                : "relative flex aspect-[16/10] min-h-[200px] items-center justify-center overflow-hidden rounded-xl p-6"
-            }
+            className={previewClassName}
             style={{ background: "#F3F4F9" }}
           >
             <AnimationPreview id={card.previewId} />

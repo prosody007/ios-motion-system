@@ -7,6 +7,24 @@ Alert 对话框过渡与反馈。
 - Preview ID：`ios-alert`
 - Tags：`0.25s` (duration) · `系统 spring` (spring)
 
+### AI Motion Spec
+
+居中 alert 以缩放 + opacity 入场，背景 dim，同步出场。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| placement | centered modal dialog |
+| backdrop | full-screen dim background |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry | scale up + fade in |
+| exit | scale down + fade out |
+
 ### SwiftUI
 
 ```swift

@@ -23,7 +23,7 @@ export const skillsSection: DocsSection = {
       bullets: [
         "**SKILL.md** —— 触发条件、使用步骤、命名约定（AI 客户端入口）",
         "**references/_catalog.md** —— 所有分类索引（slug / 标题 / 用途）",
-        "**references/&lt;slug&gt;.md** —— 单个分类下全部 cards 的完整 SwiftUI + UIKit 代码",
+        "**references/&lt;slug&gt;.md** —— 单个分类下全部 cards 的 AI Motion Spec + SwiftUI + UIKit 代码",
         "**templates/dynamic-params.md** —— spring / carousel / border-glow 的可调参数表与默认值",
       ],
     },
@@ -31,6 +31,7 @@ export const skillsSection: DocsSection = {
       title: "How It Works",
       bullets: [
         "**触发**：用户提到 iOS 动画需求时，AI 客户端自动加载 SKILL.md，按需读对应 reference 文件。",
+        "**规范优先**：如果某张卡已经补了 AI Motion Spec，先按结构化规范理解布局、触发、时序和约束，再落具体代码。",
         "**模板注入**：AI 把代码模板贴进项目对应的 SwiftUI / UIKit 文件，按用户的命名 / 状态绑定调整。",
         "**参数替换**：含 `{{param}}` 占位符的代码（如 spring playground）会按 templates/dynamic-params.md 的默认值或用户偏好填值。",
         "**版本同步**：仓库 git pull 后，本地 skill 自动更新，无需重装。",

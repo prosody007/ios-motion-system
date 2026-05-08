@@ -7,6 +7,23 @@
 - Preview ID：`ios-success-check`
 - Tags：`0.5s` (duration) · `.easeOut` (easing)
 
+### AI Motion Spec
+
+成功反馈通常是圆形容器先出现，再绘制 check。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| sequence | container appears -> check draws |
+| timing | 符号绘制略晚于容器 |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| do_not_change | 不要只做静态图标淡入 |
+
 ### SwiftUI
 
 ```swift
@@ -117,6 +134,24 @@ class CheckmarkAnimationView: UIView {
 
 - Preview ID：`ios-error-shake`
 - Tags：`0.4s` (duration) · `.easeInOut` (easing)
+
+### AI Motion Spec
+
+错误反馈以短促水平 shake 为主，强调拒绝感而不是夸张弹跳。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| axis | x-axis shake only |
+| beats | 2~4 次衰减式来回位移 |
+| duration | 整体偏短，不能拖泥带水 |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| do_not_change | 不要混入大幅缩放、旋转或纵向跳动 |
 
 ### SwiftUI
 

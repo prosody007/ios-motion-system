@@ -7,6 +7,23 @@
 - Preview ID：`ios-scroll-header`
 - Tags：`实时跟随` (easing) · `无 duration` (duration)
 
+### AI Motion Spec
+
+滚动驱动 header 缩放/压缩：滚动越深，头部越收敛，但信息层级仍清晰。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | vertical scroll offset |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| mapping | header scale/height maps continuously to scroll progress |
+| clamp | 到达最小状态后停止继续缩小 |
+
 ### SwiftUI
 
 ```swift
@@ -120,6 +137,17 @@ class ScrollHeaderViewController: UIViewController,
 
 - Preview ID：`ios-scroll-parallax`
 - Tags：`0.5x 系数` (easing) · `实时` (duration)
+
+### AI Motion Spec
+
+视差滚动：前后景移动速度不同，形成空间层次。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| parallax | background and foreground move at different rates |
+| continuity | scroll progress is continuous, not stepped |
 
 ### SwiftUI
 

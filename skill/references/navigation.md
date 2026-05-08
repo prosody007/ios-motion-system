@@ -7,6 +7,23 @@ Push / Pop 导航转场。
 - Preview ID：`ios-nav-push`
 - Tags：`0.35s` (duration) · `.default curve` (easing)
 
+### AI Motion Spec
+
+标准导航 Push / Pop：新页面从右进入，返回时向右退出。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| push | incoming view from right, current view shifts left/back |
+| pop | reverse direction on back |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| do_not_change | 不要做 crossfade 代替 push/pop spatial transition |
+
 ### SwiftUI
 
 ```swift

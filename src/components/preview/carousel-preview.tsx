@@ -1,13 +1,89 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useCardParams } from "@/components/card-context";
 
-const pages = [
-  { color: "from-[#007AFF] to-[#0051D5]", label: "Page 1" },
-  { color: "from-[#AF52DE] to-[#8E2CC4]", label: "Page 2" },
-  { color: "from-[#FF2D55] to-[#E01E45]", label: "Page 3" },
+const UNSPLASH_POOL = [
+  {
+    src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+    alt: "Mountain lake",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+    alt: "Golden field",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
+    alt: "Forest road",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80",
+    alt: "River canyon",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1511300636408-a63a89df3482?auto=format&fit=crop&w=1200&q=80",
+    alt: "Waterfall",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=1200&q=80",
+    alt: "Ocean cliff",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
+    alt: "Mountain valley",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
+    alt: "Foggy hills",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    alt: "Beach waves",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+    alt: "Snow peaks",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?auto=format&fit=crop&w=1200&q=80",
+    alt: "Sunset desert",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1505764706515-aa95265c5abc?auto=format&fit=crop&w=1200&q=80",
+    alt: "Calm sea",
+  },
 ];
+
+const pageSlides = [
+  { label: "Page 1" },
+  { label: "Page 2" },
+  { label: "Page 3" },
+];
+
+type UnsplashAssigned<T> = T & { src: string; alt: string };
+
+function assignRandomUnsplash<T extends Record<string, unknown>>(
+  items: T[],
+): UnsplashAssigned<T>[] {
+  const pool = [...UNSPLASH_POOL];
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return items.map((item, index) => ({
+    ...item,
+    src: pool[index % pool.length].src,
+    alt: pool[index % pool.length].alt,
+  }));
+}
+
+function photoBackground(src: string) {
+  return {
+    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.10) 0%, rgba(15,23,42,0.38) 100%), url("${src}")`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  } as const;
+}
 
 /* ============================================================
    useCarouselController — 真·无限循环（三副本 + 边界 snap 复位）
@@ -178,9 +254,10 @@ function useSyncSpeedToCard(speedMs: number) {
 
 /* ---------------- 1. 全屏 Pager ---------------- */
 export function CarouselPreview() {
-  const c = useCarouselController(pages.length);
+  const slides = useMemo(() => assignRandomUnsplash(pageSlides), []);
+  const c = useCarouselController(slides.length);
   useSyncSpeedToCard(c.speedMs);
-  const tripled = [...pages, ...pages, ...pages];
+  const tripled = [...slides, ...slides, ...slides];
   const wrapRef = useRef<HTMLDivElement>(null);
   const drag = useCarouselDrag(c, () => wrapRef.current?.clientWidth ?? 260);
 
@@ -212,29 +289,33 @@ export function CarouselPreview() {
           {tripled.map((p, i) => (
             <div
               key={i}
-              className={`min-w-full h-full bg-gradient-to-br ${p.color} flex items-center justify-center pointer-events-none`}
+              className="relative min-w-full h-full flex items-end justify-start overflow-hidden pointer-events-none"
+              style={photoBackground(p.src)}
             >
-              <span className="text-white text-sm font-bold">{p.label}</span>
+              <span className="mb-3 ml-3 text-white text-sm font-semibold tracking-[0.01em]">
+                {p.label}
+              </span>
             </div>
           ))}
         </div>
       </div>
 
-      <NavRow ctrl={c} total={pages.length} />
+      <NavRow ctrl={c} total={slides.length} />
       <CarouselControls ctrl={c} />
     </div>
   );
 }
 
 /* ---------------- 2. 卡片露边 (Peek) ---------------- */
-const peekItems = [
-  { color: "from-[#007AFF] to-[#0040A8]", title: "Spring" },
-  { color: "from-[#AF52DE] to-[#6D1E99]", title: "Summer" },
-  { color: "from-[#FF2D55] to-[#B8133A]", title: "Autumn" },
-  { color: "from-[#32ADE6] to-[#1A6F9C]", title: "Winter" },
+const peekItemsBase = [
+  { title: "Spring" },
+  { title: "Summer" },
+  { title: "Autumn" },
+  { title: "Winter" },
 ];
 
 export function CarouselPeekPreview() {
+  const peekItems = useMemo(() => assignRandomUnsplash(peekItemsBase), []);
   const c = useCarouselController(peekItems.length, 1);
   useSyncSpeedToCard(c.speedMs);
   const tripled = [...peekItems, ...peekItems, ...peekItems];
@@ -267,7 +348,7 @@ export function CarouselPeekPreview() {
           {tripled.map((it, i) => (
             <div
               key={i}
-              className={`shrink-0 rounded-2xl bg-gradient-to-br ${it.color} flex flex-col items-center justify-center text-white shadow-[0_6px_20px_rgba(0,0,0,0.3)] pointer-events-none`}
+              className="relative shrink-0 rounded-2xl overflow-hidden flex flex-col justify-end text-white pointer-events-none"
               style={{
                 width: CARD_W,
                 height: 90,
@@ -275,10 +356,11 @@ export function CarouselPeekPreview() {
                 transition: itemTransitionEnabled
                   ? "opacity 0.35s ease"
                   : "none",
+                ...photoBackground(it.src),
               }}
             >
-              <span className="text-sm font-bold">{it.title}</span>
-              <span className="text-[11px] text-white/70">
+              <span className="mx-3 text-sm font-semibold">{it.title}</span>
+              <span className="mx-3 mb-3 text-[11px] text-white/78">
                 Card {(i % peekItems.length) + 1}
               </span>
             </div>
@@ -293,15 +375,16 @@ export function CarouselPeekPreview() {
 }
 
 /* ---------------- 3. 缩放渐隐 (scrollTransition) ---------------- */
-const scaleItems = [
-  { color: "from-[#007AFF] to-[#0040A8]", icon: "🎵" },
-  { color: "from-[#AF52DE] to-[#6D1E99]", icon: "🎬" },
-  { color: "from-[#FF2D55] to-[#B8133A]", icon: "📚" },
-  { color: "from-[#FF9500] to-[#CC6A00]", icon: "🎮" },
-  { color: "from-[#32ADE6] to-[#30B0C7]", icon: "🏃" },
+const scaleItemsBase = [
+  { icon: "🎵", label: "Music" },
+  { icon: "🎬", label: "Cinema" },
+  { icon: "📚", label: "Reading" },
+  { icon: "🎮", label: "Gaming" },
+  { icon: "🏃", label: "Running" },
 ];
 
 export function CarouselScalePreview() {
+  const scaleItems = useMemo(() => assignRandomUnsplash(scaleItemsBase), []);
   const c = useCarouselController(scaleItems.length, 2);
   useSyncSpeedToCard(c.speedMs);
   const tripled = [...scaleItems, ...scaleItems, ...scaleItems];
@@ -338,7 +421,7 @@ export function CarouselScalePreview() {
             return (
               <div
                 key={i}
-                className={`shrink-0 rounded-2xl bg-gradient-to-br ${it.color} flex items-center justify-center text-white shadow-[0_6px_18px_rgba(0,0,0,0.35)] pointer-events-none`}
+                className="relative shrink-0 rounded-2xl overflow-hidden flex flex-col items-center justify-center text-white pointer-events-none"
                 style={{
                   width: CARD_W,
                   height: 80,
@@ -347,9 +430,15 @@ export function CarouselScalePreview() {
                   transition: itemTransitionEnabled
                     ? "transform 0.45s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease"
                     : "none",
+                  ...photoBackground(it.src),
                 }}
               >
-                <span className="text-2xl">{it.icon}</span>
+                <span className="text-2xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">
+                  {it.icon}
+                </span>
+                <span className="mt-1 text-[11px] font-medium text-white/90">
+                  {it.label}
+                </span>
               </div>
             );
           })}
@@ -363,15 +452,16 @@ export function CarouselScalePreview() {
 }
 
 /* ---------------- 4. Cover Flow ---------------- */
-const coverItems = [
-  "from-[#007AFF] to-[#0040A8]",
-  "from-[#AF52DE] to-[#6D1E99]",
-  "from-[#FF2D55] to-[#B8133A]",
-  "from-[#FF9500] to-[#CC6A00]",
-  "from-[#32ADE6] to-[#30B0C7]",
+const coverItemsBase = [
+  { label: "Coast" },
+  { label: "Forest" },
+  { label: "Summit" },
+  { label: "Canyon" },
+  { label: "Dunes" },
 ];
 
 export function CarouselCoverFlowPreview() {
+  const coverItems = useMemo(() => assignRandomUnsplash(coverItemsBase), []);
   const c = useCarouselController(coverItems.length, 2);
   useSyncSpeedToCard(c.speedMs);
   const tripled = [...coverItems, ...coverItems, ...coverItems];
@@ -405,7 +495,7 @@ export function CarouselCoverFlowPreview() {
             if (e.propertyName === "transform") c.onTransitionEnd();
           }}
         >
-          {tripled.map((color, i) => {
+          {tripled.map((item, i) => {
             const offset = i - c.trackIndex;
             const angle = Math.max(-1, Math.min(1, offset)) * -45;
             const scale = offset === 0 ? 1 : 0.8;
@@ -413,7 +503,7 @@ export function CarouselCoverFlowPreview() {
             return (
               <div
                 key={i}
-                className={`shrink-0 rounded-xl bg-gradient-to-br ${color} shadow-[0_8px_20px_rgba(0,0,0,0.45)] pointer-events-none`}
+                className="relative shrink-0 rounded-xl overflow-hidden pointer-events-none"
                 style={{
                   width: CARD,
                   height: 100,
@@ -423,8 +513,13 @@ export function CarouselCoverFlowPreview() {
                     ? "transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)"
                     : "none",
                   zIndex: 10 - Math.abs(offset),
+                  ...photoBackground(item.src),
                 }}
-              />
+              >
+                <span className="absolute bottom-2 left-2 rounded-full bg-black/24 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-[2px]">
+                  {item.label}
+                </span>
+              </div>
             );
           })}
         </div>
@@ -441,32 +536,9 @@ export function CarouselCoverFlowPreview() {
    ============================================================ */
 function NavRow({ ctrl, total }: { ctrl: Ctrl; total: number }) {
   return (
-    <div className="flex items-center gap-3">
-      <ArrowBtn dir="left" onClick={ctrl.prev} />
+    <div className="flex items-center justify-center">
       <Dots total={total} active={ctrl.logical} onSelect={ctrl.goTo} />
-      <ArrowBtn dir="right" onClick={ctrl.next} />
     </div>
-  );
-}
-
-function ArrowBtn({
-  dir,
-  onClick,
-}: {
-  dir: "left" | "right";
-  onClick: () => void;
-}) {
-  return (
-    <button
-      className="w-7 h-7 rounded-full flex items-center justify-center border-none cursor-pointer text-neutral-700 text-base"
-      style={{ background: "rgba(0,0,0,0.06)" }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-    >
-      {dir === "left" ? "‹" : "›"}
-    </button>
   );
 }
 

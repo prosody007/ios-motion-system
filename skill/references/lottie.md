@@ -7,6 +7,23 @@ Lottie 动画集成与播放。
 - Preview ID：`ios-lottie`
 - Tags：`lottie-ios` (easing) · `自定义 speed` (duration)
 
+### AI Motion Spec
+
+Lottie 集成重点在于播放、暂停、循环和状态触发的准确性。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | playback starts on appear or explicit action |
+| states | idle / playing / paused / completed |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| asset_rule | use provided lottie asset, not a hand-rebuilt approximation |
+
 ### SwiftUI
 
 ```swift

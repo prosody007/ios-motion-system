@@ -7,6 +7,23 @@ Action Sheet 过渡与选项反馈。
 - Preview ID：`ios-action-sheet`
 - Tags：`0.4s` (duration) · `.spring` (spring)
 
+### AI Motion Spec
+
+Action Sheet 从底部整体上移，动作列表保持分组感。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| placement | bottom anchored grouped list |
+| actions | destructive / cancel visual hierarchy clear |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry_exit | bottom-up enter and reverse exit |
+
 ### SwiftUI
 
 ```swift

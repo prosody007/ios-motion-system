@@ -7,6 +7,24 @@
 - Preview ID：`ios-swipe-dismiss`
 - Tags：`0.35s` (duration) · `.interactiveSpring` (spring)
 
+### AI Motion Spec
+
+卡片或浮层可向下/横向滑动关闭，未过阈值时回弹。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | drag on dismissible surface |
+| states | idle / dragging / dismissed or rebound |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| follow | 拖动时组件跟手位移 |
+| threshold | 达到阈值后离场，否则 spring 回位 |
+
 ### SwiftUI
 
 ```swift

@@ -7,6 +7,23 @@
 - Preview ID：`ios-keyframe`
 - Tags：`iOS 17+` (easing) · `多属性` (spring)
 
+### AI Motion Spec
+
+关键帧动画由多个阶段组成，每个阶段定义明确属性目标。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | tap or state change starts timeline |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| timeline | animation split into ordered keyframe segments |
+| properties | different properties can peak at different times |
+
 ### SwiftUI
 
 ```swift

@@ -7,6 +7,23 @@
 - Preview ID：`ios-phase`
 - Tags：`iOS 17+` (easing) · `序列状态` (spring)
 
+### AI Motion Spec
+
+Phase Animator 通过离散 phase 切换驱动一组样式变化，强调阶段感。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | phase value changes over time or interaction |
+| states | multiple named phases rather than one continuous float |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| per_phase_style | each phase defines a distinct visual treatment |
+
 ### SwiftUI
 
 ```swift

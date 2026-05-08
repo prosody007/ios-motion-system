@@ -7,6 +7,30 @@
 - Preview ID：`ios-swipe-cards`
 - Tags：`0.4s` (duration) · `.interactiveSpring` (spring)
 
+### AI Motion Spec
+
+Tinder 式卡片堆栈：顶层卡滑走后，下层卡前移补位。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | horizontal drag on top card |
+| states | stack order updates when top card exits |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| top_card | 跟手位移 + 轻微旋转 |
+| stack | 下层卡按顺序放大/前移补位 |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| only_top_interactive | 只有顶层卡可拖动 |
+
 ### SwiftUI
 
 ```swift

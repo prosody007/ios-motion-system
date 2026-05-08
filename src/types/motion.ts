@@ -31,12 +31,30 @@ export interface TimingCurve {
   desc: string;
 }
 
+export interface AgentSpecEntry {
+  key: string;
+  value: string;
+}
+
+export interface AgentSpecSection {
+  title: string;
+  entries: AgentSpecEntry[];
+}
+
+export interface AgentSpec {
+  summary: string;
+  sections: AgentSpecSection[];
+  acceptance?: string[];
+}
+
 export interface AnimationCard {
   title: string;
   tags: { text: string; variant: "duration" | "easing" | "spring" }[];
   previewId: string;
   /** 可选：在预览和标题之间渲染独立的参数控制面板 */
   controlsId?: string;
+  /** 可选：给 AI 读取的结构化动效规范 */
+  agentSpec?: AgentSpec;
   codes: {
     swift: string;
     uikit: string;

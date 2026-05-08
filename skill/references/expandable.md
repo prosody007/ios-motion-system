@@ -7,6 +7,36 @@
 - Preview ID：`ios-expandable`
 - Tags：`0.3s` (duration) · `.snappy` (spring)
 
+### AI Motion Spec
+
+内容区在同一容器内展开/折叠，高度、透明度和图标状态同步变化。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | tap header toggles expanded |
+| states | collapsed / expanded |
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| collapsed | 只显示标题和摘要行 |
+| expanded | 显示完整正文或子内容 |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| height | 容器高度连续展开/收起 |
+| content | 正文 opacity 或 small translate 同步进入 |
+| indicator | chevron / plus-minus 与内容状态同步变化 |
+
+#### Acceptance
+
+- 展开和收起都在同一块容器内完成，不是切页面。
+
 ### SwiftUI
 
 ```swift

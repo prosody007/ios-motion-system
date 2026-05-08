@@ -15,10 +15,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { agentSpecsByPreviewId } from "../src/data/agent-specs";
 import { sectionMap } from "../src/data";
 import { categories } from "../src/data/categories";
 import { docsNavGroups } from "../src/data/navigation";
 import type {
+  AgentSpec,
   AnimationCard,
   CardsSection,
   DocsSection,
@@ -120,6 +122,7 @@ description: iOS 动效实现库 —— SwiftUI / UIKit 的 Spring、Sheet、Tab
 - 标题（中英）
 - Tags（duration / easing / spring）
 - Preview ID（与在线网站一一对应）
+- 结构化 AI Motion Spec（如该 card 已补齐）
 - 完整 SwiftUI 代码
 - 完整 UIKit 代码
 
@@ -186,7 +189,7 @@ curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash
 
 - \`SKILL.md\` —— Skill 元信息与触发指引（AI 入口）
 - \`references/_catalog.md\` —— 所有分类索引
-- \`references/<slug>.md\` —— 各分类详情（含 SwiftUI + UIKit 完整代码）
+- \`references/<slug>.md\` —— 各分类详情（含 AI Motion Spec + SwiftUI + UIKit 完整代码）
 - \`templates/dynamic-params.md\` —— spring / carousel / border-glow 等可调参数
 
 ## Try It
@@ -360,11 +363,39 @@ function renderCardsSection(section: CardsSection): string {
     }
     md += meta.map((line) => `- ${line}`).join("\n") + "\n\n";
 
+    const agentSpec = card.agentSpec ?? agentSpecsByPreviewId[card.previewId];
+    if (agentSpec) {
+      md += renderAgentSpec(agentSpec);
+    }
+
     md += `### SwiftUI\n\n\`\`\`swift\n${stripHtml(card.codes.swift)}\n\`\`\`\n\n`;
     md += `### UIKit\n\n\`\`\`swift\n${stripHtml(card.codes.uikit)}\n\`\`\`\n\n`;
 
     if (i < section.cards.length - 1) md += `---\n\n`;
   });
+  return md;
+}
+
+function renderAgentSpec(spec: AgentSpec): string {
+  let md = `### AI Motion Spec\n\n${spec.summary}\n\n`;
+
+  for (const section of spec.sections) {
+    md += `#### ${section.title}\n\n`;
+    md += `| Key | Value |\n|---|---|\n`;
+    for (const entry of section.entries) {
+      md += `| ${escapeTableCell(entry.key)} | ${escapeTableCell(entry.value)} |\n`;
+    }
+    md += `\n`;
+  }
+
+  if (spec.acceptance?.length) {
+    md += `#### Acceptance\n\n`;
+    for (const item of spec.acceptance) {
+      md += `- ${item}\n`;
+    }
+    md += `\n`;
+  }
+
   return md;
 }
 
@@ -431,6 +462,10 @@ function stripHtml(input: string): string {
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&amp;/g, "&");
+}
+
+function escapeTableCell(input: string): string {
+  return input.replace(/\|/g, "\\|").replace(/\n/g, "<br/>");
 }
 
 main().catch((err) => {

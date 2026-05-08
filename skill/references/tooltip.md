@@ -7,6 +7,24 @@
 - Preview ID：`ios-tooltip`
 - Tags：`0.25s` (duration) · `.spring` (spring)
 
+### AI Motion Spec
+
+Tooltip / Popover 围绕锚点出现，位置与锚点关系必须稳定。
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| anchor | tooltip is anchored to target element |
+| arrow | 如有箭头，方向与锚点关系一致 |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry | small scale + opacity |
+| origin | transform origin should feel anchored to trigger |
+
 ### SwiftUI
 
 ```swift

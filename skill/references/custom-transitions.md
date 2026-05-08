@@ -7,6 +7,17 @@
 - Preview ID：`ios-custom-any-transition`
 - Tags：`.combined` (easing) · `.asymmetric` (easing)
 
+### AI Motion Spec
+
+内建 AnyTransition 组合示例：多个基础 transition 叠加，但主视觉要清晰。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| composition | combine opacity / move / scale in one transition |
+| symmetry | define clear insertion and removal behavior |
+
 ### SwiftUI
 
 ```swift
@@ -116,6 +127,17 @@ UIView.animate(
 
 - Preview ID：`ios-custom-modifier`
 - Tags：`自定义` (spring) · `.modifier(active:identity:)` (easing)
+
+### AI Motion Spec
+
+自定义 ViewModifier Transition：插入和移除遵循同一套自定义样式规则。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| modifier_rule | transition driven by custom modifier values |
+| phase | insertion/removal states must be explicit |
 
 ### SwiftUI
 
@@ -256,6 +278,23 @@ extension UIView {
 
 - Preview ID：`ios-custom-vc-transition`
 - Tags：`UIKit 完全控制` (spring) · `交互式` (easing)
+
+### AI Motion Spec
+
+UIViewControllerAnimatedTransitioning 自定义转场：容器、截图层级和终点 frame 需要明确。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | present / dismiss or push / pop via custom animator |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| container | all animated views live in transition containerView |
+| geometry | origin and final frames are explicit and continuous |
 
 ### SwiftUI
 

@@ -7,6 +7,23 @@
 - Preview ID：`ios-hero`
 - Tags：`iOS 18+` (easing) · `0.4s` (duration)
 
+### AI Motion Spec
+
+Hero 图片转场：同一张图片在列表和详情之间做大尺度连续放大。
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| shared_image | hero image frame interpolates between source and destination |
+| rest_content | supporting text/UI fades around the hero image |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| do_not_change | 不要把 hero image 断成两张不同图片淡入淡出 |
+
 ### SwiftUI
 
 ```swift

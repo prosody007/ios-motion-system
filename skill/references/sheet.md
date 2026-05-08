@@ -7,6 +7,25 @@ Sheet 与模态面板过渡。
 - Preview ID：`ios-sheet-bottom`
 - Tags：`0.45s` (duration) · `interactiveSpring` (spring)
 
+### AI Motion Spec
+
+底部 sheet 从底部上拉进入，支持背景 dim 和阻尼回落。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | tap open / drag close |
+| states | closed / open / dragging |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| entry | sheet 从底部上移进入 |
+| drag | 支持跟手拖拽和阈值决定关闭/回弹 |
+| backdrop | 背景 dim 与 sheet 进度同步 |
+
 ### SwiftUI
 
 ```swift
@@ -55,6 +74,24 @@ present(vc, animated: true)
 
 - Preview ID：`ios-sheet-switch`
 - Tags：`dismiss + present` (duration) · `open: 0.6s` (duration) · `close: 0.3s` (duration)
+
+### AI Motion Spec
+
+在一个 sheet 内从 A 内容切到 B 内容，容器保持稳定，内容做阶段切换。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| trigger | button or step action switches sheet content |
+| states | sheet A / sheet B |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| container | 外层 sheet 不消失，只切内部内容 |
+| content | 旧内容退场，新内容进场 |
 
 ### SwiftUI
 
