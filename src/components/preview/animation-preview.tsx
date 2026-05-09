@@ -10,7 +10,11 @@ import {
   ToggleIconPreview,
   ToggleSegmentedPreview,
 } from "./toggle-preview";
-import { LoadingGrowPreview, LoadingPreview } from "./loading-preview";
+import {
+  LoadingGrowPreview,
+  LoadingPreview,
+  LoadingRecordingBarsPreview,
+} from "./loading-preview";
 import { HapticImpactPreview, HapticPairingPreview, HapticSelectionPreview, HapticIncreaseDecreasePreview } from "./haptic-previews";
 import { ZoomTransitionPreview, MatchedGeometryPreview, FullScreenCoverPreview } from "./transition-previews";
 import { AnyTransitionPreview, ViewModifierTransitionPreview, VCTransitionPreview } from "./custom-transition-previews";
@@ -65,6 +69,7 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-toggle-segmented": ToggleSegmentedPreview,
   "ios-loading-spinner": LoadingPreview,
   "ios-loading-grow": LoadingGrowPreview,
+  "ios-loading-recording-bars": LoadingRecordingBarsPreview,
   "ios-haptic-impact": HapticImpactPreview,
   "ios-haptic-notification": HapticPairingPreview,
   "ios-haptic-selection": HapticSelectionPreview,

@@ -83,5 +83,22 @@ struct GrowRingView: View {
 }
 // 灰色底环保持不变；深色弧线 3 秒长到 1 后停住`,
     },
+    {
+      title: "Recording Bars",
+      tags: [{ text: "1.0s", variant: "duration" }, { text: "center wave", variant: "easing" }],
+      previewId: "ios-loading-recording-bars",
+      code: `// React — 录音条加载指示（接近 Figma 稿）
+const bars = [
+  { x: 2, y: 9, width: 2, height: 6, minScale: 0.45, delay: -0.42 },
+  { x: 6.5, y: 6, width: 2, height: 12, minScale: 0.5, delay: -0.28 },
+  { x: 11, y: 2.5, width: 2, height: 19, minScale: 0.55, delay: -0.14 },
+  { x: 15.5, y: 6, width: 2, height: 12, minScale: 0.5, delay: 0 },
+  { x: 20, y: 9, width: 2, height: 6, minScale: 0.45, delay: 0.14 },
+];
+
+// 关键：transform-origin 用 center center，避免底边始终平齐
+// 每根柱设置不同 delay，形成录音感波动
+// duration: 1.0s, ease-in-out, infinite`,
+    },
   ],
 };

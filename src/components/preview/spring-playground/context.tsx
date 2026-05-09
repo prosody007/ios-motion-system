@@ -46,8 +46,8 @@ export const PROP_RANGES: Record<
 > = {
   /* translate.max / defaultValue 是占位 — 实际由舞台宽度动态计算 */
   translate: { min: 0, max: 240, step: 4, unit: "px", defaultValue: 0 },
-  scale: { min: 1.0, max: 1.6, step: 0.02, unit: "×", defaultValue: 1.2 },
-  rotate: { min: -180, max: 180, step: 1, unit: "°", defaultValue: 10 },
+  scale: { min: 1.0, max: 1.6, step: 0.02, unit: "×", defaultValue: 1.0 },
+  rotate: { min: -180, max: 180, step: 1, unit: "°", defaultValue: 0 },
 };
 
 export function formatPropValue(prop: Prop, v: number) {
@@ -90,7 +90,7 @@ export function SpringPlaygroundProvider({ children }: { children: ReactNode }) 
   const [props, setProps] = useState<Record<Prop, boolean>>({
     translate: true,
     scale: true,
-    rotate: false,
+    rotate: true,
   });
   const [values, setValues] = useState<PropValues>({
     translate: PROP_RANGES.translate.defaultValue,

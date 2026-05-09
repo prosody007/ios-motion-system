@@ -1,17 +1,17 @@
 "use client";
 
 import {
-  Fragment,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
-  type ComponentType,
   type ReactNode,
 } from "react";
 import { AnimationPreview } from "@/components/preview/animation-preview";
 import { CardProvider } from "@/components/card-context";
 import { getControlsEntry } from "@/components/preview/controls-registry";
+import { SpringPlaygroundProvider } from "@/components/preview/spring-playground/context";
+import { BorderGlowProvider } from "@/components/preview/border-glow/context";
 import type { CardsSection } from "@/types/motion";
 
 /* ----------------------------------------------------------------
@@ -56,9 +56,12 @@ const PHONE_VISUAL_W = PHONE_W + PHONE_VISUAL_PAD_LEFT + PHONE_VISUAL_PAD_RIGHT;
 const PHONE_VISUAL_H = PHONE_H + PHONE_VISUAL_PAD_TOP + PHONE_VISUAL_PAD_BOTTOM;
 const PHONE_SCALE_BOOST = 1.43;
 const PHONE_BODY_NUDGE_X = 24;
+let cachedPhoneScale: number | null = null;
 
-const FragmentProvider = ({ children }: { children: ReactNode }) => (
-  <Fragment>{children}</Fragment>
+const UnifiedControlsProvider = ({ children }: { children: ReactNode }) => (
+  <SpringPlaygroundProvider>
+    <BorderGlowProvider>{children}</BorderGlowProvider>
+  </SpringPlaygroundProvider>
 );
 
 export function CardsPlayground({ section }: { section: CardsSection }) {
@@ -69,51 +72,14 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
   const [indicator, setIndicator] = useState({ top: 0, left: 0, ready: false });
 
   const controlsEntry = getControlsEntry(activeCard.controlsId);
-  const Provider: ComponentType<{ children: ReactNode }> =
-    controlsEntry?.Provider ?? FragmentProvider;
   const Controls = controlsEntry?.Controls;
+  const isSpringPlaygroundControls =
+    activeCard.controlsId === "ios-spring-playground";
 
   useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    const scrollY = window.scrollY;
-
-    const prevHtmlOverflow = html.style.overflow;
-    const prevHtmlHeight = html.style.height;
-    const prevBodyOverflow = body.style.overflow;
-    const prevBodyHeight = body.style.height;
-    const prevBodyPosition = body.style.position;
-    const prevBodyInset = body.style.inset;
-    const prevBodyWidth = body.style.width;
-    const prevBodyTop = body.style.top;
-    const prevHtmlOverscroll = html.style.overscrollBehavior;
-    const prevBodyOverscroll = body.style.overscrollBehavior;
-
-    html.style.overflow = "hidden";
-    html.style.height = "100svh";
-    body.style.overflow = "hidden";
-    body.style.height = "100svh";
-    body.style.position = "fixed";
-    body.style.inset = "0";
-    body.style.width = "100%";
-    body.style.top = `${-scrollY}px`;
-    html.style.overscrollBehavior = "none";
-    body.style.overscrollBehavior = "none";
-
-    return () => {
-      html.style.overflow = prevHtmlOverflow;
-      html.style.height = prevHtmlHeight;
-      body.style.overflow = prevBodyOverflow;
-      body.style.height = prevBodyHeight;
-      body.style.position = prevBodyPosition;
-      body.style.inset = prevBodyInset;
-      body.style.width = prevBodyWidth;
-      body.style.top = prevBodyTop;
-      html.style.overscrollBehavior = prevHtmlOverscroll;
-      body.style.overscrollBehavior = prevBodyOverscroll;
-      window.scrollTo(0, scrollY);
-    };
-  }, []);
+    setActiveIndex(0);
+    setIndicator((prev) => ({ ...prev, ready: false }));
+  }, [section.title]);
 
   useLayoutEffect(() => {
     const updateIndicator = () => {
@@ -155,26 +121,44 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
     >
       <div className="flex min-h-0 min-w-0 items-center justify-center">
         <CardProvider>
-          <Provider>
+          <UnifiedControlsProvider>
             {Controls ? (
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex h-full w-full min-h-0 min-w-0 flex-col items-center gap-4 py-2">
+                <div className="w-full min-h-0 flex-1">
+                  <AutoScaledPhoneFrame>
+                    <PhoneFrame>
+                      <AnimationPreview id={activeCard.previewId} />
+                    </PhoneFrame>
+                  </AutoScaledPhoneFrame>
+                </div>
+                <div
+                  className="w-full shrink-0"
+                  style={{
+                    width: isSpringPlaygroundControls ? "100%" : PHONE_W,
+                    paddingInline: isSpringPlaygroundControls ? 80 : 0,
+                    boxSizing: "border-box",
+                    maxHeight: isSpringPlaygroundControls
+                      ? "none"
+                      : "min(42svh, 360px)",
+                    overflowY: isSpringPlaygroundControls ? "visible" : "auto",
+                    overscrollBehavior: "contain",
+                    position: "relative",
+                    zIndex: 20,
+                  }}
+                >
+                  <Controls />
+                </div>
+              </div>
+            ) : (
+              <div className="flex h-full w-full min-h-0 min-w-0 flex-col items-center justify-center gap-6">
                 <AutoScaledPhoneFrame>
                   <PhoneFrame>
                     <AnimationPreview id={activeCard.previewId} />
                   </PhoneFrame>
                 </AutoScaledPhoneFrame>
-                <div style={{ width: PHONE_W }}>
-                  <Controls />
-                </div>
               </div>
-            ) : (
-              <AutoScaledPhoneFrame>
-                <PhoneFrame>
-                  <AnimationPreview id={activeCard.previewId} />
-                </PhoneFrame>
-              </AutoScaledPhoneFrame>
             )}
-          </Provider>
+          </UnifiedControlsProvider>
         </CardProvider>
       </div>
 
@@ -243,7 +227,10 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
 
 function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
   const viewportRef = useRef<HTMLDivElement>(null);
-  const [scaleState, setScaleState] = useState({ scale: 0, ready: false });
+  const [scaleState, setScaleState] = useState(() => ({
+    scale: cachedPhoneScale ?? 1,
+    ready: cachedPhoneScale !== null,
+  }));
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -265,9 +252,18 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
         availableHeight / PHONE_VISUAL_H,
       );
       const boostedScale = Math.min(1, nextScale * PHONE_SCALE_BOOST);
-      setScaleState({
-        scale: Number.isFinite(boostedScale) ? Math.max(0, boostedScale) : 1,
-        ready: true,
+      const resolvedScale = Number.isFinite(boostedScale)
+        ? Math.max(0, boostedScale)
+        : 1;
+      cachedPhoneScale = resolvedScale;
+      setScaleState((prev) => {
+        if (prev.ready && Math.abs(prev.scale - resolvedScale) < 0.0005) {
+          return prev;
+        }
+        return {
+          scale: resolvedScale,
+          ready: true,
+        };
       });
     };
 
@@ -278,7 +274,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
 
     const observer = new ResizeObserver(scheduleUpdate);
     observer.observe(viewport);
-    scheduleUpdate();
+    updateScale();
     window.addEventListener("resize", scheduleUpdate);
 
     return () => {

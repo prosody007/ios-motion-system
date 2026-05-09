@@ -107,9 +107,9 @@ export function DocsSectionView({ section }: { section: DocsSection }) {
 
           {item.codeBlocks?.length ? (
             <div className="space-y-4">
-              {item.codeBlocks.map((block) => (
+              {item.codeBlocks.map((block, blockIndex) => (
                 <div
-                  key={`${item.title}-${block.title ?? block.language}`}
+                  key={`${item.title}-${block.title ?? block.language}-${blockIndex}`}
                   className="overflow-hidden rounded-xl border border-[rgba(5,5,5,0.06)] bg-[rgba(0,0,0,0.015)]"
                 >
                   <div className="flex items-center justify-between border-b border-[rgba(5,5,5,0.06)] px-4 py-2.5">

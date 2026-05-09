@@ -5,7 +5,6 @@ import {
   SPRING_PRESETS,
   formatPropValue,
   useSpringPlayground,
-  type Prop,
 } from "./context";
 
 const BLUE = "#007AFF";
@@ -30,21 +29,23 @@ export function SpringPlaygroundControls() {
   } = useSpringPlayground();
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-2 gap-3">
       <CustomizePanel
         response={response}
         damping={damping}
-        props={props}
-        values={values}
         stiffness={stiffness}
         dampingCoef={dampingCoef}
         bounce={bounce}
         activePreset={activePreset}
         setResponse={setResponse}
         setDamping={setDamping}
+        pickPreset={pickPreset}
+      />
+      <DrivePanel
+        props={props}
+        values={values}
         setPropValue={setPropValue}
         toggleProp={toggleProp}
-        pickPreset={pickPreset}
       />
     </div>
   );
@@ -56,43 +57,34 @@ type CustomizeProps = ReturnType<typeof useSpringPlayground>;
 function CustomizePanel({
   response,
   damping,
-  props,
-  values,
   stiffness,
   dampingCoef,
   bounce,
   activePreset,
   setResponse,
   setDamping,
-  setPropValue,
-  toggleProp,
   pickPreset,
 }: Pick<
   CustomizeProps,
   | "response"
   | "damping"
-  | "props"
-  | "values"
   | "stiffness"
   | "dampingCoef"
   | "bounce"
   | "activePreset"
   | "setResponse"
   | "setDamping"
-  | "setPropValue"
-  | "toggleProp"
   | "pickPreset"
 >) {
   return (
     <div
-      className="rounded-xl px-5 py-5 flex flex-col gap-5"
+      className="rounded-xl px-4 py-4 flex flex-col gap-3"
       style={{
         background: "#FFFFFF",
         border: "1px solid rgba(0,0,0,0.06)",
       }}
     >
-      {/* 顶栏：标题 + 物理读数 */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-1">
         <SectionTitle>Customize</SectionTitle>
         <span
           className="text-xs font-mono tabular-nums"
@@ -102,7 +94,6 @@ function CustomizePanel({
         </span>
       </div>
 
-      {/* 预设 chips */}
       <div className="flex flex-wrap gap-1.5">
         {SPRING_PRESETS.map((p) => {
           const active = activePreset?.key === p.key;
@@ -120,9 +111,8 @@ function CustomizePanel({
         {!activePreset && <span style={chipStyle(true)}>custom</span>}
       </div>
 
-      {/* response & damping 滑杆 */}
-      <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
-        <SpringSlider
+      <div className="flex flex-col gap-2.5">
+        <CompactSlider
           label="response"
           value={response}
           min={0.15}
@@ -131,7 +121,7 @@ function CustomizePanel({
           display={`${response.toFixed(2)}s`}
           onChange={setResponse}
         />
-        <SpringSlider
+        <CompactSlider
           label="damping"
           value={damping}
           min={0.3}
@@ -141,34 +131,47 @@ function CustomizePanel({
           onChange={setDamping}
         />
       </div>
+    </div>
+  );
+}
 
-      {/* drive section —— translate 只给开关（距离由舞台自适应），scale / rotate 保留数值 */}
-      <div className="flex flex-col gap-2.5">
-        <SectionTitle>Drive</SectionTitle>
-        <ToggleRow
-          label="translate"
-          active={props.translate}
-          hint="auto · 舞台宽度"
-          onToggle={() => toggleProp("translate")}
-        />
-        {(["scale", "rotate"] as const).map((k) => {
-          const range = PROP_RANGES[k];
-          return (
-            <PropRow
-              key={k}
-              label={k}
-              active={props[k]}
-              value={values[k]}
-              min={range.min}
-              max={range.max}
-              step={range.step}
-              display={formatPropValue(k, values[k])}
-              onToggle={() => toggleProp(k)}
-              onChange={(v) => setPropValue(k, v)}
-            />
-          );
-        })}
-      </div>
+function DrivePanel({
+  props,
+  values,
+  setPropValue,
+  toggleProp,
+}: Pick<CustomizeProps, "props" | "values" | "setPropValue" | "toggleProp">) {
+  return (
+    <div
+      className="rounded-xl px-4 py-4 flex flex-col gap-3"
+      style={{
+        background: "#FFFFFF",
+        border: "1px solid rgba(0,0,0,0.06)",
+      }}
+    >
+      <SectionTitle>Drive</SectionTitle>
+
+      <ToggleRow
+        label="translate"
+        active={props.translate}
+        hint="auto · 舞台宽度"
+        onToggle={() => toggleProp("translate")}
+      />
+      {(["scale", "rotate"] as const).map((k) => {
+        const range = PROP_RANGES[k];
+        return (
+          <PlainPropSliderRow
+            key={k}
+            label={k}
+            value={values[k]}
+            min={range.min}
+            max={range.max}
+            step={range.step}
+            display={formatPropValue(k, values[k])}
+            onChange={(v) => setPropValue(k, v)}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -220,14 +223,14 @@ function ToggleRow({
   onToggle: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between gap-2">
       <button
         type="button"
         onClick={onToggle}
         className="inline-flex items-center"
         style={{
           ...chipStyle(active),
-          width: 104,
+          width: 90,
           justifyContent: "center",
         }}
       >
@@ -246,64 +249,57 @@ function ToggleRow({
 }
 
 /* ---------------- 属性行：toggle + 当前值 + 滑杆 ---------------- */
-function PropRow({
+function PlainPropSliderRow({
   label,
-  active,
   value,
   min,
   max,
   step,
   display,
-  onToggle,
   onChange,
 }: {
   label: string;
-  active: boolean;
   value: number;
   min: number;
   max: number;
   step: number;
   display: string;
-  onToggle: () => void;
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="inline-flex items-center"
-        style={{
-          ...chipStyle(active),
-          width: 104,
-          justifyContent: "center",
-        }}
-      >
-        {label}
-      </button>
-      <span
-        className="text-xs font-mono tabular-nums shrink-0 text-right"
-        style={{
-          color: active ? INK : "rgba(0,0,0,0.3)",
-          width: 56,
-        }}
-      >
-        {display}
-      </span>
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <span
+          className="text-xs font-mono shrink-0"
+          style={{
+            color: SUB,
+          }}
+        >
+          {label}
+        </span>
+        <span
+          className="text-xs font-mono tabular-nums shrink-0 text-right"
+          style={{
+            color: INK,
+            width: 56,
+          }}
+        >
+          {display}
+        </span>
+      </div>
       <ValueSlider
         value={value}
         min={min}
         max={max}
         step={step}
-        disabled={!active}
+        disabled={false}
         onChange={onChange}
       />
     </div>
   );
 }
 
-/* ---------------- 主参数滑杆（response / damping） ---------------- */
-function SpringSlider({
+function CompactSlider({
   label,
   value,
   min,
@@ -321,13 +317,21 @@ function SpringSlider({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between gap-2">
       <span
         className="text-xs font-mono shrink-0"
-        style={{ color: SUB, width: 64 }}
+        style={{ color: SUB }}
       >
         {label}
       </span>
+      <span
+        className="text-xs font-mono tabular-nums shrink-0 text-right"
+          style={{ color: INK, width: 56 }}
+      >
+        {display}
+      </span>
+      </div>
       <ValueSlider
         value={value}
         min={min}
@@ -335,12 +339,6 @@ function SpringSlider({
         step={step}
         onChange={onChange}
       />
-      <span
-        className="text-xs font-mono tabular-nums shrink-0 text-right"
-        style={{ color: INK, width: 50 }}
-      >
-        {display}
-      </span>
     </div>
   );
 }
