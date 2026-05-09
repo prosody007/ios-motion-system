@@ -442,14 +442,20 @@ const FLASH_INTENT_COLORS: Record<NonNullable<FlashIntent>, string> = {
   mastered: "64, 199, 0", // #40C700
 };
 
-function ChevronIcon({ direction }: { direction: "left" | "right" }) {
+function ChevronIcon({
+  direction,
+  color = "#595C60",
+}: {
+  direction: "left" | "right";
+  color?: string;
+}) {
   return (
     <svg
       width="16"
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#595C60"
+      stroke={color}
       strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -598,46 +604,92 @@ type DragState = {
 };
 
 /* ----------------------------------------------------------------
- *  Flash Card Stack · 1:1 还原 Figma 1185:8887
+ *  Flash Card Stack · 1:1 还原 Figma 1239:16252 / 1225:15591
  *
- *  Panel  : 353 × hug，内部 padding 16，gap 16
- *  Stage  : 321 × 460  （3 张卡叠放）
- *  Card   : 321 × 440  （白底，圆角 20，内部 padding 16/16/20）
- *  3 个槽位（让 3 张同样大小的卡按比例缩放堆叠）：
- *    top    : (0,   0)   scale 1.000
- *    middle : (14, 48)   scale 293/321 ≈ 0.913
- *    bottom : (28, 97)   scale 265/321 ≈ 0.826
+ *  Root frame : 393 × 852
+ *  Panel      : x 20 / y 152 / w 353 / padding 16 / gap 24
+ *  Stage      : 321 × 460
+ *  Top card   : 321 × 440
+ *  Back imgs  : (14,181,293,269) / (28,216,265,244)
  *
- *  Buttons: 两颗 40 × 40 灰底 chevron，gap 24，居中
- *
- *  动画规则：
- *    Next → 顶层卡片向左走弧线，从 z 前层下沉到底层位置
- *    Prev → 第三层卡片向右走弧线，从 z 后层升到顶层
- *    其他两张同步过渡到新槽位
+ *  交互：
+ *  - 中间四个选项都可点击
+ *  - pointer down 时内层按钮下压 4px
+ *  - 点击正确项：绿色选中 + Great job! bubble
+ *  - 点击错误项：红色选中 + 黄色反馈 bubble
  * ---------------------------------------------------------------- */
+const FLASH_STACK_FRAME_W = 393;
+const FLASH_STACK_FRAME_H = 852;
+const FLASH_STACK_PANEL_X = 20;
+const FLASH_STACK_PANEL_Y = 152;
 const FLASH_STACK_PANEL_W = 353;
+const FLASH_STACK_PANEL_GAP = 16;
+const FLASH_STACK_PANEL_PADDING = 16;
 const FLASH_STACK_STAGE_W = 321;
 const FLASH_STACK_STAGE_H = 460;
 const FLASH_STACK_CARD_W = 321;
 const FLASH_STACK_CARD_H = 440;
-const FLASH_STACK_PANEL_GAP = 16;
-const FLASH_STACK_PANEL_PADDING = 16;
-
-const FLASH_STACK_SLOTS = [
-  { tx: 0, ty: 0, scale: 1, zIndex: 30 },
-  { tx: 14, ty: 48, scale: 293 / 321, zIndex: 20 },
-  { tx: 28, ty: 97, scale: 265 / 321, zIndex: 10 },
-];
-
-const FLASH_STACK_DURATION = 500;
-const FLASH_STACK_FOLLOW_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+const FLASH_STACK_CARD_GAP = 16;
+const FLASH_STACK_REVEAL_GAP = 10;
+const FLASH_STACK_BACK_IMAGE_SRC = "/figma/card-flip/flash-stack-back.png";
+const FLASH_STACK_DURATION = 360;
+const FLASH_STACK_PANEL_RESIZE_DURATION = 200;
+const FLASH_STACK_SETTLEMENT_ITEM_DURATION = 220;
+const FLASH_STACK_SETTLEMENT_ITEM_STAGGER = 70;
 const FLASH_STACK_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+const FLASH_STACK_FOLLOW_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+const FLASH_STACK_FEEDBACK_EASE = "cubic-bezier(0.2, 0.9, 0.2, 1)";
+const FLASH_STACK_TOP_SLOT = { left: 0, top: 0 };
+const FLASH_STACK_MIDDLE_SCALE = 293 / FLASH_STACK_CARD_W;
+const FLASH_STACK_BOTTOM_SCALE = 265 / FLASH_STACK_CARD_W;
+const FLASH_STACK_MIDDLE_SLOT = {
+  left: (FLASH_STACK_CARD_W - FLASH_STACK_CARD_W * FLASH_STACK_MIDDLE_SCALE) / 2,
+  top:
+    FLASH_STACK_CARD_H +
+    FLASH_STACK_REVEAL_GAP -
+    FLASH_STACK_CARD_H * FLASH_STACK_MIDDLE_SCALE,
+  scale: FLASH_STACK_MIDDLE_SCALE,
+};
+const FLASH_STACK_BOTTOM_SLOT = {
+  left: (FLASH_STACK_CARD_W - FLASH_STACK_CARD_W * FLASH_STACK_BOTTOM_SCALE) / 2,
+  top:
+    FLASH_STACK_MIDDLE_SLOT.top +
+    FLASH_STACK_CARD_H * FLASH_STACK_MIDDLE_SLOT.scale +
+    FLASH_STACK_REVEAL_GAP -
+    FLASH_STACK_CARD_H * FLASH_STACK_BOTTOM_SCALE,
+  scale: FLASH_STACK_BOTTOM_SCALE,
+};
+const FLASH_STACK_SLOTS = [
+  { tx: FLASH_STACK_TOP_SLOT.left, ty: FLASH_STACK_TOP_SLOT.top, scale: 1, zIndex: 30 },
+  {
+    tx: FLASH_STACK_MIDDLE_SLOT.left,
+    ty: FLASH_STACK_MIDDLE_SLOT.top,
+    scale: FLASH_STACK_MIDDLE_SLOT.scale,
+    zIndex: 20,
+  },
+  {
+    tx: FLASH_STACK_BOTTOM_SLOT.left,
+    ty: FLASH_STACK_BOTTOM_SLOT.top,
+    scale: FLASH_STACK_BOTTOM_SLOT.scale,
+    zIndex: 10,
+  },
+];
+const FLASH_STACK_PANEL_QUIZ_HEIGHT =
+  FLASH_STACK_STAGE_H +
+  FLASH_STACK_PANEL_GAP +
+  FLASH_STACK_BUTTON_SIZE +
+  FLASH_STACK_PANEL_PADDING * 2;
+const FLASH_STACK_SETTLEMENT_CONTENT_HEIGHT = 345;
+const FLASH_STACK_PANEL_SETTLEMENT_HEIGHT =
+  FLASH_STACK_SETTLEMENT_CONTENT_HEIGHT + FLASH_STACK_PANEL_PADDING * 2;
 
 interface FlashStackCardData {
   id: string;
   indexLabel: string;
   question: string;
   choices: [string, string, string, string];
+  correctIndex: number;
+  wrongFeedback: string;
 }
 
 const FLASH_STACK_CARDS: FlashStackCardData[] = [
@@ -651,27 +703,371 @@ const FLASH_STACK_CARDS: FlashStackCardData[] = [
       "Nuclear membrane fragments",
       "Spindle fiber proteins",
     ],
+    correctIndex: 2,
+    wrongFeedback: "提示：再想一步就能做对。",
   },
   {
     id: "card-2",
     indexLabel: "2/3",
-    question: "Which structure separates chromosomes during mitosis?",
-    choices: [
-      "Mitotic spindle",
-      "Cell membrane",
-      "Golgi apparatus",
-      "Nucleolus",
-    ],
+    question: "XXXXXXX",
+    choices: ["1", "2", "3", "4"],
+    correctIndex: 0,
+    wrongFeedback: "提示：先找出题干中的关键数值，再按公式计算一次。",
   },
   {
     id: "card-3",
     indexLabel: "3/3",
-    question: "What is the chemical symbol for water?",
-    choices: ["H2O", "CO2", "NaCl", "O2"],
+    question: "YYYYYYYY",
+    choices: ["1", "2", "3", "4"],
+    correctIndex: 0,
+    wrongFeedback:
+      "提示：先确认题目在问什么，再把已知条件逐条代入；如果结果不合理，回到题干重新检查单位与边界条件。",
   },
 ];
 
-function FlashStackCardFront({ card }: { card: FlashStackCardData }) {
+interface FlashStackSettlementCopy {
+  title: string;
+  description: string;
+}
+
+const FLASH_STACK_SETTLEMENT_COPY: Record<number, FlashStackSettlementCopy> = {
+  3: {
+    title: "Flawless! 🏆",
+    description: "Perfect score! You've truly locked it in.",
+  },
+  2: {
+    title: "So close! ⭐",
+    description: "Almost perfect — a quick recap and you'll ace it.",
+  },
+  1: {
+    title: "Nice effort! 💪",
+    description: "Solid start — a quick review and you'll nail it.",
+  },
+  0: {
+    title: "Keep going! 🌱",
+    description: "Every attempt sharpens your understanding.",
+  },
+};
+
+function FlashStackSettlementCard({
+  score,
+  onReviewQuiz,
+  itemAnimationName,
+}: {
+  score: number;
+  onReviewQuiz: () => void;
+  itemAnimationName?: string;
+}) {
+  const maxScore = FLASH_STACK_CARDS.length;
+  const safeScore = Math.max(0, Math.min(maxScore, score));
+  const copy = FLASH_STACK_SETTLEMENT_COPY[safeScore] ?? FLASH_STACK_SETTLEMENT_COPY[0];
+
+  return (
+    <div
+      style={{
+        width: 321,
+        height: 345,
+        padding: 16,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 16,
+        borderRadius: 20,
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          alignSelf: "stretch",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 24,
+        }}
+      >
+        <div
+          style={{
+            width: 200,
+            height: 90,
+            borderRadius: 16,
+            background: "#ECF5FF",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            padding: "5px 8px 8px",
+            boxSizing: "border-box",
+            animation: itemAnimationName
+              ? `${itemAnimationName} ${FLASH_STACK_SETTLEMENT_ITEM_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1) both`
+              : undefined,
+          }}
+        >
+          <div
+            style={{
+              alignSelf: "stretch",
+              textAlign: "center",
+              fontFamily: "Poppins, sans-serif",
+              fontStyle: "normal",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "1.4em",
+              color: "#007AFF",
+            }}
+          >
+            Your Score
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "stretch",
+              height: 47,
+              padding: "12px 16px",
+              gap: 4,
+              borderRadius: 12,
+              background: "#FFFFFF",
+              boxSizing: "border-box",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: 600,
+                fontSize: 24,
+                lineHeight: "1.4em",
+                color: "#40C700",
+              }}
+            >
+              {safeScore}
+            </span>
+            <span
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: 600,
+                fontSize: 14,
+                lineHeight: "1.4em",
+                color: "#111111",
+              }}
+            >
+              /
+            </span>
+            <span
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: 600,
+                fontSize: 24,
+                lineHeight: "1.4em",
+                color: "#111111",
+              }}
+            >
+              {maxScore}
+            </span>
+          </div>
+        </div>
+
+        <div
+          style={{
+            alignSelf: "stretch",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            animation: itemAnimationName
+              ? `${itemAnimationName} ${FLASH_STACK_SETTLEMENT_ITEM_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1) ${FLASH_STACK_SETTLEMENT_ITEM_STAGGER}ms both`
+              : undefined,
+          }}
+        >
+          <div
+            style={{
+              alignSelf: "stretch",
+              textAlign: "center",
+              fontFamily: "Inter, sans-serif",
+              fontStyle: "normal",
+              fontWeight: 700,
+              fontSize: 18,
+              lineHeight: "18px",
+              color: "#111111",
+            }}
+          >
+            {copy.title}
+          </div>
+          <div
+            style={{
+              alignSelf: "stretch",
+              textAlign: "center",
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 400,
+              fontSize: 14,
+              lineHeight: "150%",
+              color: "#595C60",
+            }}
+          >
+            {copy.description}
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          alignSelf: "stretch",
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+          animation: itemAnimationName
+            ? `${itemAnimationName} ${FLASH_STACK_SETTLEMENT_ITEM_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1) ${FLASH_STACK_SETTLEMENT_ITEM_STAGGER * 2}ms both`
+            : undefined,
+        }}
+      >
+        <button
+          type="button"
+          onClick={onReviewQuiz}
+          style={{
+            height: 44,
+            alignSelf: "stretch",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 0,
+            appearance: "none",
+            WebkitAppearance: "none",
+            border: "none",
+            borderRadius: 100,
+            background: "#007AFF",
+            cursor: "pointer",
+          }}
+        >
+          <span
+            style={{
+              width: 94,
+              height: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "Inter, sans-serif",
+              fontStyle: "normal",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "16px",
+              letterSpacing: "-0.01em",
+              color: "#FFFFFF",
+              flex: "none",
+              order: 0,
+              flexGrow: 0,
+            }}
+          >
+            Review Quiz
+          </span>
+        </button>
+        <button
+          type="button"
+          style={{
+            height: 44,
+            alignSelf: "stretch",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 0,
+            appearance: "none",
+            WebkitAppearance: "none",
+            border: "none",
+            borderRadius: 100,
+            background: "transparent",
+            cursor: "pointer",
+          }}
+        >
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "Inter, sans-serif",
+              fontStyle: "normal",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "16px",
+              letterSpacing: "-0.01em",
+              color: "#007AFF",
+            }}
+          >
+            Create More Quiz
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FlashStackBackCard({
+  slot,
+  zIndex,
+  transition,
+  opacity = 1,
+}: {
+  slot: { left: number; top: number; scale: number };
+  zIndex: number;
+  transition?: string;
+  opacity?: number;
+}) {
+  return (
+    <div
+      aria-hidden
+      className="absolute overflow-hidden"
+      style={{
+        left: slot.left,
+        top: slot.top,
+        width: FLASH_STACK_CARD_W,
+        height: FLASH_STACK_CARD_H,
+        zIndex,
+        borderRadius: 20,
+        boxShadow: "0 8px 16px rgba(0,0,0,0.08)",
+        transition,
+        opacity,
+        transform: `scale(${slot.scale})`,
+        transformOrigin: "top left",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={FLASH_STACK_BACK_IMAGE_SRC}
+        alt=""
+        draggable={false}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      />
+    </div>
+  );
+}
+
+function FlashStackCardFront({
+  card,
+  correctChoice,
+  wrongChoices,
+  pressedChoice,
+  onChoiceSelect,
+  onChoicePressStart,
+  onChoicePressEnd,
+}: {
+  card: FlashStackCardData;
+  correctChoice: number | null;
+  wrongChoices: number[];
+  pressedChoice: number | null;
+  onChoiceSelect: (choiceIndex: number) => void;
+  onChoicePressStart: (choiceIndex: number) => void;
+  onChoicePressEnd: () => void;
+}) {
+  const isCorrect = correctChoice === card.correctIndex;
+  const isWrong = correctChoice === null && wrongChoices.length > 0;
+
   return (
     <div
       className="flex flex-col"
@@ -679,7 +1075,7 @@ function FlashStackCardFront({ card }: { card: FlashStackCardData }) {
         width: FLASH_STACK_CARD_W,
         height: FLASH_STACK_CARD_H,
         padding: "16px 16px 20px",
-        gap: 16,
+        gap: FLASH_STACK_CARD_GAP,
         borderRadius: 20,
         background: "#FFFFFF",
         boxShadow: "0 12px 24px rgba(0,0,0,0.08)",
@@ -697,100 +1093,387 @@ function FlashStackCardFront({ card }: { card: FlashStackCardData }) {
         >
           {card.indexLabel}
         </div>
-        <div
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 600,
-            fontSize: 16,
-            lineHeight: "20.8px",
-            color: "#111111",
-          }}
-        >
-          {card.question}
+        <div className="flex flex-col" style={{ gap: 12 }}>
+          <div
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "130%",
+              color: "#111111",
+              maxHeight: 42,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+              flex: "none",
+              alignSelf: "stretch",
+              flexGrow: 0,
+            }}
+          >
+            {card.question}
+          </div>
+
+          <div
+            style={{
+              position: "relative",
+              minHeight: isWrong ? 44 : 46,
+              maxHeight: 84,
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: isCorrect ? 1 : 0,
+                transform: isCorrect ? "translateY(0px)" : "translateY(4px)",
+                transition: `opacity 220ms ${FLASH_STACK_FEEDBACK_EASE}, transform 220ms ${FLASH_STACK_FEEDBACK_EASE}`,
+                pointerEvents: "none",
+              }}
+            >
+              <div
+                className="flex items-center"
+                style={{
+                  padding: 12,
+                  gap: 8,
+                  borderRadius: 12,
+                  background: "#EAFFEA",
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily:
+                      "-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                    fontWeight: 400,
+                    fontSize: 24,
+                    lineHeight: "24px",
+                    color: "#000000",
+                  }}
+                >
+                  👍
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 600,
+                    fontSize: 16,
+                    lineHeight: "22.4px",
+                    color: "#40C700",
+                  }}
+                >
+                  Great job!
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: isWrong ? 1 : 0,
+                transform: isWrong ? "translateY(0px)" : "translateY(4px)",
+                transition: `opacity 220ms ${FLASH_STACK_FEEDBACK_EASE}, transform 220ms ${FLASH_STACK_FEEDBACK_EASE}`,
+                pointerEvents: "none",
+              }}
+            >
+              <div
+                style={{
+                  padding: 12,
+                  borderRadius: 12,
+                  background: "#FFF6D9",
+                  maxHeight: 84,
+                  overflow: "hidden",
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: "19.6px",
+                  color: "#F6A507",
+                }}
+              >
+                <span
+                  style={{
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: 3,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {card.wrongFeedback}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="mt-auto flex flex-col" style={{ gap: 8 }}>
-        {card.choices.map((choice) => (
-          <div
-            key={choice}
-            style={{
-              paddingBottom: 4,
-              borderRadius: 12,
-              background: "#DCE7F3",
-            }}
-          >
-            <div
-              className="flex items-center justify-center"
-              style={{
-                padding: "12px 16px",
-                borderRadius: 12,
-                background: "#F4F9FF",
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 500,
-                fontSize: 16,
-                lineHeight: "22.4px",
-                color: "#111111",
-                textAlign: "center",
-              }}
+        {card.choices.map((choice, choiceIndex) => {
+          const isSelected = correctChoice === choiceIndex;
+          const isWrongSelected = wrongChoices.includes(choiceIndex);
+          const state =
+            isSelected && correctChoice === card.correctIndex
+              ? "correct"
+              : isWrongSelected
+                ? "wrong"
+                : "default";
+          const outerBg =
+            state === "correct"
+              ? "#9EE37C"
+              : state === "wrong"
+                ? "#EB9D89"
+                : "#DCE7F3";
+          const innerBg =
+            state === "correct"
+              ? "#CAFFB1"
+              : state === "wrong"
+                ? "#FFC4B1"
+                : "#F4F9FF";
+          const isPressed = pressedChoice === choiceIndex;
+          const pressDepth = 4;
+
+          return (
+            <button
+              key={choice}
+              type="button"
+              onClick={() => onChoiceSelect(choiceIndex)}
+              onPointerDown={() => onChoicePressStart(choiceIndex)}
+              onPointerUp={onChoicePressEnd}
+              onPointerCancel={onChoicePressEnd}
+              onPointerLeave={onChoicePressEnd}
+              className="w-full cursor-pointer border-none bg-transparent p-0 text-left"
+              aria-pressed={isSelected}
             >
-              {choice}
-            </div>
-          </div>
-        ))}
+              <div
+                style={{
+                  minHeight: 46,
+                  marginBottom: pressDepth,
+                  borderRadius: 12,
+                  background: innerBg,
+                  transform: isPressed ? `translateY(${pressDepth}px)` : "translateY(0)",
+                  boxShadow: isPressed
+                    ? `0 0 0 ${outerBg}`
+                    : `0 ${pressDepth}px 0 ${outerBg}`,
+                  transition: [
+                    `transform 110ms ${FLASH_STACK_FEEDBACK_EASE}`,
+                    `box-shadow 110ms ${FLASH_STACK_FEEDBACK_EASE}`,
+                    "background-color 180ms ease",
+                  ].join(", "),
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: 500,
+                  fontSize: 16,
+                  lineHeight: "22.4px",
+                  color: "#111111",
+                  textAlign: "center",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "11px 16px",
+                  willChange: "transform, box-shadow",
+                  userSelect: "none",
+                }}
+              >
+                {choice}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 export function FlashCardTransitionPreview() {
+  type StackPhase =
+    | { kind: "next"; card: number }
+    | { kind: "prev"; card: number }
+    | { kind: "auto-left"; outgoing: number; incoming?: number; third?: number };
+
   const [order, setOrder] = useState([0, 1, 2]);
-  const [phase, setPhase] = useState<{
-    direction: "next" | "prev";
-    cardId: string;
-  } | null>(null);
-  const phaseTimeoutRef = useRef<number | null>(null);
+  const [correctChoice, setCorrectChoice] = useState<number | null>(null);
+  const [wrongChoices, setWrongChoices] = useState<number[]>([]);
+  const [pressedChoice, setPressedChoice] = useState<number | null>(null);
+  const [settlementScore, setSettlementScore] = useState(0);
+  const [showSettlement, setShowSettlement] = useState(false);
+  const [showNavButtons, setShowNavButtons] = useState(true);
+  const [phase, setPhase] = useState<StackPhase | null>(null);
+  const phaseTimerRef = useRef<number | null>(null);
+  const autoAdvanceTimerRef = useRef<number | null>(null);
+  const settlementTimerRef = useRef<number | null>(null);
+  const navButtonsTimerRef = useRef<number | null>(null);
 
   const rawId = useId();
   const animId = `flash-stack-${rawId.replace(/:/g, "")}`;
+  const slotLast =
+    FLASH_STACK_SLOTS[
+      Math.max(0, Math.min(FLASH_STACK_SLOTS.length - 1, order.length - 1))
+    ] ?? FLASH_STACK_SLOTS[0];
+  const slotSecond = FLASH_STACK_SLOTS[1];
   const slotThird = FLASH_STACK_SLOTS[2];
 
   useEffect(() => {
     return () => {
-      if (phaseTimeoutRef.current !== null) {
-        clearTimeout(phaseTimeoutRef.current);
+      if (phaseTimerRef.current !== null) {
+        clearTimeout(phaseTimerRef.current);
+      }
+      if (autoAdvanceTimerRef.current !== null) {
+        clearTimeout(autoAdvanceTimerRef.current);
+      }
+      if (settlementTimerRef.current !== null) {
+        clearTimeout(settlementTimerRef.current);
+      }
+      if (navButtonsTimerRef.current !== null) {
+        clearTimeout(navButtonsTimerRef.current);
       }
     };
   }, []);
 
-  const schedulePhaseClear = (duration: number) => {
-    if (phaseTimeoutRef.current !== null) {
-      clearTimeout(phaseTimeoutRef.current);
+  const isSettlementStage = order.length === 0;
+
+  useEffect(() => {
+    if (isSettlementStage) {
+      if (!showSettlement && settlementTimerRef.current === null) {
+        settlementTimerRef.current = window.setTimeout(() => {
+          setShowSettlement(true);
+          settlementTimerRef.current = null;
+        }, FLASH_STACK_PANEL_RESIZE_DURATION);
+      }
+      return;
     }
-    phaseTimeoutRef.current = window.setTimeout(() => {
+
+    if (settlementTimerRef.current !== null) {
+      clearTimeout(settlementTimerRef.current);
+      settlementTimerRef.current = null;
+    }
+    if (showSettlement) {
+      setShowSettlement(false);
+    }
+  }, [isSettlementStage, showSettlement]);
+
+  const clearChoiceStates = () => {
+    setPressedChoice(null);
+    setCorrectChoice(null);
+    setWrongChoices([]);
+    if (autoAdvanceTimerRef.current !== null) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+  };
+
+  const startButtonTransition = (direction: "next" | "prev") => {
+    if (phase || correctChoice !== null || order.length <= 1) return;
+    clearChoiceStates();
+
+    if (direction === "next") {
+      const exiting = order[0];
+      setPhase({ kind: "next", card: exiting });
+      setOrder((prev) => [...prev.slice(1), prev[0]]);
+    } else {
+      const entering = order[order.length - 1];
+      setPhase({ kind: "prev", card: entering });
+      setOrder((prev) => [prev[prev.length - 1], ...prev.slice(0, -1)]);
+    }
+
+    if (phaseTimerRef.current !== null) {
+      clearTimeout(phaseTimerRef.current);
+    }
+    phaseTimerRef.current = window.setTimeout(() => {
       setPhase(null);
-      phaseTimeoutRef.current = null;
-    }, duration);
+      phaseTimerRef.current = null;
+    }, FLASH_STACK_DURATION + 20);
   };
 
-  const rotateForward = () => {
-    if (phase) return;
-    const exitingId = FLASH_STACK_CARDS[order[0]].id;
-    setPhase({ direction: "next", cardId: exitingId });
-    setOrder(([first, second, third]) => [second, third, first]);
-    schedulePhaseClear(FLASH_STACK_DURATION + 20);
+  const startAutoDismissLeft = () => {
+    if (phase || order.length === 0) return;
+    const [first, second, third] = order;
+    setPhase({ kind: "auto-left", outgoing: first, incoming: second, third });
+    if (phaseTimerRef.current !== null) {
+      clearTimeout(phaseTimerRef.current);
+    }
+    phaseTimerRef.current = window.setTimeout(() => {
+      setOrder((prev) => prev.slice(1));
+      setPhase(null);
+      clearChoiceStates();
+      phaseTimerRef.current = null;
+    }, FLASH_FLING_DURATION);
   };
 
-  const rotateBackward = () => {
-    if (phase) return;
-    const enteringId = FLASH_STACK_CARDS[order[2]].id;
-    setPhase({ direction: "prev", cardId: enteringId });
-    setOrder(([first, second, third]) => [third, first, second]);
-    schedulePhaseClear(FLASH_STACK_DURATION + 20);
+  const handleChoiceSelect = (choiceIndex: number) => {
+    if (phase || correctChoice !== null) return;
+    if (order.length === 0) return;
+    const activeCard = FLASH_STACK_CARDS[order[0]];
+
+    if (choiceIndex === activeCard.correctIndex) {
+      if (wrongChoices.length === 0) {
+        setSettlementScore((prev) => Math.min(FLASH_STACK_CARDS.length, prev + 1));
+      }
+      setCorrectChoice(choiceIndex);
+      if (autoAdvanceTimerRef.current !== null) {
+        clearTimeout(autoAdvanceTimerRef.current);
+      }
+      autoAdvanceTimerRef.current = window.setTimeout(() => {
+        startAutoDismissLeft();
+        autoAdvanceTimerRef.current = null;
+      }, 500);
+      return;
+    }
+
+    setWrongChoices((prev) =>
+      prev.includes(choiceIndex) ? prev : [...prev, choiceIndex],
+    );
   };
+
+  const buttonsDisabled =
+    phase !== null ||
+    correctChoice !== null ||
+    wrongChoices.length > 0 ||
+    order.length <= 1;
+
+  const handleReviewQuiz = () => {
+    if (phaseTimerRef.current !== null) {
+      clearTimeout(phaseTimerRef.current);
+      phaseTimerRef.current = null;
+    }
+    if (autoAdvanceTimerRef.current !== null) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+    if (settlementTimerRef.current !== null) {
+      clearTimeout(settlementTimerRef.current);
+      settlementTimerRef.current = null;
+    }
+    if (navButtonsTimerRef.current !== null) {
+      clearTimeout(navButtonsTimerRef.current);
+      navButtonsTimerRef.current = null;
+    }
+    setPhase(null);
+    setCorrectChoice(null);
+    setWrongChoices([]);
+    setPressedChoice(null);
+    setSettlementScore(0);
+    setShowSettlement(false);
+    setShowNavButtons(false);
+    setOrder([0, 1, 2]);
+    navButtonsTimerRef.current = window.setTimeout(() => {
+      setShowNavButtons(true);
+      navButtonsTimerRef.current = null;
+    }, FLASH_STACK_PANEL_RESIZE_DURATION);
+  };
+
+  const panelHeight = isSettlementStage
+    ? FLASH_STACK_PANEL_SETTLEMENT_HEIGHT
+    : FLASH_STACK_PANEL_QUIZ_HEIGHT;
 
   return (
-    <div className="flex h-full w-full items-center justify-center px-4 py-3 select-none">
+    <div
+      className="relative select-none overflow-hidden"
+      style={{
+        width: FLASH_STACK_FRAME_W,
+        height: FLASH_STACK_FRAME_H,
+        background: "#FFFFFF",
+      }}
+    >
       <style>{`
         @keyframes ${animId}-exit-next {
           0% {
@@ -809,13 +1492,13 @@ export function FlashCardTransitionPreview() {
             animation-timing-function: cubic-bezier(0.15, 0.6, 0.35, 1);
           }
           100% {
-            transform: translate(${slotThird.tx}px, ${slotThird.ty}px) rotateY(0deg) rotate(0deg) scale(${slotThird.scale}, ${slotThird.scale});
+            transform: translate(${slotLast.tx}px, ${slotLast.ty}px) rotateY(0deg) rotate(0deg) scale(${slotLast.scale}, ${slotLast.scale});
             z-index: 5;
           }
         }
         @keyframes ${animId}-enter-prev {
           0% {
-            transform: translate(${slotThird.tx}px, ${slotThird.ty}px) rotateY(0deg) rotate(0deg) scale(${slotThird.scale}, ${slotThird.scale});
+            transform: translate(${slotLast.tx}px, ${slotLast.ty}px) rotateY(0deg) rotate(0deg) scale(${slotLast.scale}, ${slotLast.scale});
             z-index: 5;
             animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4);
           }
@@ -834,101 +1517,199 @@ export function FlashCardTransitionPreview() {
             z-index: 40;
           }
         }
+        @keyframes ${animId}-auto-out-left {
+          0% {
+            transform: translate(0px, 0px) rotate(0deg) scale(1, 1);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(${-FLASH_FLING_DISTANCE}px, 0px) rotate(${-FLASH_FLING_ROT}deg) scale(1, 1);
+            opacity: 1;
+          }
+        }
+        @keyframes ${animId}-auto-in-top {
+          0% {
+            transform: translate(${slotSecond.tx}px, ${slotSecond.ty}px) scale(${slotSecond.scale}, ${slotSecond.scale});
+          }
+          100% {
+            transform: translate(0px, 0px) scale(1, 1);
+          }
+        }
+        @keyframes ${animId}-auto-in-middle {
+          0% {
+            transform: translate(${slotThird.tx}px, ${slotThird.ty}px) scale(${slotThird.scale}, ${slotThird.scale});
+          }
+          100% {
+            transform: translate(${slotSecond.tx}px, ${slotSecond.ty}px) scale(${slotSecond.scale}, ${slotSecond.scale});
+          }
+        }
+        @keyframes ${animId}-settlement-item-in {
+          0% {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0px);
+          }
+        }
       `}</style>
 
       <div
-        className="relative rounded-[24px] border bg-[#FBFCFF] flex flex-col"
+        className="absolute rounded-[24px] border bg-[#FBFCFF] flex flex-col"
         style={{
+          left: FLASH_STACK_PANEL_X,
+          top: FLASH_STACK_PANEL_Y,
           width: FLASH_STACK_PANEL_W,
+          height: panelHeight,
           padding: FLASH_STACK_PANEL_PADDING,
           gap: FLASH_STACK_PANEL_GAP,
           borderColor: "#E6E8EA",
+          overflow: "hidden",
+          transition: `height ${FLASH_STACK_PANEL_RESIZE_DURATION}ms ${FLASH_STACK_EASE}`,
         }}
       >
-        <div
-          className="relative"
-          style={{
-            width: FLASH_STACK_STAGE_W,
-            height: FLASH_STACK_STAGE_H,
-            perspective: "1400px",
-            perspectiveOrigin: "50% 40%",
-          }}
-        >
-          {FLASH_STACK_CARDS.map((card, cardIndex) => {
-            const stackIndex = order.indexOf(cardIndex);
-            const slot = FLASH_STACK_SLOTS[stackIndex];
-            const isPhaseCard = phase?.cardId === card.id;
-            const animationName = isPhaseCard
-              ? phase?.direction === "next"
-                ? `${animId}-exit-next`
-                : `${animId}-enter-prev`
-              : undefined;
+        {showSettlement ? (
+          <FlashStackSettlementCard
+            score={settlementScore}
+            onReviewQuiz={handleReviewQuiz}
+            itemAnimationName={`${animId}-settlement-item-in`}
+          />
+        ) : isSettlementStage ? null : (
+          <>
+            <div
+              className="relative"
+              style={{
+                width: FLASH_STACK_STAGE_W,
+                height: FLASH_STACK_STAGE_H,
+                perspective: "1400px",
+                perspectiveOrigin: "50% 40%",
+              }}
+            >
+              {FLASH_STACK_CARDS.map((card, cardIndex) => {
+                const stackIndex = order.indexOf(cardIndex);
+                if (stackIndex < 0) return null;
+                const slot = FLASH_STACK_SLOTS[stackIndex];
+                const isTop = stackIndex === 0 && phase === null;
 
-            const transformValue = `translate(${slot.tx}px, ${slot.ty}px) rotate(0deg) scale(${slot.scale})`;
-            const transition = animationName
-              ? "none"
-              : `transform ${FLASH_STACK_DURATION}ms ${FLASH_STACK_FOLLOW_EASE}`;
+                let transformValue = `translate(${slot.tx}px, ${slot.ty}px) rotate(0deg) scale(${slot.scale})`;
+                let transition = `transform ${FLASH_STACK_DURATION}ms ${FLASH_STACK_FOLLOW_EASE}`;
+                let zIndex = slot.zIndex;
+                let animation: string | undefined;
 
-            return (
-              <div
-                key={card.id}
-                className="absolute left-0 top-0 will-change-transform"
+                if (phase) {
+                  if (phase.kind === "next" && phase.card === cardIndex) {
+                    animation = `${animId}-exit-next ${FLASH_STACK_DURATION}ms ${FLASH_STACK_EASE} both`;
+                    transition = "none";
+                  } else if (phase.kind === "prev" && phase.card === cardIndex) {
+                    animation = `${animId}-enter-prev ${FLASH_STACK_DURATION}ms ${FLASH_STACK_EASE} both`;
+                    transition = "none";
+                  } else if (phase.kind === "auto-left") {
+                    if (phase.outgoing === cardIndex) {
+                      animation = `${animId}-auto-out-left ${FLASH_FLING_DURATION}ms ${FLASH_FLING_EASE} both`;
+                      transition = "none";
+                      zIndex = 40;
+                    } else if (
+                      phase.incoming !== undefined &&
+                      phase.incoming === cardIndex
+                    ) {
+                      animation = `${animId}-auto-in-top ${FLASH_FLING_DURATION}ms ${FLASH_STACK_EASE} both`;
+                      transition = "none";
+                      zIndex = 30;
+                    } else if (
+                      phase.third !== undefined &&
+                      phase.third === cardIndex
+                    ) {
+                      animation = `${animId}-auto-in-middle ${FLASH_FLING_DURATION}ms ${FLASH_STACK_EASE} both`;
+                      transition = "none";
+                      zIndex = 20;
+                    }
+                  }
+                }
+
+                return (
+                  <div
+                    key={card.id}
+                    className="absolute left-0 top-0 will-change-transform"
+                    style={{
+                      width: FLASH_STACK_CARD_W,
+                      height: FLASH_STACK_CARD_H,
+                      transform: transformValue,
+                      transformOrigin: "top left",
+                      zIndex,
+                      transition,
+                      animation,
+                      pointerEvents: isTop ? "auto" : "none",
+                    }}
+                  >
+                    <FlashStackCardFront
+                      card={card}
+                      correctChoice={isTop ? correctChoice : null}
+                      wrongChoices={isTop ? wrongChoices : []}
+                      pressedChoice={isTop ? pressedChoice : null}
+                      onChoiceSelect={isTop ? handleChoiceSelect : () => {}}
+                      onChoicePressStart={isTop ? setPressedChoice : () => {}}
+                      onChoicePressEnd={isTop ? () => setPressedChoice(null) : () => {}}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            <div
+              className="flex items-center justify-center"
+              style={{
+                height: FLASH_STACK_BUTTON_SIZE,
+                gap: FLASH_STACK_BUTTON_GAP,
+                opacity: showNavButtons ? 1 : 0,
+                transition: "opacity 120ms ease",
+                pointerEvents: showNavButtons ? "auto" : "none",
+              }}
+            >
+              <button
+                type="button"
+                disabled={buttonsDisabled}
+                className="flex items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90 disabled:cursor-default disabled:active:scale-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!buttonsDisabled) startButtonTransition("next");
+                }}
+                aria-label="Previous card"
                 style={{
-                  width: FLASH_STACK_CARD_W,
-                  height: FLASH_STACK_CARD_H,
-                  transform: transformValue,
-                  transformOrigin: "top left",
-                  zIndex: slot.zIndex,
-                  transition,
-                  animation: animationName
-                    ? `${animationName} ${FLASH_STACK_DURATION}ms ${FLASH_STACK_EASE} both`
-                    : undefined,
+                  width: FLASH_STACK_BUTTON_SIZE,
+                  height: FLASH_STACK_BUTTON_SIZE,
+                  background: "#EDEEF3",
                 }}
               >
-                <FlashStackCardFront card={card} />
-              </div>
-            );
-          })}
-        </div>
+                <ChevronIcon
+                  direction="left"
+                  color={buttonsDisabled ? "#C4C6C9" : "#595C60"}
+                />
+              </button>
 
-        <div
-          className="flex items-center justify-center"
-          style={{ height: FLASH_STACK_BUTTON_SIZE, gap: FLASH_STACK_BUTTON_GAP }}
-        >
-          <button
-            type="button"
-            className="flex items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90"
-            onClick={(e) => {
-              e.stopPropagation();
-              rotateBackward();
-            }}
-            aria-label="Previous card"
-            style={{
-              width: FLASH_STACK_BUTTON_SIZE,
-              height: FLASH_STACK_BUTTON_SIZE,
-              background: "#EDEEF3",
-            }}
-          >
-            <ChevronIcon direction="left" />
-          </button>
-
-          <button
-            type="button"
-            className="flex items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90"
-            onClick={(e) => {
-              e.stopPropagation();
-              rotateForward();
-            }}
-            aria-label="Next card"
-            style={{
-              width: FLASH_STACK_BUTTON_SIZE,
-              height: FLASH_STACK_BUTTON_SIZE,
-              background: "#EDEEF3",
-            }}
-          >
-            <ChevronIcon direction="right" />
-          </button>
-        </div>
+              <button
+                type="button"
+                disabled={buttonsDisabled}
+                className="flex items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90 disabled:cursor-default disabled:active:scale-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!buttonsDisabled) startButtonTransition("prev");
+                }}
+                aria-label="Next card"
+                style={{
+                  width: FLASH_STACK_BUTTON_SIZE,
+                  height: FLASH_STACK_BUTTON_SIZE,
+                  background: "#EDEEF3",
+                }}
+              >
+                <ChevronIcon
+                  direction="right"
+                  color={buttonsDisabled ? "#C4C6C9" : "#595C60"}
+                />
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

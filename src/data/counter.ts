@@ -12,8 +12,7 @@ export const counterSection: CardsSection = {
         { text: ".snappy", variant: "spring" },
       ],
       previewId: "ios-counter-text",
-      codes: {
-        swift: `// SwiftUI — .contentTransition(.numericText())
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct NumericCounterView: View {
     @State private var count = 0
 
@@ -32,37 +31,6 @@ struct NumericCounterView: View {
         }
     }
 }`,
-        uikit: `// UIKit — CATransition push 模拟数字滚动
-class NumericCounterViewController: UIViewController {
-    private let label = UILabel()
-    private var count = 0
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        label.font = .monospacedDigitSystemFont(ofSize: 64, weight: .bold)
-        label.textAlignment = .center
-        label.text = "0"
-        view.addSubview(label)
-
-        let button = UIButton(type: .system)
-        button.setTitle("增加", for: .normal)
-        button.addTarget(self, action: #selector(increment), for: .touchUpInside)
-        view.addSubview(button)
-    }
-
-    @objc private func increment() {
-        count += 1
-
-        let transition = CATransition()
-        transition.type = .push
-        transition.subtype = .fromTop
-        transition.duration = 0.3
-        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        label.layer.add(transition, forKey: "numericTransition")
-        label.text = "\\(count)"
-    }
-}`,
-      },
     },
     {
       title: "Custom Counter",
@@ -71,8 +39,7 @@ class NumericCounterViewController: UIViewController {
         { text: "easeOutCubic", variant: "easing" },
       ],
       previewId: "ios-counter-custom",
-      codes: {
-        swift: `// SwiftUI — TimelineView + 自定义插值
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct CustomCounterView: View {
     @State private var targetValue: Double = 0
     @State private var displayValue: Double = 0
@@ -100,53 +67,6 @@ struct CustomCounterView: View {
         }
     }
 }`,
-        uikit: `// UIKit — CADisplayLink + easeOutCubic 插值
-class CustomCounterViewController: UIViewController {
-    private let label = UILabel()
-    private var displayLink: CADisplayLink?
-    private var startTime: CFTimeInterval = 0
-    private var fromValue: Double = 0
-    private var toValue: Double = 0
-    private let duration: CFTimeInterval = 1.0
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        label.font = .monospacedDigitSystemFont(ofSize: 64, weight: .bold)
-        label.textAlignment = .center
-        label.text = "0"
-        view.addSubview(label)
-    }
-
-    func animateTo(_ value: Double) {
-        fromValue = Double(Int(label.text ?? "0") ?? 0)
-        toValue = value
-        startTime = CACurrentMediaTime()
-
-        displayLink?.invalidate()
-        displayLink = CADisplayLink(
-            target: self,
-            selector: #selector(tick)
-        )
-        displayLink?.add(to: .main, forMode: .common)
-    }
-
-    @objc private func tick(_ link: CADisplayLink) {
-        let elapsed = CACurrentMediaTime() - startTime
-        let progress = min(elapsed / duration, 1.0)
-
-        // easeOutCubic: 1 - (1 - t)^3
-        let eased = 1.0 - pow(1.0 - progress, 3)
-        let current = fromValue + (toValue - fromValue) * eased
-
-        label.text = "\\(Int(current))"
-
-        if progress >= 1.0 {
-            displayLink?.invalidate()
-            displayLink = nil
-        }
-    }
-}`,
-      },
     },
   ],
 };

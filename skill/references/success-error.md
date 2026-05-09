@@ -24,10 +24,10 @@
 |---|---|
 | do_not_change | 不要只做静态图标淡入 |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 勾号路径绘制动画
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct CheckmarkView: View {
     @State private var trimEnd: CGFloat = 0
 
@@ -80,54 +80,6 @@ struct CheckmarkShape: Shape {
 }
 ```
 
-### UIKit
-
-```swift
-// UIKit — CAShapeLayer 勾号路径绘制
-class CheckmarkAnimationView: UIView {
-    private let checkLayer = CAShapeLayer()
-
-    func setupCheckmark() {
-        let path = UIBezierPath()
-        let size = bounds.size
-        path.move(to: CGPoint(
-            x: size.width * 0.15,
-            y: size.height * 0.5
-        ))
-        path.addLine(to: CGPoint(
-            x: size.width * 0.4,
-            y: size.height * 0.75
-        ))
-        path.addLine(to: CGPoint(
-            x: size.width * 0.85,
-            y: size.height * 0.25
-        ))
-
-        checkLayer.path = path.cgPath
-        checkLayer.fillColor = UIColor.clear.cgColor
-        checkLayer.strokeColor = UIColor.systemGreen.cgColor
-        checkLayer.lineWidth = 4
-        checkLayer.lineCap = .round
-        checkLayer.lineJoin = .round
-        checkLayer.strokeEnd = 0
-        layer.addSublayer(checkLayer)
-    }
-
-    func animateCheckmark() {
-        let animation = CABasicAnimation(keyPath: "strokeEnd")
-        animation.fromValue = 0
-        animation.toValue = 1
-        animation.duration = 0.5
-        animation.timingFunction = CAMediaTimingFunction(
-            name: .easeOut
-        )
-        animation.fillMode = .forwards
-        animation.isRemovedOnCompletion = false
-        checkLayer.add(animation, forKey: "checkmark")
-    }
-}
-```
-
 ---
 
 ## Error Shake
@@ -153,10 +105,10 @@ class CheckmarkAnimationView: UIView {
 |---|---|
 | do_not_change | 不要混入大幅缩放、旋转或纵向跳动 |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — keyframe 抖动动画
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct ShakeView: View {
     @State private var shakeOffset: CGFloat = 0
     @State private var showError = false
@@ -217,39 +169,5 @@ KeyframeAnimator(
     SpringKeyframe(-2, duration: 0.06)
     SpringKeyframe(0, duration: 0.08)
 }
-```
-
-### UIKit
-
-```swift
-// UIKit — CAKeyframeAnimation 抖动
-class ShakeTextField: UITextField {
-    func shake() {
-        let animation = CAKeyframeAnimation(keyPath: "position.x")
-        animation.values = [
-            0, -10, 10, -6, 6, -2, 0
-        ].map { center.x + $0 }
-        animation.keyTimes = [
-            0, 0.15, 0.35, 0.5, 0.65, 0.8, 1.0
-        ]
-        animation.duration = 0.4
-        animation.timingFunction = CAMediaTimingFunction(
-            name: .easeInOut
-        )
-        layer.add(animation, forKey: "shake")
-
-        // 配合红色边框
-        UIView.animate(withDuration: 0.2) {
-            self.layer.borderColor = UIColor.systemRed.cgColor
-            self.layer.borderWidth = 1
-        }
-
-        // 触觉反馈
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.error)
-    }
-}
-// values: [-10, 10, -6, 6, -2, 0] 递减振幅
-// duration: 0.4s, .easeInOut
 ```
 

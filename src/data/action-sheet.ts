@@ -12,8 +12,7 @@ export const actionSheetSection: CardsSection = {
         { text: ".spring", variant: "spring" },
       ],
       previewId: "ios-action-sheet",
-      codes: {
-        swift: `// SwiftUI — .confirmationDialog (Action Sheet)
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct ActionSheetDemo: View {
     @State private var showSheet = false
 
@@ -74,55 +73,6 @@ struct CustomActionSheet: View {
         )
     }
 }`,
-        uikit: `// UIKit — UIAlertController .actionSheet
-class ActionSheetVC: UIViewController {
-    func showActionSheet() {
-        let sheet = UIAlertController(
-            title: "选择操作",
-            message: nil,
-            preferredStyle: .actionSheet
-        )
-
-        sheet.addAction(UIAlertAction(
-            title: "拍照",
-            style: .default,
-            handler: { _ in self.takePhoto() }
-        ))
-
-        sheet.addAction(UIAlertAction(
-            title: "从相册选择",
-            style: .default,
-            handler: { _ in self.pickFromLibrary() }
-        ))
-
-        sheet.addAction(UIAlertAction(
-            title: "删除",
-            style: .destructive,
-            handler: { _ in self.delete() }
-        ))
-
-        sheet.addAction(UIAlertAction(
-            title: "取消",
-            style: .cancel
-        ))
-
-        // iPad 需要设置 popoverPresentationController
-        if let popover = sheet.popoverPresentationController {
-            popover.sourceView = self.view
-            popover.sourceRect = CGRect(
-                x: view.bounds.midX,
-                y: view.bounds.midY,
-                width: 0, height: 0
-            )
-        }
-
-        present(sheet, animated: true)
-        // animated: true → 系统 spring 动画
-        // 从底部滑入, ~0.4s
-        // damping ≈ 0.85, 轻微回弹
-    }
-}`,
-      },
     },
   ],
 };

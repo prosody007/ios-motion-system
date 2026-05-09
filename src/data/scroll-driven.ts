@@ -12,8 +12,7 @@ export const scrollDrivenSection: CardsSection = {
         { text: "无 duration", variant: "duration" },
       ],
       previewId: "ios-scroll-header",
-      codes: {
-        swift: `// SwiftUI — 滚动驱动 Header 缩放 (iOS 18+)
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct ScrollHeaderView: View {
     @State private var scrollOffset: CGFloat = 0
 
@@ -70,47 +69,6 @@ struct ScrollHeaderFallback: View {
         .coordinateSpace(name: "scroll")
     }
 }`,
-        uikit: `// UIKit — UIScrollViewDelegate 驱动 Header
-class ScrollHeaderViewController: UIViewController,
-    UIScrollViewDelegate {
-
-    private var headerView: UIImageView!
-    private var scrollView: UIScrollView!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        scrollView = UIScrollView()
-        scrollView.delegate = self
-        view.addSubview(scrollView)
-
-        headerView = UIImageView(image: UIImage(named: "header"))
-        headerView.contentMode = .scaleAspectFill
-        headerView.clipsToBounds = true
-        headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 250)
-        scrollView.addSubview(headerView)
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offsetY = scrollView.contentOffset.y
-
-        // 下拉放大
-        if offsetY < 0 {
-            let scale = 1.0 + abs(offsetY) / 500.0
-            headerView.transform = CGAffineTransform(
-                scaleX: min(scale, 1.5),
-                y: min(scale, 1.5)
-            )
-        } else {
-            headerView.transform = .identity
-        }
-
-        // 上滑渐隐
-        let opacity = 1.0 - max(0, offsetY) / 200.0
-        headerView.alpha = max(opacity, 0)
-    }
-}`,
-      },
     },
     {
       title: "Parallax",
@@ -119,8 +77,7 @@ class ScrollHeaderViewController: UIViewController,
         { text: "实时", variant: "duration" },
       ],
       previewId: "ios-scroll-parallax",
-      codes: {
-        swift: `// SwiftUI — 视差滚动
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct ParallaxScrollView: View {
     let parallaxFactor: CGFloat = 0.5
 
@@ -147,47 +104,6 @@ struct ParallaxScrollView: View {
         }
     }
 }`,
-        uikit: `// UIKit — scrollViewDidScroll 视差
-class ParallaxViewController: UIViewController,
-    UITableViewDelegate, UITableViewDataSource {
-
-    private let parallaxFactor: CGFloat = 0.5
-    private var tableView: UITableView!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView = UITableView()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(ParallaxCell.self, forCellReuseIdentifier: "cell")
-        view.addSubview(tableView)
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        for cell in tableView.visibleCells {
-            guard let parallaxCell = cell as? ParallaxCell else { continue }
-            let cellFrame = tableView.convert(cell.frame, to: view)
-            let centerY = cellFrame.midY
-            let screenMid = view.bounds.height / 2
-            let offset = (centerY - screenMid) * parallaxFactor
-            parallaxCell.imageOffset = offset
-        }
-    }
-}
-
-class ParallaxCell: UITableViewCell {
-    private let parallaxImage = UIImageView()
-
-    var imageOffset: CGFloat = 0 {
-        didSet {
-            parallaxImage.transform = CGAffineTransform(
-                translationX: 0,
-                y: imageOffset
-            )
-        }
-    }
-}`,
-      },
     },
   ],
 };

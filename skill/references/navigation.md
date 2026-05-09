@@ -24,10 +24,10 @@ Push / Pop 导航转场。
 |---|---|
 | do_not_change | 不要做 crossfade 代替 push/pop spatial transition |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — NavigationStack 转场
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 NavigationStack {
     List {
         NavigationLink("Detail", value: item)
@@ -46,35 +46,5 @@ NavigationStack {
 // iOS 18+
 .navigationTransition(.slide)
 .navigationTransition(.zoom(sourceID: id, in: ns))
-```
-
-### UIKit
-
-```swift
-// UIKit — 自定义 Push 转场
-class SlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    func transitionDuration(using ctx: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.35
-    }
-
-    func animateTransition(using ctx: UIViewControllerContextTransitioning) {
-        guard let toVC = ctx.viewController(forKey: .to) else { return }
-        let container = ctx.containerView
-        let finalFrame = ctx.finalFrame(for: toVC)
-
-        toVC.view.frame = finalFrame.offsetBy(dx: finalFrame.width, dy: 0)
-        container.addSubview(toVC.view)
-
-        UIView.animate(
-            withDuration: 0.35,
-            delay: 0,
-            options: .curveEaseInOut,
-            animations: {
-                toVC.view.frame = finalFrame
-            },
-            completion: { ctx.completeTransition($0) }
-        )
-    }
-}
 ```
 

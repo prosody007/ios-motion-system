@@ -7,10 +7,10 @@
 - Preview ID：`ios-checkbox`
 - Tags：`0.3s` (duration) · `.bouncy` (spring)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — Reminders 风格任务勾选
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 @State private var done = false
 
 HStack(spacing: 12) {
@@ -45,45 +45,6 @@ HStack(spacing: 12) {
 .onTapGesture { done.toggle() }
 ```
 
-### UIKit
-
-```swift
-// UIKit — 任务勾选
-class TaskCell: UITableViewCell {
-    let circle = CAShapeLayer()
-    let check = CAShapeLayer()
-    var done = false
-
-    func toggle() {
-        done.toggle()
-
-        // 圆圈填充 + 边框
-        UIView.animate(
-            withDuration: 0.3,
-            delay: 0,
-            usingSpringWithDamping: 0.75,
-            initialSpringVelocity: 0
-        ) {
-            self.circle.fillColor = self.done
-                ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor
-            self.circle.strokeColor = self.done
-                ? UIColor.systemBlue.cgColor
-                : UIColor.secondaryLabel.withAlphaComponent(0.3).cgColor
-        }
-
-        // 对勾生长动画 —— strokeEnd 0 → 1
-        let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.fromValue = done ? 0 : 1
-        anim.toValue = done ? 1 : 0
-        anim.duration = 0.32
-        anim.timingFunction = CAMediaTimingFunction(name: .easeOut)
-        anim.beginTime = CACurrentMediaTime() + (done ? 0.05 : 0)
-        check.strokeEnd = done ? 1 : 0
-        check.add(anim, forKey: "draw")
-    }
-}
-```
-
 ---
 
 ## Consent Checkbox
@@ -91,10 +52,10 @@ class TaskCell: UITableViewCell {
 - Preview ID：`ios-consent-check`
 - Tags：`0.32s` (duration) · `stroke draw` (easing)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 同意协议勾选
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 @State private var agreed = false
 
 VStack(alignment: .leading, spacing: 12) {
@@ -140,48 +101,6 @@ VStack(alignment: .leading, spacing: 12) {
 }
 ```
 
-### UIKit
-
-```swift
-// UIKit — 同意协议勾选
-class ConsentView: UIView {
-    let box = CAShapeLayer()
-    let check = CAShapeLayer()
-    let nextButton = UIButton(type: .system)
-    var agreed = false
-
-    func toggle() {
-        agreed.toggle()
-
-        // 复选框填充
-        UIView.animate(
-            withDuration: 0.25,
-            delay: 0,
-            usingSpringWithDamping: 0.75,
-            initialSpringVelocity: 0
-        ) {
-            self.box.fillColor = self.agreed
-                ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor
-            self.box.strokeColor = self.agreed
-                ? UIColor.systemBlue.cgColor
-                : UIColor.secondaryLabel.withAlphaComponent(0.35).cgColor
-            self.nextButton.isEnabled = self.agreed
-            self.nextButton.alpha = self.agreed ? 1 : 0.5
-        }
-
-        // 对勾生长绘制
-        let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.fromValue = check.strokeEnd
-        anim.toValue = agreed ? 1 : 0
-        anim.duration = 0.32
-        anim.timingFunction = CAMediaTimingFunction(name: .easeOut)
-        anim.beginTime = CACurrentMediaTime() + (agreed ? 0.05 : 0)
-        check.strokeEnd = agreed ? 1 : 0
-        check.add(anim, forKey: "draw")
-    }
-}
-```
-
 ---
 
 ## List Selection
@@ -189,10 +108,10 @@ class ConsentView: UIView {
 - Preview ID：`ios-radio`
 - Tags：`0.32s` (duration) · `stroke draw` (easing)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — List Selection Row（iOS 标准单选方式）
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 // iOS 不使用 Radio Button，而是用 List + checkmark
 // 对勾使用 Path + .trim 实现"生长"绘制动画
 
@@ -231,45 +150,5 @@ List {
 // 关键动画参数：
 // trim(from:to:) — 控制描边完成度，从 0 到 1 即"生长"绘制
 // 0.32s easeOut + 0.05s 延迟（等上一个淡出后再开始绘制）
-```
-
-### UIKit
-
-```swift
-// UIKit — List Selection Row，checkmark 使用描边生长动画
-class SelectionCell: UITableViewCell {
-    let checkLayer = CAShapeLayer()
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 4, y: 9.5))
-        path.addLine(to: CGPoint(x: 7.8, y: 13))
-        path.addLine(to: CGPoint(x: 14, y: 5.5))
-        checkLayer.path = path.cgPath
-        checkLayer.strokeColor = UIColor.systemBlue.cgColor
-        checkLayer.fillColor = UIColor.clear.cgColor
-        checkLayer.lineWidth = 2.2
-        checkLayer.lineCap = .round
-        checkLayer.lineJoin = .round
-        checkLayer.strokeEnd = 0
-    }
-    required init?(coder: NSCoder) { fatalError() }
-
-    func setSelected(_ on: Bool, animated: Bool) {
-        if animated {
-            let anim = CABasicAnimation(keyPath: "strokeEnd")
-            anim.fromValue = checkLayer.strokeEnd
-            anim.toValue = on ? 1 : 0
-            anim.duration = on ? 0.32 : 0.15
-            anim.timingFunction = CAMediaTimingFunction(
-                name: on ? .easeOut : .easeIn
-            )
-            anim.beginTime = CACurrentMediaTime() + (on ? 0.05 : 0)
-            checkLayer.add(anim, forKey: "draw")
-        }
-        checkLayer.strokeEnd = on ? 1 : 0
-    }
-}
 ```
 

@@ -1,6 +1,6 @@
 # Catalog · 分类索引
 
-以下 40 个分类按使用场景分组。每个分类对应 `references/<slug>.md`，里面是该分类下全部 cards 的完整 SwiftUI / UIKit 代码。
+以下 40 个分类按使用场景分组。每个分类对应 `references/<slug>.md`，里面是该分类下全部 cards 的完整 React/TSX 代码。
 
 ## 基础
 

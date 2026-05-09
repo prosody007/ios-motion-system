@@ -24,10 +24,10 @@
 | entry_exit | slide down in, slide up out |
 | content | banner body keeps shape stable during motion |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 通知横幅顶部滑入
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct NotificationBanner: View {
     @Binding var isPresented: Bool
     let title: String
@@ -109,119 +109,5 @@ struct ContentView: View {
         )
     }
 }
-```
-
-### UIKit
-
-```swift
-// UIKit — 通知横幅顶部滑入
-class NotificationBannerView: UIView {
-    private let iconView = UIImageView()
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
-
-    func show(
-        in window: UIWindow,
-        title: String,
-        subtitle: String,
-        autoDismissAfter: TimeInterval = 4.0
-    ) {
-        titleLabel.text = title
-        subtitleLabel.text = subtitle
-
-        translatesAutoresizingMaskIntoConstraints = false
-        window.addSubview(self)
-
-        NSLayoutConstraint.activate([
-            leadingAnchor.constraint(
-                equalTo: window.leadingAnchor, constant: 8
-            ),
-            trailingAnchor.constraint(
-                equalTo: window.trailingAnchor, constant: -8
-            ),
-            topAnchor.constraint(
-                equalTo: window.safeAreaLayoutGuide.topAnchor
-            )
-        ])
-
-        // 初始位置: 屏幕外
-        transform = CGAffineTransform(
-            translationX: 0,
-            y: -200
-        )
-
-        // spring 滑入
-        UIView.animate(
-            withDuration: 0.4,
-            delay: 0,
-            usingSpringWithDamping: 0.8,
-            initialSpringVelocity: 0,
-            options: [],
-            animations: {
-                self.transform = .identity
-            }
-        )
-
-        // 自动消失
-        DispatchQueue.main.asyncAfter(
-            deadline: .now() + autoDismissAfter
-        ) {
-            self.dismiss()
-        }
-
-        // 上滑手势关闭
-        let pan = UIPanGestureRecognizer(
-            target: self,
-            action: #selector(handlePan)
-        )
-        addGestureRecognizer(pan)
-    }
-
-    func dismiss() {
-        UIView.animate(
-            withDuration: 0.35,
-            delay: 0,
-            usingSpringWithDamping: 0.85,
-            initialSpringVelocity: 0,
-            options: [],
-            animations: {
-                self.transform = CGAffineTransform(
-                    translationX: 0, y: -200
-                )
-            },
-            completion: { _ in
-                self.removeFromSuperview()
-            }
-        )
-    }
-
-    @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: self)
-        if gesture.state == .changed {
-            if translation.y < 0 {
-                transform = CGAffineTransform(
-                    translationX: 0, y: translation.y
-                )
-            }
-        } else if gesture.state == .ended {
-            if translation.y < -20 {
-                dismiss()
-            } else {
-                UIView.animate(
-                    withDuration: 0.3,
-                    delay: 0,
-                    usingSpringWithDamping: 0.8,
-                    initialSpringVelocity: 0,
-                    animations: {
-                        self.transform = .identity
-                    }
-                )
-            }
-        }
-    }
-}
-// 入场: 0.4s, spring(damping: 0.8)
-// 退场: 0.35s, spring(damping: 0.85)
-// 支持上滑手势关闭
 ```
 

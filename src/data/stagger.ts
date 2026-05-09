@@ -12,8 +12,7 @@ export const staggerSection: CardsSection = {
         { text: ".spring", variant: "spring" },
       ],
       previewId: "ios-stagger",
-      codes: {
-        swift: `// SwiftUI — ForEach stagger 入场
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct StaggerList: View {
     @State private var items = Array(0..<10)
     @State private var appeared = false
@@ -50,36 +49,6 @@ ForEach(items) { item in
             value: items
         )
 }`,
-        uikit: `// UIKit — stagger 延迟入场
-class StaggerListVC: UIViewController {
-    let stackView = UIStackView()
-
-    func animateItemsIn() {
-        let subviews = stackView.arrangedSubviews
-
-        for view in subviews {
-            view.alpha = 0
-            view.transform = CGAffineTransform(translationX: 0, y: 20)
-        }
-
-        for (index, view) in subviews.enumerated() {
-            UIView.animate(
-                withDuration: 0.4,
-                delay: Double(index) * 0.05,
-                usingSpringWithDamping: 0.8,
-                initialSpringVelocity: 0,
-                options: [],
-                animations: {
-                    view.alpha = 1
-                    view.transform = .identity
-                }
-            )
-        }
-    }
-}
-// 每个 item 延迟 50ms
-// 总入场时长 ≈ 0.4s + count * 0.05s`,
-      },
     },
   ],
 };

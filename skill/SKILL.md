@@ -1,20 +1,20 @@
 ---
 name: ios-motion-system
-description: iOS 动效实现库 —— SwiftUI / UIKit 的 Spring、Sheet、Tab Bar、Toast、Card、Border Glow、骨架屏、转场、手势等 80+ 标准动效代码模板。当用户需要实现 iOS 风格动画（按钮按压、底部弹层、卡片展开/翻转、转场、回弹效果等）时使用。
+description: iOS 风格动效的 React 实现库 —— Spring、Sheet、Tab Bar、Toast、Card、Border Glow、骨架屏、转场、手势等 80+ 标准动效的 React/TSX 代码模板。预览与代码统一使用 React，方便在 Web 项目里直接落地与测试。
 ---
 
 # iOS Motion System
 
-完整的 iOS 动效实现库，覆盖 Apple HIG 推荐的标准动画、Spring 弹性、转场、手势、加载态等 40 个分类的 SwiftUI 与 UIKit 代码模板。
+iOS 风格的动效实现库，覆盖 Apple HIG 推荐的常用动画、Spring 弹性、转场、手势、加载态等 40 个分类的 **React/TSX** 代码模板。预览与实现代码统一使用 React。
 
 ## 触发条件
 
 当用户提出以下需求时使用本 Skill：
 
-- 实现某个 iOS 动效（按钮按压、Sheet 展开、Tab 切换、卡片翻转、骨架屏等）
-- 询问 SwiftUI / UIKit 中如何做特定动画
+- 在 Web/React 项目里实现 iOS 风格动效（按钮按压、Sheet 展开、Tab 切换、卡片翻转、骨架屏等）
+- 询问 React 里如何还原某个 iOS 动画
 - 询问 Spring 参数、转场曲线、动画时长怎么选
-- 需要可粘贴的 iOS 动画代码片段
+- 需要可粘贴的 React 动画代码片段
 - 中文或英文表述，例如「卡片展开」「pull to refresh」「rotateY 翻转」「toast 通知」
 
 ## 使用步骤
@@ -31,13 +31,19 @@ description: iOS 动效实现库 —— SwiftUI / UIKit 的 Spring、Sheet、Tab
 - Tags（duration / easing / spring）
 - Preview ID（与在线网站一一对应）
 - 结构化 AI Motion Spec（如该 card 已补齐）
-- 完整 SwiftUI 代码
-- 完整 UIKit 代码
+- 单一的 React/TSX 代码块（与在线预览实现一致）
 
 ### Step 3：处理动态参数（如有）
 
 部分卡片代码含 `{{paramName}}` 占位符（例如 `ios-spring-playground`、`ios-carousel`）。
 读 `templates/dynamic-params.md` 获取每个参数的类型与默认值，按用户需求替换占位符再返回。
+
+### Step 4：锁定动画优先复用（团队协作）
+
+对于已锁定的生产动效（例如 `ios-card-flash-stack`），优先复用仓库中的标准组件入口，不要复制 keyframes 后在业务页面里改一份。
+
+- 推荐复用：`FlashCardTransitionPreview`
+- 不建议：复制一份动画实现并私自改 `duration / easing / keyframes`
 
 ## 分类导航
 
@@ -56,17 +62,27 @@ description: iOS 动效实现库 —— SwiftUI / UIKit 的 Spring、Sheet、Tab
 
 不是只回一段代码，而是**直接动手**：
 
-1. **定位目标文件**：扫一遍当前 workspace，找到合适落地的 SwiftUI / UIKit 文件（比如用户提到的视图、最近编辑的、或者 `Views/` 目录下的对应文件）。如果不存在，新建。
-2. **粘贴模板，按项目命名调整**：模板里 `struct CardExpandView: View` 这类示例名要改成符合用户项目命名约定的名字；`@State` 绑定如果用户已有 model / store 要接进去而不是新建。
+1. **定位目标文件**：扫一遍当前 workspace，找到合适落地的 React/TSX 文件（页面或组件目录）。如果不存在，新建一个客户端组件。
+2. **粘贴模板，按项目命名调整**：示例组件名要改成符合用户项目命名约定的名字；状态绑定如果用户已有 store / context，要接进去而不是新建。
 3. **保留代码注释里的中文**——那些是给最终用户看的设计说明，不要翻译或删除。
 4. **不要凭空发明 API**：本库代码已验证过；要扩展时显式说明"基于本库的 X 模板，新加 Y"，让用户能追溯。
 
-## 平台与 API 选择
+## 实现风格
 
-- **优先 SwiftUI**（iOS 16+ 已是主流）。除非用户项目是纯 UIKit 或明确指定。
-- **iOS 17+ 推荐**：Spring 优先用 `.smooth` / `.snappy` / `.bouncy` 三个预设而不是 `.spring(response:dampingFraction:)`。
-- **Spring 语义**：response（周期，越大越慢）+ damping（阻尼比，1.0=无过冲，越小越弹）。
-- **deployment target 检测**：能看到 `Package.swift` / `.xcodeproj` 时，优先匹配项目实际的 iOS 版本；不确定时默认 iOS 17+。
+- 统一使用 **React + TypeScript**，client component（`"use client"`）。
+- 优先使用 **CSS transition / keyframes** 表达动画；交互逻辑用 React state 控制。
+- Tailwind / 内联 style 都可以，按项目现有风格选择。
+- Spring 参数对应 `cubic-bezier`、`framer-motion` 或 `react-spring` 都可以，按 `Spring & Timing` 分类选合适曲线。
+
+## Motion Lock（团队防改坏）
+
+以下规则用于保证多人协作时动画手感不漂移：
+
+- `ios-card-flash-stack` 的按钮切卡关键帧（尤其 `enter-prev` / `exit-next`）与对应时序属于锁定参数。
+- 做题→结算、结算→重做的容器过渡时序属于锁定参数。
+- 结算内容逐项出现（得分牌→文案→按钮）的时序属于锁定参数。
+- 若要改动以上参数，先新增 card / previewId 做实验，通过评审后再替换默认实现。
+- 接入验收至少覆盖：初始、答错、答对左飞、结算、Review Quiz 回退、右箭头 prev 平滑回顶。
 
 ## 在线预览与原始仓库
 

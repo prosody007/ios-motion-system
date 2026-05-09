@@ -32,9 +32,10 @@ Border Glow 通过 conic-gradient + 旋转光晕表现高光边框，重点是�
 |---|---|
 | do_not_change | 不要把整个卡片本体转起来 |
 
-### SwiftUI
+### Code
 
-```swift
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 /* CSS — 流光边框 (auto-play, 当前参数)
    palette       渐变色环
    duration      {{duration}}s · 一周时长
@@ -83,84 +84,5 @@ Border Glow 通过 conic-gradient + 旋转光晕表现高光边框，重点是�
   filter: blur({{glowSize}}px);
   opacity: {{glowOpacity}};
 }
-```
-
-### UIKit
-
-```swift
-// React — 流光边框组件 (auto-play)
-import { type CSSProperties } from "react";
-
-interface BorderGlowProps {
-  /** 一周完整旋转的时长（秒） */
-  duration?: number;          // default 4
-  /** 锐利边框厚度（px） */
-  borderWidth?: number;       // default 2
-  /** 外晕模糊半径（px），0 = 无外晕 */
-  glowSize?: number;          // default 24
-  /** 外晕不透明度 0-1 */
-  glowOpacity?: number;       // default 0.7
-  /** 卡片圆角 */
-  borderRadius?: number;      // default 20
-  /** 渐变色板 */
-  colors?: string[];          // default Aurora
-  /** 旋转方向 */
-  direction?: "normal" | "reverse"; // default "normal"
-  /** 是否暂停（默认自动播放） */
-  paused?: boolean;           // default false
-  children?: React.ReactNode;
-}
-
-export function BorderGlow({
-  duration = {{duration}},
-  borderWidth = {{borderWidth}},
-  glowSize = {{glowSize}},
-  glowOpacity = {{glowOpacity}},
-  borderRadius = {{borderRadius}},
-  colors = [{{colors}}],
-  direction = "{{direction}}",
-  paused = false,
-  children,
-}: BorderGlowProps) {
-  const gradient = `conic-gradient(from var(--bg-angle), ${colors.join(", ")})`;
-  const animation = `border-glow-spin ${duration}s linear ${direction} infinite`;
-  const playState = paused ? "paused" : "running";
-
-  const ringBase: CSSProperties = {
-    position: "absolute",
-    inset: -borderWidth,
-    borderRadius: borderRadius + borderWidth,
-    background: gradient,
-    animation,
-    animationPlayState: playState,
-  };
-
-  return (
-    <div style={{ position: "relative" }}>
-      {/* halo */}
-      <div aria-hidden style={{
-        ...ringBase,
-        filter: `blur(${glowSize}px)`,
-        opacity: glowOpacity,
-        zIndex: 0,
-      }} />
-      {/* sharp ring */}
-      <div aria-hidden style={{ ...ringBase, zIndex: 1 }} />
-      {/* content */}
-      <div style={{
-        position: "relative",
-        background: "#fff",
-        borderRadius,
-        zIndex: 2,
-      }}>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// 全局 CSS 中需要注册一次：
-//   @property --bg-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
-//   @keyframes border-glow-spin { to { --bg-angle: 360deg; } }
 ```
 

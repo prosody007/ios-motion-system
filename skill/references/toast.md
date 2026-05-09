@@ -24,10 +24,10 @@
 | entry | 从顶部小位移进入 + opacity |
 | exit | 停留后按相反方向离开 |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 顶部 Toast
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 // overlay + .transition(.move(edge: .top))
 
 struct ToastOverlay: ViewModifier {
@@ -69,51 +69,6 @@ struct ToastOverlay: ViewModifier {
 // 自动消失: 2.5s
 ```
 
-### UIKit
-
-```swift
-// UIKit — 顶部 Toast
-class ToastManager {
-    static func show(_ message: String, in vc: UIViewController) {
-        let toast = makeBanner(message)
-        vc.view.addSubview(toast)
-
-        // 初始位置（屏幕外）
-        toast.transform = CGAffineTransform(translationX: 0, y: -80)
-        toast.alpha = 0
-
-        // 入场
-        UIView.animate(
-            withDuration: 0.4,
-            delay: 0,
-            usingSpringWithDamping: 0.86,
-            initialSpringVelocity: 0,
-            animations: {
-                toast.transform = .identity
-                toast.alpha = 1
-            }
-        )
-
-        // 2.5s 后退场
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            UIView.animate(
-                withDuration: 0.3,
-                delay: 0,
-                options: .curveEaseIn,
-                animations: {
-                    toast.transform = CGAffineTransform(translationX: 0, y: -80)
-                    toast.alpha = 0
-                },
-                completion: { _ in toast.removeFromSuperview() }
-            )
-        }
-    }
-}
-
-// 入场: 0.4s, dampingRatio 0.86 ≈ .snappy
-// 退场: 0.3s, .curveEaseIn（加速离场）
-```
-
 ---
 
 ## Bottom Snackbar with Action
@@ -138,10 +93,10 @@ class ToastManager {
 |---|---|
 | entry_exit | 底部上移进入、下移退出 |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 底部 Snackbar
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 // 从底部弹出，带 Undo 操作按钮
 
 struct Snackbar: View {
@@ -184,55 +139,5 @@ VStack {
 // 入场: .spring(response: 0.35, dampingFraction: 0.86)
 // 退场: 同曲线反向
 // 支持手势 dismiss: .gesture(DragGesture().onEnded { if $0.translation.height > 20 { dismiss } })
-```
-
-### UIKit
-
-```swift
-// UIKit — 底部 Snackbar
-class SnackbarView: UIView {
-    let label = UILabel()
-    let actionButton = UIButton(type: .system)
-
-    func present(in view: UIView) {
-        frame = CGRect(x: 16, y: view.bounds.height,
-                       width: view.bounds.width - 32, height: 52)
-        layer.cornerRadius = 14
-        view.addSubview(self)
-
-        // 入场
-        UIView.animate(
-            withDuration: 0.35,
-            delay: 0,
-            usingSpringWithDamping: 0.86,
-            initialSpringVelocity: 0,
-            animations: {
-                self.frame.origin.y = view.bounds.height - 52 - view.safeAreaInsets.bottom - 8
-            }
-        )
-
-        // 3s 后自动退场
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.dismiss()
-        }
-    }
-
-    func dismiss() {
-        UIView.animate(
-            withDuration: 0.25,
-            delay: 0,
-            options: .curveEaseIn,
-            animations: {
-                self.frame.origin.y = self.superview?.bounds.height ?? 800
-                self.alpha = 0
-            },
-            completion: { _ in self.removeFromSuperview() }
-        )
-    }
-}
-
-// 入场: 0.35s, dampingRatio 0.86
-// 退场: 0.25s, .curveEaseIn
-// 支持 UIPanGestureRecognizer 下滑 dismiss
 ```
 

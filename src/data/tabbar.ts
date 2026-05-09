@@ -12,8 +12,7 @@ export const tabbarSection: CardsSection = {
         { text: ".bouncy", variant: "spring" },
       ],
       previewId: "ios-tabbar-bounce",
-      codes: {
-        swift: `// SwiftUI — 自定义 TabBar，Scan / Study / Me
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 // 设计规范：
 //   • active  = #007AFF  字重 600
 //   • inactive = #989B9E 字重 500
@@ -60,47 +59,6 @@ HStack(alignment: .center, spacing: 0) {
         .fill(Color(hex: 0xF6F8FA))
         .frame(height: 1)
 }`,
-        uikit: `// UIKit — 自定义 TabBar，Scan / Study / Me
-final class TabBarView: UIView {
-    private let stack = UIStackView()
-    private let topLine = UIView()
-    private var items: [(icon: UIImageView, label: UILabel)] = []
-
-    private let active   = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
-    private let inactive = UIColor(red: 152/255, green: 155/255, blue: 158/255, alpha: 1)
-
-    func select(index: Int) {
-        for (i, (icon, label)) in items.enumerated() {
-            let isActive = i == index
-            let color = isActive ? active : inactive
-            label.textColor = color
-            icon.tintColor   = color
-            label.font = .systemFont(
-                ofSize: 10,
-                weight: isActive ? .semibold : .medium
-            )
-            if isActive {
-                icon.transform = CGAffineTransform(scaleX: 0.88, y: 0.88)
-                UIView.animate(
-                    withDuration: 0.22,
-                    delay: 0,
-                    usingSpringWithDamping: 0.65,
-                    initialSpringVelocity: 0.3
-                ) {
-                    icon.transform = .identity
-                }
-            }
-        }
-    }
-}
-
-// 样式规范
-stack.distribution = .fillEqually    // 3 Tab 等分
-stack.alignment    = .center
-icon.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
-label.font = .systemFont(ofSize: 10, weight: .medium)
-topLine.backgroundColor = UIColor(white: 0.965, alpha: 1) // #F6F8FA`,
-      },
     },
     {
       title: "Badge Pulse",
@@ -109,8 +67,7 @@ topLine.backgroundColor = UIColor(white: 0.965, alpha: 1) // #F6F8FA`,
         { text: "spring overshoot", variant: "easing" },
       ],
       previewId: "ios-tabbar-badge",
-      codes: {
-        swift: `// SwiftUI — Badge 计数变化时的 pop 动画
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 @State private var count = 3
 @State private var bump = false
 
@@ -136,20 +93,6 @@ ZStack(alignment: .topTrailing) {
         bump = false
     }
 }`,
-        uikit: `// UIKit — Badge 计数 pop 动画
-func bumpBadge(_ badge: UIView) {
-    badge.transform = CGAffineTransform(scaleX: 1.18, y: 1.18)
-    UIView.animate(
-        withDuration: 0.3,
-        delay: 0,
-        usingSpringWithDamping: 0.5,
-        initialSpringVelocity: 0.4,
-        options: [.beginFromCurrentState]
-    ) {
-        badge.transform = .identity
-    }
-}`,
-      },
     },
   ],
 };

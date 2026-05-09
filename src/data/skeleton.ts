@@ -12,8 +12,7 @@ export const skeletonSection: CardsSection = {
         { text: "linear infinite", variant: "easing" },
       ],
       previewId: "ios-skeleton",
-      codes: {
-        swift: `// SwiftUI — redacted + 自定义 shimmer
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct SkeletonView: View {
     @State private var isAnimating = false
 
@@ -89,45 +88,6 @@ struct ShimmerModifier: ViewModifier {
             }
     }
 }`,
-        uikit: `// UIKit — CAGradientLayer shimmer
-class ShimmerView: UIView {
-    private let gradientLayer = CAGradientLayer()
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        gradientLayer.frame = bounds
-        setupShimmer()
-    }
-
-    func setupShimmer() {
-        gradientLayer.colors = [
-            UIColor.systemGray5.cgColor,
-            UIColor.systemGray4.cgColor,
-            UIColor.systemGray5.cgColor
-        ]
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
-        gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
-        gradientLayer.locations = [0, 0.5, 1]
-        layer.addSublayer(gradientLayer)
-
-        let animation = CABasicAnimation(keyPath: "locations")
-        animation.fromValue = [-1.0, -0.5, 0.0]
-        animation.toValue = [1.0, 1.5, 2.0]
-        animation.duration = 1.5
-        animation.repeatCount = .infinity
-        animation.timingFunction = CAMediaTimingFunction(
-            name: .linear
-        )
-        gradientLayer.add(animation, forKey: "shimmer")
-    }
-
-    func stopShimmer() {
-        gradientLayer.removeAnimation(forKey: "shimmer")
-    }
-}
-// duration: 1.5s, linear, repeatForever
-// locations 从 [-1, -0.5, 0] → [1, 1.5, 2]`,
-      },
     },
   ],
 };

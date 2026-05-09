@@ -12,8 +12,7 @@ export const heroTransitionSection: CardsSection = {
         { text: "0.4s", variant: "duration" },
       ],
       previewId: "ios-hero",
-      codes: {
-        swift: `// SwiftUI — Hero 转场 (iOS 18+)
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct HeroTransitionDemo: View {
     @Namespace private var heroNamespace
 
@@ -78,62 +77,6 @@ struct HeroFallbackView: View {
         }
     }
 }`,
-        uikit: `// UIKit — UIViewControllerAnimatedTransitioning
-class HeroAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    let isPresenting: Bool
-    let originFrame: CGRect
-
-    init(isPresenting: Bool, originFrame: CGRect) {
-        self.isPresenting = isPresenting
-        self.originFrame = originFrame
-    }
-
-    func transitionDuration(
-        using transitionContext: UIViewControllerContextTransitioning?
-    ) -> TimeInterval {
-        return 0.4
-    }
-
-    func animateTransition(
-        using transitionContext: UIViewControllerContextTransitioning
-    ) {
-        let container = transitionContext.containerView
-        guard let toView = transitionContext.view(forKey: .to),
-              let fromView = transitionContext.view(forKey: .from)
-        else { return }
-
-        let snapshot = UIImageView(image: captureSnapshot(of: fromView))
-        snapshot.frame = isPresenting ? originFrame : fromView.frame
-        snapshot.layer.cornerRadius = isPresenting ? 12 : 0
-        snapshot.clipsToBounds = true
-
-        container.addSubview(toView)
-        container.addSubview(snapshot)
-        toView.alpha = 0
-
-        let finalFrame = isPresenting
-            ? transitionContext.finalFrame(for: transitionContext.viewController(forKey: .to)!)
-            : originFrame
-
-        UIView.animate(
-            withDuration: 0.4,
-            delay: 0,
-            usingSpringWithDamping: 0.85,
-            initialSpringVelocity: 0,
-            options: .curveEaseInOut
-        ) {
-            snapshot.frame = finalFrame
-            snapshot.layer.cornerRadius = self.isPresenting ? 0 : 12
-            toView.alpha = 1
-        } completion: { _ in
-            snapshot.removeFromSuperview()
-            transitionContext.completeTransition(
-                !transitionContext.transitionWasCancelled
-            )
-        }
-    }
-}`,
-      },
     },
   ],
 };

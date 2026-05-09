@@ -55,10 +55,8 @@ export interface AnimationCard {
   controlsId?: string;
   /** 可选：给 AI 读取的结构化动效规范 */
   agentSpec?: AgentSpec;
-  codes: {
-    swift: string;
-    uikit: string;
-  };
+  /** React / TSX 实现代码（与预览实现保持一致） */
+  code: string;
 }
 
 export interface TokenSection {

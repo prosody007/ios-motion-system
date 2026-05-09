@@ -12,8 +12,7 @@ export const keyframeSection: CardsSection = {
         { text: "多属性", variant: "spring" },
       ],
       previewId: "ios-keyframe",
-      codes: {
-        swift: `// SwiftUI — KeyframeAnimator (iOS 17+)
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct KeyframeAnimationDemo: View {
     @State private var isAnimating = false
 
@@ -61,53 +60,6 @@ struct KeyframeAnimationDemo: View {
         }
     }
 }`,
-        uikit: `// UIKit — CAKeyframeAnimation 多属性
-class KeyframeViewController: UIViewController {
-    private var starView: UIImageView!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        starView = UIImageView(
-            image: UIImage(systemName: "star.fill")?
-                .withTintColor(.systemYellow, renderingMode: .alwaysOriginal)
-        )
-        starView.frame = CGRect(x: 0, y: 0, width: 64, height: 64)
-        starView.center = view.center
-        view.addSubview(starView)
-    }
-
-    func playKeyframeAnimation() {
-        // Scale keyframes
-        let scaleAnim = CAKeyframeAnimation(keyPath: "transform.scale")
-        scaleAnim.values = [1.0, 1.5, 0.8, 1.0]
-        scaleAnim.keyTimes = [0, 0.3, 0.5, 1.0]
-        scaleAnim.timingFunctions = [
-            CAMediaTimingFunction(name: .easeOut),
-            CAMediaTimingFunction(name: .easeInEaseOut),
-            CAMediaTimingFunction(name: .easeOut),
-        ]
-
-        // Rotation keyframes
-        let rotationAnim = CAKeyframeAnimation(keyPath: "transform.rotation.z")
-        rotationAnim.values = [0, Double.pi * 2]
-        rotationAnim.keyTimes = [0, 1.0]
-
-        // Position keyframes
-        let positionAnim = CAKeyframeAnimation(keyPath: "position.y")
-        let centerY = starView.center.y
-        positionAnim.values = [centerY, centerY - 30, centerY, centerY - 15, centerY]
-        positionAnim.keyTimes = [0, 0.2, 0.5, 0.7, 1.0]
-
-        let group = CAAnimationGroup()
-        group.animations = [scaleAnim, rotationAnim, positionAnim]
-        group.duration = 0.8
-        group.fillMode = .forwards
-        group.isRemovedOnCompletion = true
-
-        starView.layer.add(group, forKey: "keyframeGroup")
-    }
-}`,
-      },
     },
   ],
 };

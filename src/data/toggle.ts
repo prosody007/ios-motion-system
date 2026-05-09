@@ -9,8 +9,7 @@ export const toggleSection: CardsSection = {
       title: "Standard Switch",
       tags: [{ text: "0.3s", variant: "duration" }, { text: ".spring", variant: "spring" }],
       previewId: "ios-toggle-demo",
-      codes: {
-        swift: `// SwiftUI — Toggle
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 @State private var isOn = false
 
 Toggle(isOn: $isOn) {
@@ -23,20 +22,12 @@ Toggle(isOn: $isOn) {
 // spring(response: 0.3, dampingFraction: 0.8)
 // knob translateX: 20pt
 // track color: gray → systemGreen`,
-        uikit: `// UIKit — UISwitch
-let toggle = UISwitch()
-toggle.onTintColor = .systemGreen
-toggle.addTarget(self, action: #selector(toggled), for: .valueChanged)
-
-// 系统 UISwitch 内部 spring 动画 ~0.25s`,
-      },
     },
     {
       title: "Icon Knob (Dark Mode)",
       tags: [{ text: "0.35s", variant: "duration" }, { text: ".spring", variant: "spring" }],
       previewId: "ios-toggle-icon",
-      codes: {
-        swift: `// SwiftUI — knob 内带图标
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct IconSwitch: View {
     @Binding var isOn: Bool
 
@@ -69,37 +60,12 @@ struct IconSwitch: View {
             .onTapGesture { isOn.toggle() }
     }
 }`,
-        uikit: `// UIKit — 自定义 knob 内图标
-class IconSwitchView: UIControl {
-    private let knob = UIImageView()
-    private let sunImage = UIImage(systemName: "sun.max.fill")
-    private let moonImage = UIImage(systemName: "moon.fill")
-
-    var isOn = false {
-        didSet {
-            UIView.transition(with: knob, duration: 0.3, options: .transitionCrossDissolve) {
-                self.knob.image = self.isOn ? self.moonImage : self.sunImage
-                self.knob.tintColor = self.isOn ? UIColor(hex: 0x1e293b) : .systemOrange
-            }
-            UIView.animate(
-                withDuration: 0.35, delay: 0,
-                usingSpringWithDamping: 0.8, initialSpringVelocity: 0
-            ) {
-                self.knob.transform = CGAffineTransform(translationX: self.isOn ? 20 : 0, y: 0)
-                self.backgroundColor = self.isOn
-                    ? UIColor(hex: 0x1e293b) : UIColor(hex: 0xfde68a)
-            }
-        }
-    }
-}`,
-      },
     },
     {
       title: "Segmented Toggle",
       tags: [{ text: "0.4s", variant: "duration" }, { text: ".spring", variant: "spring" }],
       previewId: "ios-toggle-segmented",
-      codes: {
-        swift: `// SwiftUI — 两选项 segmented
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 enum AppTheme: String, CaseIterable { case light, dark }
 
 @State private var theme: AppTheme = .light
@@ -133,23 +99,6 @@ HStack(spacing: 0) {
         .offset(x: theme == .light ? 0 : 76)
 }
 .animation(.spring(response: 0.4, dampingFraction: 0.85), value: theme)`,
-        uikit: `// UIKit — UISegmentedControl
-let control = UISegmentedControl(items: ["Light", "Dark"])
-control.selectedSegmentIndex = 0
-control.selectedSegmentTintColor = .white
-control.addTarget(self, action: #selector(changed), for: .valueChanged)
-
-// 系统 segmented 切换动画 ~0.25s
-// 自定义指示条滑动：
-UIView.animate(
-    withDuration: 0.4,
-    delay: 0,
-    usingSpringWithDamping: 0.85,
-    initialSpringVelocity: 0
-) {
-    self.indicator.frame.origin.x = CGFloat(index) * self.segmentWidth
-}`,
-      },
     },
   ],
 };

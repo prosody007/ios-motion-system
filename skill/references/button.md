@@ -7,10 +7,10 @@
 - Preview ID：`ios-btn-scale`
 - Tags：`0.1s` (duration) · `.easeInOut` (easing)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — Button 按下缩放
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 Button(action: { }) {
     Text("按钮")
         .padding(.horizontal, 36)
@@ -30,39 +30,6 @@ struct ScaleButtonStyle: ButtonStyle {
 }
 ```
 
-### UIKit
-
-```swift
-// UIKit — Button 按下缩放
-class ScaleButton: UIButton {
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        UIView.animate(
-            withDuration: 0.1,
-            delay: 0,
-            options: [.curveEaseInOut, .allowUserInteraction],
-            animations: {
-                self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-                self.alpha = 0.9
-            }
-        )
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        UIView.animate(
-            withDuration: 0.1,
-            delay: 0,
-            options: [.curveEaseInOut, .allowUserInteraction],
-            animations: {
-                self.transform = .identity
-                self.alpha = 1.0
-            }
-        )
-    }
-}
-```
-
 ---
 
 ## Highlight + Haptic
@@ -70,10 +37,10 @@ class ScaleButton: UIButton {
 - Preview ID：`ios-btn-highlight`
 - Tags：`0.08s` (duration) · `.easeOut` (easing)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 高亮 + 触觉反馈（无缩放）
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 Button(action: {
     let impact = UIImpactFeedbackGenerator(style: .medium)
     impact.impactOccurred()
@@ -99,31 +66,6 @@ struct HighlightButtonStyle: ButtonStyle {
 }
 ```
 
-### UIKit
-
-```swift
-// UIKit — 高亮 + 触觉反馈（无缩放）
-let btn = UIButton(type: .custom)
-btn.backgroundColor = UIColor(hex: 0x007AFF)
-btn.setTitleColor(.white, for: .normal)
-btn.addTarget(self, action: #selector(down), for: [.touchDown, .touchDragEnter])
-btn.addTarget(self, action: #selector(up), for: [.touchUpInside, .touchUpOutside, .touchDragExit, .touchCancel])
-
-@objc func down() {
-    let generator = UIImpactFeedbackGenerator(style: .medium)
-    generator.impactOccurred()
-    UIView.animate(withDuration: 0.08, delay: 0, options: .curveEaseOut) {
-        self.btn.backgroundColor = UIColor(hex: 0x0051D5)
-    }
-}
-
-@objc func up() {
-    UIView.animate(withDuration: 0.08, delay: 0, options: .curveEaseOut) {
-        self.btn.backgroundColor = UIColor(hex: 0x007AFF)
-    }
-}
-```
-
 ---
 
 ## Depth Press
@@ -131,10 +73,10 @@ btn.addTarget(self, action: #selector(up), for: [.touchUpInside, .touchUpOutside
 - Preview ID：`ios-btn-depth`
 - Tags：`0.1s` (duration) · `5pt depth` (easing)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 带厚度的按压按钮
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 // 通过下方实色阴影模拟"按键厚度"，按下时下沉消失
 struct DepthButtonStyle: ButtonStyle {
     let depth: CGFloat = 5
@@ -161,42 +103,5 @@ struct DepthButtonStyle: ButtonStyle {
 
 Button("Press") { }
     .buttonStyle(DepthButtonStyle())
-```
-
-### UIKit
-
-```swift
-// UIKit — 带厚度的按压按钮
-class DepthButton: UIButton {
-    private let depth: CGFloat = 5
-    private let darkLayer = CALayer()
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        darkLayer.frame = CGRect(
-            x: 0, y: depth,
-            width: bounds.width, height: bounds.height
-        )
-        darkLayer.backgroundColor = UIColor(hex: 0x0060C8).cgColor
-        darkLayer.cornerRadius = 12
-        layer.insertSublayer(darkLayer, at: 0)
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut) {
-            self.transform = CGAffineTransform(translationX: 0, y: self.depth)
-            self.darkLayer.frame.origin.y = 0
-        }
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut) {
-            self.transform = .identity
-            self.darkLayer.frame.origin.y = self.depth
-        }
-    }
-}
 ```
 

@@ -25,10 +25,10 @@ Tooltip / Popover 围绕锚点出现，位置与锚点关系必须稳定。
 | entry | small scale + opacity |
 | origin | transform origin should feel anchored to trigger |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — .popover 系统弹出
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct PopoverDemo: View {
     @State private var showPopover = false
 
@@ -88,79 +88,6 @@ struct TooltipBubble: View {
             .background(Color(.systemGray6))
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .shadow(radius: 4)
-    }
-}
-```
-
-### UIKit
-
-```swift
-// UIKit — UIPopoverPresentationController
-class PopoverDemoVC: UIViewController {
-    func showPopover(from sourceView: UIView) {
-        let contentVC = TooltipContentVC()
-        contentVC.modalPresentationStyle = .popover
-        contentVC.preferredContentSize = CGSize(
-            width: 240,
-            height: 100
-        )
-
-        if let popover =
-            contentVC.popoverPresentationController {
-            popover.sourceView = sourceView
-            popover.sourceRect = sourceView.bounds
-            popover.permittedArrowDirections = [.up, .down]
-            popover.delegate = self
-        }
-
-        present(contentVC, animated: true)
-        // 系统动画: scale + opacity, ~0.25s spring
-    }
-}
-
-extension PopoverDemoVC:
-    UIPopoverPresentationControllerDelegate {
-    func adaptivePresentationStyle(
-        for controller: UIPresentationController
-    ) -> UIModalPresentationStyle {
-        .none // iPhone 上也保持 popover 样式
-    }
-}
-
-// 自定义 Tooltip 动画
-class CustomTooltip: UIView {
-    func show(from anchor: UIView) {
-        transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-        alpha = 0
-
-        // 设置锚点到底部中心
-        layer.anchorPoint = CGPoint(x: 0.5, y: 1.0)
-
-        UIView.animate(
-            withDuration: 0.25,
-            delay: 0,
-            usingSpringWithDamping: 0.8,
-            initialSpringVelocity: 0,
-            options: [],
-            animations: {
-                self.transform = .identity
-                self.alpha = 1
-            }
-        )
-    }
-
-    func dismiss() {
-        UIView.animate(
-            withDuration: 0.15,
-            delay: 0,
-            options: .curveEaseIn,
-            animations: {
-                self.alpha = 0
-                self.transform =
-                    CGAffineTransform(scaleX: 0.9, y: 0.9)
-            },
-            completion: { _ in self.removeFromSuperview() }
-        )
     }
 }
 ```

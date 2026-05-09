@@ -24,10 +24,10 @@ Lottie 集成重点在于播放、暂停、循环和状态触发的准确性。
 |---|---|
 | asset_rule | use provided lottie asset, not a hand-rebuilt approximation |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — LottieView (lottie-ios 4.x)
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 import Lottie
 
 struct LottieDemo: View {
@@ -70,55 +70,6 @@ struct LottieControlledView: View {
                 }
             }
         }
-    }
-}
-```
-
-### UIKit
-
-```swift
-// UIKit — LottieAnimationView (lottie-ios 4.x)
-import Lottie
-
-class LottieViewController: UIViewController {
-    private var animationView: LottieAnimationView!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        animationView = LottieAnimationView(name: "confetti")
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.animationSpeed = 1.5
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(animationView)
-
-        NSLayoutConstraint.activate([
-            animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            animationView.widthAnchor.constraint(equalToConstant: 200),
-            animationView.heightAnchor.constraint(equalToConstant: 200),
-        ])
-
-        animationView.play()
-    }
-
-    func playToMarker(named marker: String) {
-        animationView.play(
-            fromProgress: 0,
-            toProgress: 1,
-            loopMode: .playOnce
-        ) { finished in
-            print("Animation finished: \(finished)")
-        }
-    }
-
-    func setSpeed(_ speed: CGFloat) {
-        animationView.animationSpeed = speed
-    }
-
-    func pauseAnimation() {
-        animationView.pause()
     }
 }
 ```

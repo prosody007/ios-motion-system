@@ -17,8 +17,7 @@ export const springAnimationsSection: CardsSection = {
       ],
       previewId: "ios-spring-playground",
       controlsId: "ios-spring-playground",
-      codes: {
-        swift: `// SwiftUI — 当前面板参数：
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 //   response {{response}}s · damping {{damping}} · bounce {{bounce}}
 //   等价物理量：stiffness {{stiffness}} · damping coef {{dampingCoef}}
 // 所有勾选中的属性共享同一条 spring 曲线（这就是 Choreography）
@@ -62,43 +61,6 @@ RoundedRectangle(cornerRadius: 16)
 //   dampingFraction ↑ → 越快收敛，1.0 时刚好无过冲
 //   response        ↑ → 整体变慢，振幅变大
 //   bounce = 1 - dampingFraction`,
-        uikit: `// UIKit — 当前面板参数：
-//   duration {{response}}s · dampingRatio {{damping}}
-//   stiffness {{stiffness}} · damping coef {{dampingCoef}}
-
-// ───── 写法 A：UIViewPropertyAnimator（推荐，支持打断）─────
-let spring = UISpringTimingParameters(
-    dampingRatio: {{damping}},
-    initialVelocity: .zero
-)
-let animator = UIViewPropertyAnimator(
-    duration: {{response}},
-    timingParameters: spring
-)
-animator.addAnimations {
-    // 勾选中的属性用同一个 animator 驱动 → 天然同步
-{{uikitProps}}
-}
-animator.startAnimation()
-
-// ───── 写法 B：CASpringAnimation（物理参数）─────
-let caSpring = CASpringAnimation(keyPath: "transform.translation.x")
-caSpring.mass = 1.0
-caSpring.stiffness = {{stiffness}}
-caSpring.damping = {{dampingCoef}}
-caSpring.initialVelocity = 0
-caSpring.fromValue = 0
-caSpring.toValue = 180
-caSpring.duration = caSpring.settlingDuration  // 自动估算收敛时间
-box.layer.add(caSpring, forKey: "slide")
-
-// ───── UIKit 系统预设对照 ─────
-//   .smooth      ≈ UISpringTimingParameters(dampingRatio: 1.0)
-//   .snappy      ≈ UISpringTimingParameters(dampingRatio: 0.85)
-//   .bouncy      ≈ UISpringTimingParameters(dampingRatio: 0.7)
-//   .interactive ≈ UISpringTimingParameters(dampingRatio: 0.86)
-//   critical     ≈ UISpringTimingParameters(dampingRatio: 1.0)`,
-      },
     },
   ],
 };

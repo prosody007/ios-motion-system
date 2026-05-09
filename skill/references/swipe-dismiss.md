@@ -25,10 +25,10 @@
 | follow | 拖动时组件跟手位移 |
 | threshold | 达到阈值后离场，否则 spring 回位 |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — Vertical Swipe to Dismiss
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct SwipeDismissView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var offsetY: CGFloat = 0
@@ -76,74 +76,6 @@ struct SwipeDismissView: View {
                     }
                 }
         )
-    }
-}
-```
-
-### UIKit
-
-```swift
-// UIKit — Interactive Swipe Dismiss
-class SwipeDismissController: UIViewController {
-    private var panStartY: CGFloat = 0
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let pan = UIPanGestureRecognizer(
-            target: self,
-            action: #selector(handlePan)
-        )
-        view.addGestureRecognizer(pan)
-    }
-
-    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: view)
-
-        switch gesture.state {
-        case .changed:
-            if translation.y > 0 {
-                view.transform = CGAffineTransform(
-                    translationX: 0,
-                    y: translation.y
-                )
-            }
-        case .ended:
-            if translation.y > 100 {
-                let springTiming = UISpringTimingParameters(
-                    dampingRatio: 0.86,
-                    initialVelocity: CGVector(dx: 0, dy: 8)
-                )
-                let animator = UIViewPropertyAnimator(
-                    duration: 0.35,
-                    timingParameters: springTiming
-                )
-                animator.addAnimations {
-                    self.view.transform = CGAffineTransform(
-                        translationX: 0,
-                        y: self.view.bounds.height
-                    )
-                }
-                animator.addCompletion { _ in
-                    self.dismiss(animated: false)
-                }
-                animator.startAnimation()
-            } else {
-                let springTiming = UISpringTimingParameters(
-                    dampingRatio: 0.86,
-                    initialVelocity: .zero
-                )
-                let animator = UIViewPropertyAnimator(
-                    duration: 0.35,
-                    timingParameters: springTiming
-                )
-                animator.addAnimations {
-                    self.view.transform = .identity
-                }
-                animator.startAnimation()
-            }
-        default:
-            break
-        }
     }
 }
 ```

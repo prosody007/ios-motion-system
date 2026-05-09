@@ -34,10 +34,10 @@
 | looping | 允许无限循环时要做无缝复位 |
 | duration | 约 0.4s，ease-out 风格 |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — TabView pager（最经典）
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct PagerView: View {
     @State private var current = 0
     // 自动播放：每 {{speedSec}} 秒翻一页（无限循环）
@@ -57,39 +57,6 @@ struct PagerView: View {
                 current = (current + 1) % pages.count
             }
         }
-    }
-}
-```
-
-### UIKit
-
-```swift
-// UIKit — UIPageViewController + 自动播放定时器
-class PagerVC: UIPageViewController {
-    private var autoplayTimer: Timer?
-
-    init() {
-        super.init(
-            transitionStyle: .scroll,
-            navigationOrientation: .horizontal,
-            options: [.interPageSpacing: 16]
-        )
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // 自动循环：每 {{speedSec}} 秒翻一页
-        autoplayTimer = Timer.scheduledTimer(
-            withTimeInterval: {{speedSec}},
-            repeats: true
-        ) { [weak self] _ in
-            self?.advanceToNextPage()
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        autoplayTimer?.invalidate()
     }
 }
 ```
@@ -127,9 +94,10 @@ class PagerVC: UIPageViewController {
 | focus | 当前卡 opacity 最高，相邻卡略弱 |
 | translation | 整个轨道连续滑动，active 始终回到中心 |
 
-### SwiftUI
+### Code
 
-```swift
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 // iOS 17+ — ScrollView paging + 露出相邻卡片
 struct PeekCarousel: View {
     @State private var index = 0
@@ -162,37 +130,6 @@ struct PeekCarousel: View {
             }
         }
     }
-}
-```
-
-### UIKit
-
-```swift
-// UIKit — UICollectionView + 自动播放
-let layout = UICollectionViewFlowLayout()
-layout.scrollDirection = .horizontal
-layout.minimumLineSpacing = 12
-layout.itemSize = CGSize(
-    width: view.bounds.width - 64, // 两边留 32 露出
-    height: 120
-)
-collectionView.contentInset = UIEdgeInsets(
-    top: 0, left: 32, bottom: 0, right: 32
-)
-collectionView.decelerationRate = .fast
-
-// 自动循环：每 {{speedSec}} 秒滚动到下一张
-autoplayTimer = Timer.scheduledTimer(
-    withTimeInterval: {{speedSec}},
-    repeats: true
-) { [weak self] _ in
-    guard let self else { return }
-    let next = (currentIndex + 1) % items.count
-    let path = IndexPath(item: next, section: 0)
-    collectionView.scrollToItem(
-        at: path, at: .centeredHorizontally, animated: true
-    )
-    currentIndex = next
 }
 ```
 
@@ -229,9 +166,10 @@ autoplayTimer = Timer.scheduledTimer(
 | scale_mode | 只做等比缩放，不挤压内容 |
 | shadow | 去掉阴影，靠图片和层级表达焦点 |
 
-### SwiftUI
+### Code
 
-```swift
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 // iOS 18+ — scrollTransition 让边缘卡片缩放并淡化
 struct ScaleCarousel: View {
     @State private var index = 0
@@ -271,38 +209,6 @@ struct ScaleCarousel: View {
 }
 ```
 
-### UIKit
-
-```swift
-// UIKit — UIScrollViewDelegate 中根据偏移量计算
-func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    let center = scrollView.bounds.midX
-    for cell in collectionView.visibleCells {
-        let cellCenter = cell.convert(
-            CGPoint(x: cell.bounds.midX, y: 0),
-            to: collectionView
-        ).x
-        let distance = abs(cellCenter - center)
-        let maxDistance = scrollView.bounds.width
-        let ratio = max(0, 1 - distance / maxDistance)
-        let scale = 0.85 + 0.15 * ratio
-        let alpha = 0.5 + 0.5 * ratio
-        cell.transform = CGAffineTransform(
-            scaleX: scale, y: scale
-        )
-        cell.alpha = alpha
-    }
-}
-
-// 自动循环：每 {{speedSec}} 秒滚到下一张
-autoplayTimer = Timer.scheduledTimer(
-    withTimeInterval: {{speedSec}},
-    repeats: true
-) { [weak self] _ in
-    self?.advanceToNextItem()
-}
-```
-
 ---
 
 ## Cover Flow
@@ -336,10 +242,10 @@ Cover Flow 依赖透视和 Y 轴旋转：中心卡正对用户，两侧卡向外
 | slide_content | 用图片卡面，不要纯色块 |
 | shadow | 去掉投影，靠 translateZ/rotation 表达空间 |
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — Cover Flow（rotation3DEffect）
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct CoverFlowCarousel: View {
     @State private var index = 0
     let timer = Timer.publish(every: {{speedSec}}, on: .main, in: .common)
@@ -377,41 +283,6 @@ struct CoverFlowCarousel: View {
             }
         }
     }
-}
-```
-
-### UIKit
-
-```swift
-// UIKit — CATransform3D + CALayer
-func updateCoverFlow() {
-    let center = scrollView.contentOffset.x +
-                 scrollView.bounds.width / 2
-    for cell in collectionView.visibleCells {
-        let cellCenter = cell.center.x
-        let offset = (cellCenter - center) /
-                     scrollView.bounds.width
-        let angle = -offset * .pi / 4 // ±45°
-
-        var transform = CATransform3DIdentity
-        transform.m34 = -1.0 / 500 // perspective
-        transform = CATransform3DRotate(
-            transform, angle, 0, 1, 0
-        )
-        let scale = 1 - abs(offset) * 0.2
-        transform = CATransform3DScale(
-            transform, scale, scale, 1
-        )
-        cell.layer.transform = transform
-    }
-}
-
-// 自动循环：每 {{speedSec}} 秒推进一张
-autoplayTimer = Timer.scheduledTimer(
-    withTimeInterval: {{speedSec}},
-    repeats: true
-) { [weak self] _ in
-    self?.advanceToNextItem()
 }
 ```
 

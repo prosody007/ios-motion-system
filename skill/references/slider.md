@@ -7,10 +7,10 @@ Slider 与 Stepper 交互反馈。
 - Preview ID：`ios-slider`
 - Tags：`跟手` (duration) · `.selection` (easing)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — Slider + 触觉反馈
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 @State private var value: Double = 0.5
 let steps = stride(from: 0, through: 1, by: 0.25)
 
@@ -33,29 +33,6 @@ Circle()
     )
 ```
 
-### UIKit
-
-```swift
-// UIKit — UISlider + 触觉反馈
-let slider = UISlider()
-slider.minimumValue = 0
-slider.maximumValue = 1
-slider.addTarget(self, action: #selector(sliderChanged), for: .valueChanged)
-
-let haptic = UISelectionFeedbackGenerator()
-haptic.prepare()
-
-var lastDetent: Float = 0
-@objc func sliderChanged(_ sender: UISlider) {
-    let step: Float = 0.25
-    let nearest = (sender.value / step).rounded() * step
-    if nearest != lastDetent {
-        lastDetent = nearest
-        haptic.selectionChanged()
-    }
-}
-```
-
 ---
 
 ## Stepper
@@ -63,10 +40,10 @@ var lastDetent: Float = 0
 - Preview ID：`ios-stepper`
 - Tags：`长按加速` (duration)
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 左 − 中数字 右 + 布局，到边界自动置灰
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 @State private var count = 1
 let range = 0...99
 
@@ -94,43 +71,5 @@ HStack(spacing: 16) {
 }
 // 系统 Stepper 默认支持长按自动加速（autorepeat）
 // 首次 420ms 延迟后开始重复，间隔从 140ms 递减到 40ms
-```
-
-### UIKit
-
-```swift
-// UIKit — 自定义 − / + 按钮 + 长按加速
-let minusBtn = UIButton(type: .system)
-let plusBtn  = UIButton(type: .system)
-let label    = UILabel()
-label.font = .monospacedDigitSystemFont(ofSize: 22, weight: .semibold)
-
-var count = 1 {
-    didSet {
-        minusBtn.isEnabled = count > 0
-        plusBtn.isEnabled  = count < 99
-        minusBtn.alpha = minusBtn.isEnabled ? 1 : 0.35
-        plusBtn.alpha  = plusBtn.isEnabled  ? 1 : 0.35
-        label.text = "\(count)"
-    }
-}
-
-// 长按加速：420ms 后进入 140→40ms 的递减间隔
-var holdTimer: Timer?
-func startHold(_ delta: Int) {
-    step(delta)
-    holdTimer = Timer.scheduledTimer(withTimeInterval: 0.42,
-                                     repeats: false) { _ in
-        var interval: TimeInterval = 0.14
-        let tick = Timer(timeInterval: interval, repeats: true) { t in
-            step(delta)
-            interval = max(0.04, interval * 0.92)
-            t.invalidate()
-            holdTimer = Timer.scheduledTimer(withTimeInterval: interval,
-                                             repeats: false) { _ in tick.fire() }
-        }
-        RunLoop.main.add(tick, forMode: .common)
-    }
-}
 ```
 

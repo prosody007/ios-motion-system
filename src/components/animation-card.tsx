@@ -55,7 +55,7 @@ export function AnimationCardView({ card }: { card: AnimationCardType }) {
               ))}
             </div>
             <div className="flex-1" />
-            <CodeToggle codes={card.codes} />
+            <CodeToggle code={card.code} />
           </div>
 
           {Controls && (

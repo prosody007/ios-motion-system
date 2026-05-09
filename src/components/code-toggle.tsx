@@ -2,10 +2,9 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCardParams, substituteParams } from "@/components/card-context";
 
-export function CodeToggle({ codes }: { codes: { swift: string; uikit: string } }) {
+export function CodeToggle({ code }: { code: string }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,44 +20,31 @@ export function CodeToggle({ codes }: { codes: { swift: string; uikit: string } 
       </Button>
       {open && (
         <div className="w-full mt-3 basis-full">
-          <InlineCodeBlock codes={codes} />
+          <InlineCodeBlock code={code} />
         </div>
       )}
     </>
   );
 }
 
-function InlineCodeBlock({ codes }: { codes: { swift: string; uikit: string } }) {
+function InlineCodeBlock({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState("swift");
   const { params } = useCardParams();
 
-  const swift = useMemo(() => substituteParams(codes.swift, params), [codes.swift, params]);
-  const uikit = useMemo(() => substituteParams(codes.uikit, params), [codes.uikit, params]);
+  const resolved = useMemo(() => substituteParams(code, params), [code, params]);
 
   const handleCopy = useCallback(() => {
-    const text = activeTab === "swift" ? swift : uikit;
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(resolved).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     });
-  }, [activeTab, swift, uikit]);
+  }, [resolved]);
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <div className="flex items-center mb-1.5">
-        <TabsList className="h-7">
-          <TabsTrigger value="swift" className="text-xs font-mono px-2.5 h-5">SwiftUI</TabsTrigger>
-          <TabsTrigger value="uikit" className="text-xs font-mono px-2.5 h-5">UIKit</TabsTrigger>
-        </TabsList>
-      </div>
-      <TabsContent value="swift" className="mt-0">
-        <CodeBlock code={swift} copied={copied} onCopy={handleCopy} />
-      </TabsContent>
-      <TabsContent value="uikit" className="mt-0">
-        <CodeBlock code={uikit} copied={copied} onCopy={handleCopy} />
-      </TabsContent>
-    </Tabs>
+    <div className="relative">
+      <div className="mb-1.5 text-xs font-mono text-muted-foreground">React</div>
+      <CodeBlock code={resolved} copied={copied} onCopy={handleCopy} />
+    </div>
   );
 }
 

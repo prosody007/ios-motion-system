@@ -1,6 +1,6 @@
 # iOS Motion System Skill
 
-让 Cursor / Claude Code / Codex 在写 iOS 动画代码时直接引用本库的 SwiftUI / UIKit 标准实现。
+让 Cursor / Claude Code / Codex 在 React 项目里写 iOS 风格动效时直接引用本库的标准 React 实现。
 
 ## Install
 
@@ -22,7 +22,7 @@ curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash
 
 - `SKILL.md` —— Skill 元信息与触发指引（AI 入口）
 - `references/_catalog.md` —— 所有分类索引
-- `references/<slug>.md` —— 各分类详情（含 AI Motion Spec + SwiftUI + UIKit 完整代码）
+- `references/<slug>.md` —— 各分类详情（含 AI Motion Spec + React 完整实现代码）
 - `templates/dynamic-params.md` —— spring / carousel / border-glow 等可调参数
 
 ## Try It
@@ -37,6 +37,12 @@ curl -fsSL https://ios-motion-system.vercel.app/install.sh | bash
 - "Tab 切换有 badge 弹跳效果"
 
 AI 会自动加载本 Skill 并引用对应的代码模板。
+
+## Team Reuse Guardrails
+
+- 优先复用锁定组件入口，不在业务页复制动画后再“微调”。
+- 同一个动画只保留一个权威实现文件，避免多份实现漂移。
+- 变更后至少做一次人工验收：切卡平滑性 + 结算流程完整性 + 字体一致性。
 
 ## Update
 

@@ -53,10 +53,10 @@
 - 展开时卡片轮廓和内容裁切同步打开，不出现内容先露出或被裁错位。
 - 收起时内容立即不可交互，卡片按原路径回到中心小卡。
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — matchedGeometryEffect 卡片展开
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct CardExpandView: View {
     @Namespace private var namespace
     @State private var selectedCard: String?
@@ -111,53 +111,6 @@ struct CardExpandView: View {
 // dampingFraction: 0.85 — 轻微回弹
 ```
 
-### UIKit
-
-```swift
-// UIKit — 卡片展开过渡 (Hero-style)
-class CardTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    let isPresenting: Bool
-    let originFrame: CGRect
-
-    func transitionDuration(
-        using context: UIViewControllerContextTransitioning?
-    ) -> TimeInterval { 0.4 }
-
-    func animateTransition(
-        using context: UIViewControllerContextTransitioning
-    ) {
-        let container = context.containerView
-        guard let toView = context.view(forKey: .to) else { return }
-
-        if isPresenting {
-            toView.frame = originFrame
-            toView.layer.cornerRadius = 16
-            toView.clipsToBounds = true
-            container.addSubview(toView)
-
-            let finalFrame = context.finalFrame(
-                for: context.viewController(forKey: .to)!
-            )
-
-            UIView.animate(
-                withDuration: 0.4,
-                delay: 0,
-                usingSpringWithDamping: 0.85,
-                initialSpringVelocity: 0,
-                options: [],
-                animations: {
-                    toView.frame = finalFrame
-                    toView.layer.cornerRadius = 0
-                },
-                completion: { _ in
-                    context.completeTransition(true)
-                }
-            )
-        }
-    }
-}
-```
-
 ---
 
 ## Matched Geometry
@@ -207,10 +160,10 @@ class CardTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 - 标题位置连续过渡，不出现跳变。
 - collapsed 状态只保留一行摘要，不出现完整正文。
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 标题 matched，正文从截断 → 完整两段
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 // 动画规则：入场 0.40s 让眼睛看清新内容；出场 0.24s 用 Apple 招牌的柔和曲线收掉
 @State private var expanded = false
 
@@ -260,36 +213,6 @@ struct HabitCard: View {
         }
     }
 }
-```
-
-### UIKit
-
-```swift
-// UIKit — 入场 0.40s / 出场 0.24s，出场用 Apple 柔和曲线 (0.32, 0.72, 0, 1)
-@IBAction func toggle() {
-    expanded.toggle()
-
-    let duration: TimeInterval = expanded ? 0.40 : 0.24
-    let timing: UICubicTimingParameters = expanded
-        ? UICubicTimingParameters(controlPoint1: CGPoint(x: 0.22, y: 1),
-                                  controlPoint2: CGPoint(x: 0.36, y: 1))
-        : UICubicTimingParameters(controlPoint1: CGPoint(x: 0.32, y: 0.72),
-                                  controlPoint2: CGPoint(x: 0, y: 1))
-
-    let anim = UIViewPropertyAnimator(duration: duration, timingParameters: timing)
-    anim.addAnimations {
-        self.previewLabel.alpha = self.expanded ? 0 : 1
-        self.fullStack.alpha = self.expanded ? 1 : 0
-        self.previewLabel.isHidden = self.expanded
-        self.fullStack.isHidden = !self.expanded
-        self.stackView.spacing = self.expanded ? 32 : 16
-        self.view.layoutIfNeeded()
-    }
-    anim.startAnimation()
-}
-
-// 关键：所有变化放在同一个 animate block + layoutIfNeeded()，
-// 让 AutoLayout 的约束变化、alpha、isHidden 共享同一条曲线。
 ```
 
 ---
@@ -342,10 +265,10 @@ struct HabitCard: View {
 - 前后文案切换依赖 3D 旋转，不是简单透明度交叉淡入。
 - 透视存在，翻面过程中能明显看到空间感。
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 3D 翻转效果
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct FlipCardView: View {
     @State private var isFlipped = false
     @State private var rotation: Double = 0
@@ -380,53 +303,6 @@ struct FlipCardView: View {
 // 中间速度最快, 两端减速, 翻转自然
 ```
 
-### UIKit
-
-```swift
-// UIKit — UIView.transition 翻转
-class FlipCardVC: UIViewController {
-    let containerView = UIView()
-    let frontView = UIView()
-    let backView = UIView()
-    var showingFront = true
-
-    func flipCard() {
-        let fromView = showingFront ? frontView : backView
-        let toView = showingFront ? backView : frontView
-
-        UIView.transition(
-            from: fromView,
-            to: toView,
-            duration: 0.5,
-            options: [
-                .transitionFlipFromRight,
-                .showHideTransitionViews
-            ],
-            completion: { _ in
-                self.showingFront.toggle()
-            }
-        )
-    }
-
-    // 手动 CATransform3D 版本
-    func flipWithTransform() {
-        var transform = CATransform3DIdentity
-        transform.m34 = -1.0 / 500.0 // 透视
-        containerView.layer.sublayerTransform = transform
-
-        UIView.animate(
-            withDuration: 0.5,
-            delay: 0,
-            options: .curveEaseInOut,
-            animations: {
-                self.containerView.layer.transform =
-                    CATransform3DRotate(transform, .pi, 0, 1, 0)
-            }
-        )
-    }
-}
-```
-
 ---
 
 ## Flash Card Stack
@@ -436,223 +312,68 @@ class FlipCardVC: UIViewController {
 
 ### AI Motion Spec
 
-经典三张闪卡牌堆轮换：三张卡始终保留在堆里，左右按钮只改变顺序，不删除卡片、不出现 swipe-away 文案或 intent 提示。
+当前生产版 Flash Card Stack：做题流程（答对自动左飞移除）+ 结算态（0~3 分）+ Review Quiz 回退重做；按钮切卡轨迹与线上网站保持一致。
 
 #### Trigger & State
 
 | Key | Value |
 |---|---|
-| trigger | left/right chevron buttons only |
-| states | order = [0,1,2] 的循环重排；卡片总数恒为 3 |
-| next_prev | next = [1,2,0]；prev = [2,0,1] |
+| answer_flow | 点击选项；错误保持错误态；正确后显示反馈并在 0.5s 后自动左飞移除当前卡 |
+| stack_order | left 按钮：顶卡入底（next）；right 按钮：底卡回顶（prev） |
+| settlement | 3 题结束后进入结算卡，分数范围 0/3~3/3；Review Quiz 重置回初始三题 |
+| button_visibility_after_review | 点击 Review Quiz 后，等待容器展开完成再显示左右按钮 |
 
 #### Layout
 
 | Key | Value |
 |---|---|
-| card_count | 3 cards always visible |
-| stack_shape | 后两张逐级缩小并向下堆叠，不做拖拽抛出或删除 |
-| scales | 1.00 / 0.95 / 0.90 |
-| offset_y | 0 / 12 / 24 |
-| buttons | 底部是胶囊底板 + 两个圆形 chevron 按钮，不是 Need to Review / Mastered pills |
+| frame_panel_stage | Frame 393×852；Panel x20 y152 w353；Stage 321×460；Top card 321×440 |
+| stack_slots | 后两张按等比缩放 + 居中堆叠；露出间距 = 10；按钮区与牌堆间距 = 16 |
+| settlement_layout_base | 结算容器内布局以 Figma 1407:7232 / 1407:7235 为基准，内容文案以 1407:7251 四状态为基准 |
+| button_style | 结算按钮高度 44；Review Quiz 文字盒 94×16，Inter 600/16/16，tracking -1% |
 
 #### Motion
 
 | Key | Value |
 |---|---|
-| duration | 0.42s |
-| curve | smooth / spring-like reorder |
-| card_behavior | 所有卡片在同一段动画里交换位置；没有单张卡飞出舞台 |
+| reorder_duration | 360ms（左右按钮切卡） |
+| reorder_curve | cubic-bezier(0.4, 0, 0.2, 1) |
+| reorder_keyframe_lock | prev/next 关键帧中点保留 49.9% / 50.1% 的 z-index 切换，不可改 |
+| auto_dismiss | 答对后 500ms 等待，再用 320ms 左飞移除（与 flip swipe-away 左飞参数一致） |
+| panel_resize | 做题→结算 / 结算→做题 的容器高度过渡 = 200ms |
+| settlement_stagger | 结算内容按 得分牌→文案→按钮 逐项出现；duration 220ms，stagger 70ms |
 
 #### Constraints
 
 | Key | Value |
 |---|---|
-| do_not_change | 不要改成 swipe-away、pill buttons、drag intent labels 或 reset 流程 |
-| visual_rule | 三张卡是牌堆参考视图；重点是稳定轮换，不是手势实验场 |
+| motion_lock | 禁止单独修改 FLASH_STACK_DURATION / FLASH_STACK_EASE / enter-prev & exit-next 关键帧；改动必须同步设计与验收 |
+| reuse_rule | 团队内复用优先直接使用 FlashCardTransitionPreview，避免拷贝后再改一份动画实现 |
+| scope_rule | 需要新玩法时创建新 previewId，不在 ios-card-flash-stack 现有实现上叠加破坏式改动 |
 
 #### Acceptance
 
-- 无论切多少次，始终保留 3 张卡。
-- 底部控制是 chevron 样式，而不是文字 pills。
-- 切换后新的顶层卡会放大到最前，其余两张回到堆叠位。
+- 右箭头（prev）从底卡回顶的过渡必须连续顺滑，不出现瞬间缩小或跳帧。
+- 答对后卡片左飞并从堆中移除；三题完成后进入结算态。
+- 点击 Review Quiz 后，先展开容器，再出现左右按钮。
+- 结算内容按得分牌、文案、按钮逐项丝滑出现。
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 3 张卡片堆叠轮换
-struct FlashCardStackView: View {
-    struct FlashCard: Identifiable {
-        let id: String
-        let indexLabel: String
-        let title: String
-        let accent: Color
-        let image: LinearGradient
-    }
+```tsx
+"use client";
 
-    @State private var order = [0, 1, 2]
+import { FlashCardTransitionPreview } from "@/components/preview/card-flip-preview";
 
-    let cards: [FlashCard] = [
-        .init(
-            id: "scan",
-            indexLabel: "1/3",
-            title: "The sum of two negative integers is always negative.",
-            accent: Color(hex: 0x007AFF),
-            image: .init(colors: [Color(hex: 0xE3EEFF), Color(hex: 0xBCD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-        .init(
-            id: "study",
-            indexLabel: "2/3",
-            title: "Choose the correct verb form to complete the sentence.",
-            accent: Color(hex: 0xAF52DE),
-            image: .init(colors: [Color(hex: 0xF4E8FF), Color(hex: 0xDEC3FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-        .init(
-            id: "focus",
-            indexLabel: "3/3",
-            title: "Review the highlighted term before moving to the next card.",
-            accent: Color(hex: 0x34C759),
-            image: .init(colors: [Color(hex: 0xE5F8EB), Color(hex: 0xBFE9CB)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-    ]
-
-    private let stack = [
-        (offsetY: 0.0,  scale: 1.00, z: 3.0),
-        (offsetY: 12.0, scale: 0.95, z: 2.0),
-        (offsetY: 24.0, scale: 0.90, z: 1.0),
-    ]
-
-    var body: some View {
-        VStack(spacing: 20) {
-            ZStack(alignment: .top) {
-                ForEach(Array(order.enumerated()), id: \.offset) { stackIndex, cardIndex in
-                    let item = cards[cardIndex]
-                    let style = stack[stackIndex]
-
-                    VStack(spacing: 0) {
-                        Rectangle()
-                            .fill(item.image)
-                            .frame(height: 140)
-
-                        VStack(spacing: 12) {
-                            Text(item.indexLabel)
-                                .font(.system(size: 14, weight: .regular))
-                                .foregroundStyle(Color(hex: 0x595C60))
-
-                            Text(item.title)
-                                .font(.system(size: 14, weight: .semibold))
-                                .multilineTextAlignment(.center)
-                                .foregroundStyle(.black)
-
-                            Text("Tap to reveal")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(item.accent)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
-                        .padding(.bottom, 20)
-                    }
-                    .frame(width: 210)
-                    .background(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .shadow(color: .black.opacity(0.08), radius: 12, y: 8)
-                    .frame(width: 321, height: 325, alignment: .top)
-                    .scaleEffect(style.scale)
-                    .offset(y: style.offsetY)
-                    .zIndex(style.z)
-                }
-            }
-            .frame(width: 321, height: 280)
-
-            HStack(spacing: 8) {
-                Button {
-                    withAnimation(.smooth(duration: 0.42)) {
-                        order = [order[2], order[0], order[1]]
-                    }
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .frame(width: 40, height: 40)
-                        .background(Color(hex: 0xE9ECF5), in: Circle())
-                }
-
-                Button {
-                    withAnimation(.smooth(duration: 0.42)) {
-                        order = [order[1], order[2], order[0]]
-                    }
-                } label: {
-                    Image(systemName: "chevron.right")
-                        .frame(width: 40, height: 40)
-                        .background(Color(hex: 0xE9ECF5), in: Circle())
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(Color(hex: 0xEDEEF3), in: Capsule())
-        }
-    }
+/**
+ * Team Reuse Entry (LOCKED)
+ * - 直接复用仓库里的标准实现，保证动效与网站 1:1 一致。
+ * - 不要在业务页面里重写 keyframes / duration / easing。
+ * - 如需新玩法，请新建 previewId，而不是改这份实现。
+ */
+export function FlashCardStackLockedDemo() {
+  return <FlashCardTransitionPreview />;
 }
-
-// 交互规则：
-// • 共 3 张卡片，后两张逐级缩小并向下堆叠
-// • Next  = 第一张移到最后，第二张放大到最前
-// • Prev  = 最后一张移到最前，第一张退到第二位
-// • 全部卡片在同一段 smooth 动画中交换位置
-```
-
-### UIKit
-
-```swift
-// UIKit — Flash Card 堆叠轮换
-final class FlashCardStackView: UIView {
-    private let cards: [UIView] = [UIView(), UIView(), UIView()]
-    private var order = [0, 1, 2]
-
-    private let stack: [(y: CGFloat, scale: CGFloat, z: CGFloat)] = [
-        (0, 1.00, 3),
-        (12, 0.95, 2),
-        (24, 0.90, 1),
-    ]
-
-    func moveForward() {
-        order = [order[1], order[2], order[0]]
-        applyStack(animated: true)
-    }
-
-    func moveBackward() {
-        order = [order[2], order[0], order[1]]
-        applyStack(animated: true)
-    }
-
-    private func applyStack(animated: Bool) {
-        for (stackIndex, cardIndex) in order.enumerated() {
-            let view = cards[cardIndex]
-            let style = stack[stackIndex]
-
-            let updates = {
-                view.transform = CGAffineTransform(translationX: 0, y: style.y)
-                    .scaledBy(x: style.scale, y: style.scale)
-                view.layer.zPosition = style.z
-            }
-
-            guard animated else {
-                updates()
-                continue
-            }
-
-            let timing = UISpringTimingParameters(dampingRatio: 1.0)
-            let animator = UIViewPropertyAnimator(duration: 0.42, timingParameters: timing)
-            animator.addAnimations(updates)
-            animator.startAnimation()
-        }
-    }
-}
-
-// 交互规则：
-// • 3 张卡片保持堆叠
-// • 后两张逐级缩小并向下露出
-// • Next  = 顶层卡片移到最后
-// • Prev  = 底层卡片提到最前
-// • 所有卡片在同一段动画中交换位置
 ```
 
 ---
@@ -718,10 +439,10 @@ final class FlashCardStackView: UIView {
 - 背景卡不变形，并且左右保持居中。
 - 三张都移除后只显示 Reset，不再显示原来的两个按钮。
 
-### SwiftUI
+### Code
 
-```swift
-// SwiftUI — 顶层卡片可 3D 翻转，左右滑走后直接移除
+```tsx
+// React — TODO: replace with the React implementation that mirrors the preview.
 struct FlashCardFlipSwipeAwayView: View {
     @State private var cards = ["card-1", "card-2", "card-3"]
     @State private var flipped: Set<String> = []
@@ -780,28 +501,6 @@ struct FlashCardFlipSwipeAwayView: View {
                 .frame(width: 321, height: 40)
             }
         }
-    }
-}
-```
-
-### UIKit
-
-```swift
-// UIKit — 顶层卡片可翻转，滑走后直接移除
-final class FlashCardFlipSwipeAwayView: UIView {
-    private var cards: [UIView] = (0..<3).map { _ in UIView() }
-    private var showingBack = false
-
-    func flipTopCard() {
-        // 顶层卡片 front/back 做 UIView.transition flip
-    }
-
-    func dismissTopCard(sign: CGFloat) {
-        // 左右滑走后 removeFirst()，剩余卡片前移
-    }
-
-    func resetStack() {
-        // 重新创建 3 张卡，并把顶层恢复到正面
     }
 }
 ```

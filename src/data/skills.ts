@@ -4,7 +4,7 @@ export const skillsSection: DocsSection = {
   type: "docs",
   title: "Skills",
   description:
-    "Give your AI assistant deep knowledge of this animation library. Once installed, Cursor / Claude Code / Codex can drop the right SwiftUI / UIKit implementation straight into your iOS project.",
+    "Give your AI assistant deep knowledge of this animation library. Once installed, Cursor / Claude Code / Codex can drop the right React/TSX implementation straight into your web project.",
   sections: [
     {
       title: "Install",
@@ -23,7 +23,7 @@ export const skillsSection: DocsSection = {
       bullets: [
         "**SKILL.md** —— 触发条件、使用步骤、命名约定（AI 客户端入口）",
         "**references/_catalog.md** —— 所有分类索引（slug / 标题 / 用途）",
-        "**references/&lt;slug&gt;.md** —— 单个分类下全部 cards 的 AI Motion Spec + SwiftUI + UIKit 代码",
+        "**references/&lt;slug&gt;.md** —— 单个分类下全部 cards 的 AI Motion Spec + React/TSX 实现代码",
         "**templates/dynamic-params.md** —— spring / carousel / border-glow 的可调参数表与默认值",
       ],
     },
@@ -32,9 +32,18 @@ export const skillsSection: DocsSection = {
       bullets: [
         "**触发**：用户提到 iOS 动画需求时，AI 客户端自动加载 SKILL.md，按需读对应 reference 文件。",
         "**规范优先**：如果某张卡已经补了 AI Motion Spec，先按结构化规范理解布局、触发、时序和约束，再落具体代码。",
-        "**模板注入**：AI 把代码模板贴进项目对应的 SwiftUI / UIKit 文件，按用户的命名 / 状态绑定调整。",
+        "**模板注入**：AI 把代码模板贴进项目对应的 React 组件文件，按用户的命名 / 状态绑定调整。",
         "**参数替换**：含 `{{param}}` 占位符的代码（如 spring playground）会按 templates/dynamic-params.md 的默认值或用户偏好填值。",
         "**版本同步**：仓库 git pull 后，本地 skill 自动更新，无需重装。",
+      ],
+    },
+    {
+      title: "Team Reuse (Recommended)",
+      bullets: [
+        "**锁定复用入口**：团队内优先直接复用 `FlashCardTransitionPreview`（而不是复制动画代码再二次改写）。",
+        "**参数冻结**：`ios-card-flash-stack` 的关键帧、duration、easing、结算时序属于锁定参数，改动前必须走设计评审。",
+        "**新需求新 ID**：需要实验新玩法时，新建 previewId/card，不在锁定 demo 上做破坏式叠加。",
+        "**接入验收**：至少验证 6 个场景——初始、答错、答对左飞、结算、Review Quiz 回退、右箭头 prev 平滑回顶。",
       ],
     },
     {

@@ -12,8 +12,7 @@ export const alertSection: CardsSection = {
         { text: "系统 spring", variant: "spring" },
       ],
       previewId: "ios-alert",
-      codes: {
-        swift: `// SwiftUI — .alert 系统弹窗
+      code: `// React — TODO: replace with the React implementation that mirrors the preview.
 struct AlertDemo: View {
     @State private var showAlert = false
 
@@ -73,79 +72,6 @@ struct CustomAlert: View {
         )
     }
 }`,
-        uikit: `// UIKit — UIAlertController 系统弹窗
-class AlertDemoVC: UIViewController {
-    func showAlert() {
-        let alert = UIAlertController(
-            title: "提示",
-            message: "确定要执行此操作吗？",
-            preferredStyle: .alert
-        )
-
-        alert.addAction(UIAlertAction(
-            title: "取消",
-            style: .cancel
-        ))
-
-        alert.addAction(UIAlertAction(
-            title: "确定",
-            style: .default,
-            handler: { _ in self.confirm() }
-        ))
-
-        present(alert, animated: true)
-        // animated: true → 系统 spring 动画
-        // 弹出: scale 1.1 → 1.0 + opacity, ~0.25s
-        // 收起: scale 1.0 → 0.95 + opacity, ~0.2s
-    }
-
-    // 自定义 Alert 过渡动画
-    func presentCustomAlert(_ vc: UIViewController) {
-        vc.modalPresentationStyle = .custom
-        vc.transitioningDelegate = self
-
-        let animator = AlertAnimator()
-        // animator 参数:
-        // scale: 1.1 → 1.0
-        // alpha: 0 → 1
-        // duration: 0.25
-        // spring damping: 0.9
-
-        present(vc, animated: true)
-    }
-}
-
-class AlertAnimator: NSObject,
-    UIViewControllerAnimatedTransitioning {
-    func transitionDuration(
-        using context: UIViewControllerContextTransitioning?
-    ) -> TimeInterval { 0.25 }
-
-    func animateTransition(
-        using context: UIViewControllerContextTransitioning
-    ) {
-        guard let toView = context.view(forKey: .to) else { return }
-        toView.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-        toView.alpha = 0
-        context.containerView.addSubview(toView)
-
-        UIView.animate(
-            withDuration: 0.25,
-            delay: 0,
-            usingSpringWithDamping: 0.9,
-            initialSpringVelocity: 0,
-            options: [],
-            animations: {
-                toView.transform = .identity
-                toView.alpha = 1
-            },
-            completion: { _ in
-                context.completeTransition(true)
-            }
-        )
-    }
-}`,
-      },
     },
   ],
 };

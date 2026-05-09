@@ -11,16 +11,10 @@ const BLUE = "#007AFF";
 const INK = "rgba(0,0,0,0.82)";
 const SUB = "rgba(0,0,0,0.5)";
 
-const TABLE_COLS =
-  "minmax(120px, auto) minmax(120px, auto) minmax(88px, auto) minmax(0, 1fr)";
-const ROW_PAD = "14px 18px";
-const DIVIDER = "1px solid rgba(0,0,0,0.06)";
-
 export function BorderGlowControls() {
   return (
     <div className="flex flex-col gap-4">
       <CustomizePanel />
-      <ReferencePanel />
     </div>
   );
 }
@@ -214,141 +208,6 @@ function CustomizePanel() {
   );
 }
 
-function ReferencePanel() {
-  const rows = [
-    {
-      name: "duration",
-      type: "number · s",
-      value: "4.0",
-      desc: "一周完整旋转的时长，越大越慢",
-    },
-    {
-      name: "borderWidth",
-      type: "number · px",
-      value: "2",
-      desc: "锐利边框（彩环）的厚度",
-    },
-    {
-      name: "glowSize",
-      type: "number · px",
-      value: "48",
-      desc: "外晕的模糊半径，0 时完全无外晕",
-    },
-    {
-      name: "glowOpacity",
-      type: "number · 0–1",
-      value: "0.35",
-      desc: "外晕透明度",
-    },
-    {
-      name: "borderRadius",
-      type: "number · px",
-      value: "20",
-      desc: "卡片圆角；外环圆角 = 此值 + borderWidth",
-    },
-    {
-      name: "palette",
-      type: "enum",
-      value: "aurora",
-      desc: "色板：aurora / sunset / neon / mono / custom",
-    },
-    {
-      name: "colors",
-      type: "string[]",
-      value: "—",
-      desc: "选择 custom 时生效，2–8 个色标，建议首末同色形成闭环",
-    },
-    {
-      name: "direction",
-      type: "enum",
-      value: "normal",
-      desc: "旋转方向：normal 顺时针 · reverse 逆时针",
-    },
-    {
-      name: "paused",
-      type: "boolean",
-      value: "false",
-      desc: "暂停动画，默认 false（自动播放）",
-    },
-  ];
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="px-0.5">
-        <SectionTitle>Reference</SectionTitle>
-      </div>
-
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{
-          background: "#FFFFFF",
-          border: "1px solid rgba(0,0,0,0.06)",
-        }}
-      >
-        <div
-          className="grid items-center"
-          style={{
-            gridTemplateColumns: TABLE_COLS,
-            columnGap: 20,
-            padding: "12px 18px",
-            borderBottom: DIVIDER,
-          }}
-        >
-          <HeaderCell>Property</HeaderCell>
-          <HeaderCell>Type</HeaderCell>
-          <HeaderCell>Default</HeaderCell>
-          <HeaderCell>Description</HeaderCell>
-        </div>
-
-        {rows.map((row, i) => (
-          <div
-            key={row.name}
-            className="grid items-center"
-            style={{
-              gridTemplateColumns: TABLE_COLS,
-              columnGap: 20,
-              padding: ROW_PAD,
-              borderTop: i === 0 ? undefined : DIVIDER,
-            }}
-          >
-            <div>
-              <Pill variant="prop">{row.name}</Pill>
-            </div>
-            <span
-              className="text-xs font-mono"
-              style={{ color: SUB }}
-            >
-              {row.type}
-            </span>
-            <div>
-              <Pill variant="value">{row.value}</Pill>
-            </div>
-            <span
-              className="text-xs leading-[1.55]"
-              style={{ color: INK }}
-            >
-              {row.desc}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <p
-        className="text-xs leading-[1.6] m-0 px-0.5"
-        style={{ color: SUB }}
-      >
-        基于 CSS{" "}
-        <code style={{ color: INK }}>@property</code> 注册一个{" "}
-        <code style={{ color: INK }}>&lt;angle&gt;</code> 自定义属性，配合{" "}
-        <code style={{ color: INK }}>conic-gradient(from var(--bg-angle), ...)</code>{" "}
-        与{" "}
-        <code style={{ color: INK }}>@keyframes</code>{" "}
-        让浏览器原生插值角度，纯 CSS 即可旋转，无需 JS。
-      </p>
-    </div>
-  );
-}
-
 /* ---------------- shared atoms ---------------- */
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -364,45 +223,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
     >
       {children}
     </h4>
-  );
-}
-
-function HeaderCell({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      className="text-xs font-medium"
-      style={{ color: SUB, letterSpacing: 0.3 }}
-    >
-      {children}
-    </span>
-  );
-}
-
-function Pill({
-  variant,
-  children,
-}: {
-  variant: "prop" | "value";
-  children: React.ReactNode;
-}) {
-  const color = variant === "prop" ? BLUE : "#111111";
-  return (
-    <span
-      style={{
-        display: "inline-block",
-        background: "#F3F4F9",
-        color,
-        padding: "3px 9px",
-        borderRadius: 6,
-        fontSize: 12,
-        lineHeight: "16px",
-        fontFamily:
-          "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {children}
-    </span>
   );
 }
 
