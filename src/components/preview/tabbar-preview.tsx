@@ -24,21 +24,29 @@ export function TabBarBouncePreview() {
   };
 
   return (
-    <div className="w-full max-w-[320px] flex flex-col items-center select-none">
+    <div className="absolute inset-0 flex flex-col select-none">
       <div
-        className="w-full rounded-t-2xl flex items-center justify-center h-14"
-        style={{ background: BG }}
+        className="flex-1 flex items-center justify-center"
+        style={{ background: "#F6F8FA" }}
       >
-        <span className="text-sm" style={{ color: INACTIVE }}>
+        <span
+          style={{
+            fontSize: 14,
+            fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+            color: INACTIVE,
+          }}
+        >
           {TABS[active].label} Page
         </span>
       </div>
 
       <div
-        className="w-full flex rounded-b-2xl pb-1.5"
+        className="w-full flex shrink-0"
         style={{
           background: BG,
           borderTop: `1px solid ${TOP_BORDER}`,
+          paddingTop: 6,
+          paddingBottom: 24,
         }}
       >
         {TABS.map((tab, i) => {
@@ -49,15 +57,18 @@ export function TabBarBouncePreview() {
           return (
             <button
               key={tab.id}
-              className="flex-1 flex flex-col items-center border-none bg-transparent cursor-pointer pt-3 pb-1"
-              style={{ gap: 2 }}
-              onClick={(e) => { e.stopPropagation(); tap(i); }}
+              className="flex-1 flex flex-col items-center border-none bg-transparent cursor-pointer pt-1 pb-1"
+              style={{ gap: 3 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                tap(i);
+              }}
             >
               <span
                 className="inline-flex items-center justify-center"
                 style={{
-                  width: 24,
-                  height: 24,
+                  width: 28,
+                  height: 28,
                   color,
                   transform: isTapped ? "scale(0.88)" : "scale(1)",
                   transition: isTapped
@@ -99,93 +110,96 @@ export function TabBarBadgePreview() {
   };
 
   return (
-    <div className="absolute inset-0 select-none">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-full max-w-[320px] flex flex-col items-center">
-          <div
-            className="w-full rounded-t-2xl flex items-center justify-center h-14"
-            style={{ background: BG }}
-          >
-            <span className="text-sm" style={{ color: INACTIVE }}>
-              Scan Page
-            </span>
-          </div>
-
-          <div
-            className="w-full flex rounded-b-2xl pb-1.5"
-            style={{
-              background: BG,
-              borderTop: `1px solid ${TOP_BORDER}`,
-            }}
-          >
-            {TABS.map((tab, i) => {
-              const isActive = i === 0;
-              const color = isActive ? ACTIVE : INACTIVE;
-              const Icon = tab.Icon;
-              const showBadge = i === BADGE_TAB_INDEX;
-              return (
-                <div
-                  key={tab.id}
-                  className="flex-1 flex flex-col items-center pt-3 pb-1"
-                  style={{ gap: 2 }}
-                >
-                  <span
-                    className="relative inline-flex items-center justify-center"
-                    style={{ width: 24, height: 24, color }}
-                  >
-                    <Icon />
-                    {showBadge && (
-                      <span
-                        className="absolute flex items-center justify-center rounded-full bg-red-500 text-white font-bold leading-none"
-                        style={{
-                          minWidth: 18,
-                          height: 18,
-                          padding: "0 5px",
-                          fontSize: 11,
-                          top: -8,
-                          right: -14,
-                          transformOrigin: "center",
-                          transform: pulse ? "scale(1.18)" : "scale(1)",
-                          transition:
-                            "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                          boxShadow: "0 0 0 2px #FFFFFF",
-                        }}
-                      >
-                        {count}
-                      </span>
-                    )}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      lineHeight: 1.21,
-                      fontFamily:
-                        "Inter, ui-sans-serif, system-ui, sans-serif",
-                      fontWeight: isActive ? 600 : 500,
-                      color,
-                    }}
-                  >
-                    {tab.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+    <div className="absolute inset-0 flex flex-col select-none">
+      <div
+        className="flex-1 flex flex-col items-center justify-center gap-4"
+        style={{ background: "#F6F8FA" }}
+      >
+        <span
+          style={{
+            fontSize: 14,
+            fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+            color: INACTIVE,
+          }}
+        >
+          Scan Page
+        </span>
+        <button
+          className="px-3 py-1.5 rounded-lg text-xs font-medium border-none cursor-pointer"
+          style={{
+            background: "rgba(0,0,0,0.06)",
+            color: "rgba(0,0,0,0.7)",
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            increment();
+          }}
+        >
+          + New Message
+        </button>
       </div>
 
-      <button
-        className="absolute px-3 py-1.5 rounded-lg text-xs font-medium border-none cursor-pointer"
+      <div
+        className="w-full flex shrink-0"
         style={{
-          bottom: 16,
-          right: 16,
-          background: "rgba(0,0,0,0.06)",
-          color: "rgba(0,0,0,0.7)",
+          background: BG,
+          borderTop: `1px solid ${TOP_BORDER}`,
+          paddingTop: 6,
+          paddingBottom: 24,
         }}
-        onClick={(e) => { e.stopPropagation(); increment(); }}
       >
-        + New Message
-      </button>
+        {TABS.map((tab, i) => {
+          const isActive = i === 0;
+          const color = isActive ? ACTIVE : INACTIVE;
+          const Icon = tab.Icon;
+          const showBadge = i === BADGE_TAB_INDEX;
+          return (
+            <div
+              key={tab.id}
+              className="flex-1 flex flex-col items-center pt-1 pb-1"
+              style={{ gap: 3 }}
+            >
+              <span
+                className="relative inline-flex items-center justify-center"
+                style={{ width: 28, height: 28, color }}
+              >
+                <Icon />
+                {showBadge && (
+                  <span
+                    className="absolute flex items-center justify-center rounded-full bg-red-500 text-white font-bold leading-none"
+                    style={{
+                      minWidth: 18,
+                      height: 18,
+                      padding: "0 5px",
+                      fontSize: 11,
+                      top: -6,
+                      right: -12,
+                      transformOrigin: "center",
+                      transform: pulse ? "scale(1.18)" : "scale(1)",
+                      transition:
+                        "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                      boxShadow: "0 0 0 2px #FFFFFF",
+                    }}
+                  >
+                    {count}
+                  </span>
+                )}
+              </span>
+              <span
+                style={{
+                  fontSize: 10,
+                  lineHeight: 1.21,
+                  fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  fontWeight: isActive ? 600 : 500,
+                  color,
+                }}
+              >
+                {tab.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
