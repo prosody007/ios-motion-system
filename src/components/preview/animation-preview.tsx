@@ -36,7 +36,13 @@ import { BorderGlowPreview } from "./border-glow/preview";
 import { ActionSheetPreview } from "./action-sheet-preview";
 import { TooltipPreview } from "./tooltip-preview";
 import { DropdownPreview } from "./dropdown-preview";
-import { NotificationBannerPreview } from "./notification-banner-preview";
+import {
+  NotificationBannerPreview,
+  NotificationBannerTitlePreview,
+  NotificationBannerTitleButtonPreview,
+  NotificationBannerTitleTextPreview,
+  NotificationBannerTitleTextButtonPreview,
+} from "./notification-banner-preview";
 
 import { SuccessCheckPreview, ErrorShakePreview } from "./success-error-preview";
 import { ToastPreview, SnackbarPreview } from "./toast-preview";
@@ -121,6 +127,10 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-tooltip": TooltipPreview,
   "ios-dropdown": DropdownPreview,
   "ios-notification": NotificationBannerPreview,
+  "ios-notification-title": NotificationBannerTitlePreview,
+  "ios-notification-title-button": NotificationBannerTitleButtonPreview,
+  "ios-notification-title-text": NotificationBannerTitleTextPreview,
+  "ios-notification-title-text-button": NotificationBannerTitleTextButtonPreview,
   // Batch 7 — gestures, hero, advanced
   "ios-swipe-dismiss": SwipeDismissPreview,
   "ios-swipe-cards": SwipeCardsPreview,

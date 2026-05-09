@@ -290,7 +290,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
     <div
       ref={viewportRef}
       className="flex h-full w-full items-center justify-center overflow-visible"
-      style={{ padding: `${PHONE_PREVIEW_GAP}px` }}
+      style={{ padding: `${PHONE_PREVIEW_GAP}px`, pointerEvents: "none" }}
     >
       <div
         className="relative shrink-0"
@@ -299,6 +299,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
           height: PHONE_H * scale,
           overflow: "visible",
           visibility: scaleState.ready ? "visible" : "hidden",
+          pointerEvents: "none",
         }}
       >
         <div
@@ -309,6 +310,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
             width: PHONE_VISUAL_W * scale,
             height: PHONE_VISUAL_H * scale,
             overflow: "visible",
+            pointerEvents: "none",
           }}
         >
           <div
@@ -319,6 +321,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
               transformOrigin: "top left",
               overflow: "visible",
               willChange: "transform",
+              pointerEvents: "none",
             }}
           >
             <div
@@ -328,6 +331,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
                 top: PHONE_VISUAL_PAD_TOP,
                 width: PHONE_W,
                 height: PHONE_H,
+                pointerEvents: "auto",
               }}
             >
               {children}

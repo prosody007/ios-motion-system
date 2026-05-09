@@ -17,14 +17,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" className="h-full">
-      <body className="min-h-full antialiased">
+      <body className="h-[100svh] overflow-hidden antialiased">
         <TooltipProvider>
           <SiteHeader />
-          <div className="flex w-full pt-16">
+          <div className="flex h-[calc(100svh-4rem)] w-full mt-16">
             <AppSidebar />
-            <main className="flex min-w-0 flex-1 justify-center">
-              <div className="flex min-h-[calc(100svh-4rem)] w-full max-w-[1280px] flex-col px-10 pb-8 pt-10">
-                <div className="flex-1">{children}</div>
+            <main className="flex min-w-0 flex-1 justify-center overflow-hidden">
+              <div className="flex h-full w-full max-w-[1280px] min-h-0 flex-col px-10 pb-8 pt-10">
+                <div className="min-h-0 flex-1">{children}</div>
                 <SiteFooter />
               </div>
             </main>
