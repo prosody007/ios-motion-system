@@ -169,7 +169,8 @@ export function LoadingRecordingBarsPreview() {
           style={{ flex: "0 0 24px" }}
         >
           {RECORDING_BAR_CONFIG.map((bar, index) => {
-            const rectStyle: CSSProperties & Record<string, string | number> = {
+            const rectStyle: CSSProperties &
+              Record<string, string | number | undefined> = {
               fill: "#007AFF",
               transformBox: "fill-box",
               transformOrigin: "center center",
