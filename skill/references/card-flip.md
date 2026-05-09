@@ -2,6 +2,79 @@
 
 卡片展开、翻转与堆叠切换。
 
+## Flash Card Stack
+
+- Preview ID：`ios-card-flash-stack`
+- Tags：`0.36s` (duration) · `.smooth` (spring)
+
+### AI Motion Spec
+
+当前生产版 Flash Card Stack：做题流程（答对自动左飞移除）+ 结算态（0~3 分）+ Review Quiz 回退重做；按钮切卡轨迹与线上网站保持一致。
+
+#### Trigger & State
+
+| Key | Value |
+|---|---|
+| answer_flow | 点击选项；错误保持错误态；正确后显示反馈并在 0.5s 后自动左飞移除当前卡 |
+| stack_order | left 按钮：顶卡入底（next）；right 按钮：底卡回顶（prev） |
+| settlement | 3 题结束后进入结算卡，分数范围 0/3~3/3；Review Quiz 重置回初始三题 |
+| button_visibility_after_review | 点击 Review Quiz 后，等待容器展开完成再显示左右按钮 |
+
+#### Layout
+
+| Key | Value |
+|---|---|
+| frame_panel_stage | Frame 393×852；Panel x20 y152 w353；Stage 321×460；Top card 321×440 |
+| stack_slots | 后两张按等比缩放 + 居中堆叠；露出间距 = 10；按钮区与牌堆间距 = 16 |
+| settlement_layout_base | 结算容器内布局以 Figma 1407:7232 / 1407:7235 为基准，内容文案以 1407:7251 四状态为基准 |
+| button_style | 结算按钮高度 44；Review Quiz 文字盒 94×16，Inter 600/16/16，tracking -1% |
+
+#### Motion
+
+| Key | Value |
+|---|---|
+| reorder_duration | 360ms（左右按钮切卡） |
+| reorder_curve | cubic-bezier(0.4, 0, 0.2, 1) |
+| reorder_keyframe_lock | prev/next 关键帧中点保留 49.9% / 50.1% 的 z-index 切换，不可改 |
+| auto_dismiss | 答对后 500ms 等待，再用 320ms 左飞移除（与 flip swipe-away 左飞参数一致） |
+| panel_resize | 做题→结算 / 结算→做题 的容器高度过渡 = 200ms |
+| settlement_stagger | 结算内容按 得分牌→文案→按钮 逐项出现；duration 220ms，stagger 70ms |
+
+#### Constraints
+
+| Key | Value |
+|---|---|
+| motion_lock | 禁止单独修改 FLASH_STACK_DURATION / FLASH_STACK_EASE / enter-prev & exit-next 关键帧；改动必须同步设计与验收 |
+| reuse_rule | 团队内复用优先直接使用 FlashCardTransitionPreview，避免拷贝后再改一份动画实现 |
+| scope_rule | 需要新玩法时创建新 previewId，不在 ios-card-flash-stack 现有实现上叠加破坏式改动 |
+
+#### Acceptance
+
+- 右箭头（prev）从底卡回顶的过渡必须连续顺滑，不出现瞬间缩小或跳帧。
+- 答对后卡片左飞并从堆中移除；三题完成后进入结算态。
+- 点击 Review Quiz 后，先展开容器，再出现左右按钮。
+- 结算内容按得分牌、文案、按钮逐项丝滑出现。
+
+### Code
+
+```tsx
+"use client";
+
+import { FlashCardTransitionPreview } from "@/components/preview/card-flip-preview";
+
+/**
+ * Team Reuse Entry (LOCKED)
+ * - 直接复用仓库里的标准实现，保证动效与网站 1:1 一致。
+ * - 不要在业务页面里重写 keyframes / duration / easing。
+ * - 如需新玩法，请新建 previewId，而不是改这份实现。
+ */
+export function FlashCardStackLockedDemo() {
+  return <FlashCardTransitionPreview />;
+}
+```
+
+---
+
 ## Card Expand
 
 - Preview ID：`ios-card-expand`
@@ -301,79 +374,6 @@ struct FlipCardView: View {
 }
 // .easeInOut(duration: 0.5)
 // 中间速度最快, 两端减速, 翻转自然
-```
-
----
-
-## Flash Card Stack
-
-- Preview ID：`ios-card-flash-stack`
-- Tags：`0.36s` (duration) · `.smooth` (spring)
-
-### AI Motion Spec
-
-当前生产版 Flash Card Stack：做题流程（答对自动左飞移除）+ 结算态（0~3 分）+ Review Quiz 回退重做；按钮切卡轨迹与线上网站保持一致。
-
-#### Trigger & State
-
-| Key | Value |
-|---|---|
-| answer_flow | 点击选项；错误保持错误态；正确后显示反馈并在 0.5s 后自动左飞移除当前卡 |
-| stack_order | left 按钮：顶卡入底（next）；right 按钮：底卡回顶（prev） |
-| settlement | 3 题结束后进入结算卡，分数范围 0/3~3/3；Review Quiz 重置回初始三题 |
-| button_visibility_after_review | 点击 Review Quiz 后，等待容器展开完成再显示左右按钮 |
-
-#### Layout
-
-| Key | Value |
-|---|---|
-| frame_panel_stage | Frame 393×852；Panel x20 y152 w353；Stage 321×460；Top card 321×440 |
-| stack_slots | 后两张按等比缩放 + 居中堆叠；露出间距 = 10；按钮区与牌堆间距 = 16 |
-| settlement_layout_base | 结算容器内布局以 Figma 1407:7232 / 1407:7235 为基准，内容文案以 1407:7251 四状态为基准 |
-| button_style | 结算按钮高度 44；Review Quiz 文字盒 94×16，Inter 600/16/16，tracking -1% |
-
-#### Motion
-
-| Key | Value |
-|---|---|
-| reorder_duration | 360ms（左右按钮切卡） |
-| reorder_curve | cubic-bezier(0.4, 0, 0.2, 1) |
-| reorder_keyframe_lock | prev/next 关键帧中点保留 49.9% / 50.1% 的 z-index 切换，不可改 |
-| auto_dismiss | 答对后 500ms 等待，再用 320ms 左飞移除（与 flip swipe-away 左飞参数一致） |
-| panel_resize | 做题→结算 / 结算→做题 的容器高度过渡 = 200ms |
-| settlement_stagger | 结算内容按 得分牌→文案→按钮 逐项出现；duration 220ms，stagger 70ms |
-
-#### Constraints
-
-| Key | Value |
-|---|---|
-| motion_lock | 禁止单独修改 FLASH_STACK_DURATION / FLASH_STACK_EASE / enter-prev & exit-next 关键帧；改动必须同步设计与验收 |
-| reuse_rule | 团队内复用优先直接使用 FlashCardTransitionPreview，避免拷贝后再改一份动画实现 |
-| scope_rule | 需要新玩法时创建新 previewId，不在 ios-card-flash-stack 现有实现上叠加破坏式改动 |
-
-#### Acceptance
-
-- 右箭头（prev）从底卡回顶的过渡必须连续顺滑，不出现瞬间缩小或跳帧。
-- 答对后卡片左飞并从堆中移除；三题完成后进入结算态。
-- 点击 Review Quiz 后，先展开容器，再出现左右按钮。
-- 结算内容按得分牌、文案、按钮逐项丝滑出现。
-
-### Code
-
-```tsx
-"use client";
-
-import { FlashCardTransitionPreview } from "@/components/preview/card-flip-preview";
-
-/**
- * Team Reuse Entry (LOCKED)
- * - 直接复用仓库里的标准实现，保证动效与网站 1:1 一致。
- * - 不要在业务页面里重写 keyframes / duration / easing。
- * - 如需新玩法，请新建 previewId，而不是改这份实现。
- */
-export function FlashCardStackLockedDemo() {
-  return <FlashCardTransitionPreview />;
-}
 ```
 
 ---

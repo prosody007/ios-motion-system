@@ -1,8 +1,8 @@
 # iOS Motion System
 
-A reference library of production-ready iOS motion patterns — Spring, Sheet, Tab Bar, Card flips, transitions, gestures, skeletons, border glow — each shipped with paste-ready SwiftUI **and** UIKit code.
+A reference library of production-ready iOS motion patterns for React/TSX — Spring, Sheet, Tab Bar, Card flips, transitions, gestures, skeletons, border glow.
 
-Browse the demos at **[ios-motion-system.vercel.app](https://ios-motion-system.vercel.app)**, or install it as an Agent Skill so Cursor / Claude Code / Codex can drop the right implementation straight into your project.
+This site is publicly available at **[ios-motion-system.vercel.app](https://ios-motion-system.vercel.app)**, and anyone can directly install the Skill into Cursor / Claude Code / Codex.
 
 ## Install
 
@@ -23,6 +23,12 @@ The assistant resolves the matching pattern from the skill, adapts naming and st
 
 For project-local installs, single-agent installs, copy-instead-of-symlink, or the `curl` fallback, see the [install page](https://ios-motion-system.vercel.app/skills).
 
+## Public access & direct skill onboarding
+
+- Website (public): `https://ios-motion-system.vercel.app`
+- Skills install docs (public): `https://ios-motion-system.vercel.app/skills`
+- Direct install command: `npx skills add prosody007/ios-motion-system`
+
 ## What's included
 
 | Group | Sections |
@@ -38,7 +44,7 @@ For project-local installs, single-agent installs, copy-instead-of-symlink, or t
 | Haptics | Haptics |
 | Advanced | Counter · Scroll-Driven · Keyframes · Phase Animator · Lottie · Border Glow |
 
-40 categories, ~80 cards. Every card carries a SwiftUI implementation (iOS 16+, with iOS 17 spring presets noted where relevant) and a UIKit equivalent. A handful of cards (Spring Playground, Border Glow, Carousel) accept runtime parameters; the skill substitutes them via the bundled `templates/dynamic-params.md`.
+40 categories, ~80 cards. Cards are exported into the `skill/` package that AI clients consume. A handful of cards (Spring Playground, Border Glow, Carousel) accept runtime parameters; the skill substitutes them via the bundled `templates/dynamic-params.md`.
 
 ## Live development
 
@@ -49,10 +55,19 @@ npm install
 
 npm run dev            # http://localhost:3000
 npm run export-skill   # rebuild ./skill from src/data
+npm run check-skill-sync  # fail if generated ./skill is stale
+npm run setup-hooks    # enable local pre-commit guard
 npm run build          # production build
 ```
 
 Catalog data lives in `src/data/<slug>.ts`. After editing, run `npm run export-skill` to regenerate the skill folder, commit, push — anyone running `npx skills update ios-motion-system` will pull the change.
+
+Guardrails in this repo:
+
+- **Display layer**: website skills page reads from `skill/README.md` (single-source display).
+- **Production layer**: generated `skill/` remains the published package consumed by AI clients.
+- **Automation**: CI workflow `.github/workflows/skill-sync.yml` runs `npm run check-skill-sync` and blocks stale generated artifacts.
+- **Local hook (optional)**: `.githooks/pre-commit` runs the same check to avoid forgetting export before commit.
 
 ## Project layout
 
@@ -72,6 +87,10 @@ scripts/
 public/
   install.sh                 Alternative one-line installer
 skill/                       Generated Agent Skill (committed)
+.githooks/
+  pre-commit                 Optional local guard for skill sync
+.github/workflows/
+  skill-sync.yml             CI guard: generated skill must stay in sync
 ```
 
 ## Contributing

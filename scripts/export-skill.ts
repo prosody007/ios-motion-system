@@ -183,7 +183,12 @@ ${groupsList}
 async function writeReadme() {
   const md = `# iOS Motion System Skill
 
-让 Cursor / Claude Code / Codex 在 React 项目里写 iOS 风格动效时直接引用本库的标准 React 实现。
+让 Cursor / Claude Code / Codex 在 React 项目里直接接入 iOS 风格动效实现。
+
+## Public access
+
+- Website (public): https://ios-motion-system.vercel.app
+- Skills docs (public): https://ios-motion-system.vercel.app/skills
 
 ## Install
 
@@ -226,6 +231,7 @@ AI 会自动加载本 Skill 并引用对应的代码模板。
 - 优先复用锁定组件入口，不在业务页复制动画后再“微调”。
 - 同一个动画只保留一个权威实现文件，避免多份实现漂移。
 - 变更后至少做一次人工验收：切卡平滑性 + 结算流程完整性 + 字体一致性。
+- 需要新玩法时创建新的 previewId/card，不在已锁定 demo 上叠加破坏式改动。
 
 ## Update
 
@@ -243,6 +249,19 @@ cd ~/.local/share/ios-motion-system && git pull
 
 fork 仓库后改 \`src/data/*.ts\`，跑一次 \`npm run export-skill\` 重新生成 skill/，
 然后让自己 / 团队从你的 fork 装：\`npx skills add <your-username>/ios-motion-system\`。
+
+## Sync discipline (for maintainers)
+
+\`\`\`bash
+npm run export-skill
+npm run check-skill-sync
+\`\`\`
+
+建议启用本地 pre-commit（可选）：
+
+\`\`\`bash
+npm run setup-hooks
+\`\`\`
 `;
 
   await fs.writeFile(path.join(SKILL_DIR, "README.md"), md, "utf8");
