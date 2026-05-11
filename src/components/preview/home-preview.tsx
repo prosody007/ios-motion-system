@@ -5,6 +5,7 @@ import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 
 const HOME_INDICATOR_H = 34;
 const STATUS_BAR_FG = "#FFFFFF";
+const CAPTURE_MODE_PANEL_H = 160;
 
 const TAB_ACTIVE = "#007AFF";
 const TAB_INACTIVE = "#989B9E";
@@ -107,61 +108,76 @@ export function HomePreview() {
         </div>
       </div>
 
-      {/* Bottom Tab Bar (Scan / Study / Me) */}
-      <div
-        className="absolute left-0 right-0 flex"
-        style={{
-          bottom: 0,
-          background: TAB_BG,
-          paddingTop: 6,
-          paddingBottom: 24,
-        }}
-      >
-        {TABS.map((tab, i) => {
-          const isActive = active === i;
-          const isTapped = tapped === i;
-          const color = isActive ? TAB_ACTIVE : TAB_INACTIVE;
-          const Icon = tab.Icon;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              className="flex-1 flex flex-col items-center border-none bg-transparent cursor-pointer pt-1 pb-1"
-              style={{ gap: 3 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                tap(i);
-              }}
-            >
-              <span
-                className="inline-flex items-center justify-center"
-                style={{
-                  width: 28,
-                  height: 28,
-                  color,
-                  transform: isTapped ? "scale(0.88)" : "scale(1)",
-                  transition: isTapped
-                    ? "transform 0.07s ease-in, color 0.18s ease"
-                    : "transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), color 0.18s ease",
+      {/* Capture mode panel + Bottom Tab Bar */}
+      <div className="absolute left-0 right-0 bottom-0 flex flex-col">
+        <div
+          className="relative w-full pointer-events-none"
+          style={{ height: CAPTURE_MODE_PANEL_H }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/figma/home/capture-mode.png"
+            alt=""
+            draggable={false}
+            className="absolute inset-0 w-full h-full"
+            style={{ objectFit: "cover", objectPosition: "center center" }}
+          />
+        </div>
+
+        <div
+          className="flex"
+          style={{
+            background: TAB_BG,
+            paddingTop: 6,
+            paddingBottom: 24,
+          }}
+        >
+          {TABS.map((tab, i) => {
+            const isActive = active === i;
+            const isTapped = tapped === i;
+            const color = isActive ? TAB_ACTIVE : TAB_INACTIVE;
+            const Icon = tab.Icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                className="flex-1 flex flex-col items-center border-none bg-transparent cursor-pointer pt-1 pb-1"
+                style={{ gap: 3 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  tap(i);
                 }}
               >
-                <Icon />
-              </span>
-              <span
-                style={{
-                  fontSize: 10,
-                  lineHeight: 1.21,
-                  fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
-                  fontWeight: isActive ? 600 : 500,
-                  color,
-                  transition: "color 0.18s ease",
-                }}
-              >
-                {tab.label}
-              </span>
-            </button>
-          );
-        })}
+                <span
+                  className="inline-flex items-center justify-center"
+                  style={{
+                    width: 28,
+                    height: 28,
+                    color,
+                    transform: isTapped ? "scale(0.88)" : "scale(1)",
+                    transition: isTapped
+                      ? "transform 0.07s ease-in, color 0.18s ease"
+                      : "transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), color 0.18s ease",
+                  }}
+                >
+                  <Icon active={isActive} />
+                </span>
+                <span
+                  style={{
+                    fontSize: 10,
+                    lineHeight: 1.21,
+                    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+                    fontWeight: isActive ? 600 : 500,
+                    color,
+                    transition: "color 0.18s ease",
+                  }}
+                >
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Home indicator (drawn on top of the dark tab bar) */}
