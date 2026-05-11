@@ -5,7 +5,7 @@ import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 
 const HOME_INDICATOR_H = 34;
 const STATUS_BAR_FG = "#FFFFFF";
-const CAPTURE_MODE_PANEL_H = 160;
+const CAPTURE_MODE_PANEL_H = 172;
 
 const TAB_ACTIVE = "#007AFF";
 const TAB_INACTIVE = "#989B9E";
@@ -198,19 +198,7 @@ export function HomePreview() {
 
       {/* Capture mode panel + Bottom Tab Bar */}
       <div className="absolute left-0 right-0 bottom-0 flex flex-col">
-        <div
-          className="relative w-full pointer-events-none"
-          style={{ height: CAPTURE_MODE_PANEL_H }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/figma/home/capture-mode.png"
-            alt=""
-            draggable={false}
-            className="absolute inset-0 w-full h-full"
-            style={{ objectFit: "cover", objectPosition: "center center" }}
-          />
-        </div>
+        <CaptureMode />
 
         <div
           className="flex"
@@ -285,6 +273,269 @@ export function HomePreview() {
             background: "#FFFFFF",
           }}
         />
+      </div>
+    </div>
+  );
+}
+
+const CAPTURE_LABEL_FONT = {
+  fontFamily:
+    "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+  fontWeight: 600,
+  fontSize: 12,
+  color: "#FFFFFF",
+  opacity: 0.8,
+  textAlign: "center" as const,
+};
+
+const SEGMENT_TEXT_BASE = {
+  fontFamily:
+    "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+  fontSize: 13,
+  lineHeight: "18px",
+  color: "#111111",
+  whiteSpace: "nowrap" as const,
+};
+
+function CaptureMode() {
+  return (
+    <div
+      className="relative w-full"
+      style={{ height: CAPTURE_MODE_PANEL_H, pointerEvents: "none" }}
+    >
+      {/* 底部蒙层 — Figma node 1467:14077 */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 160,
+          background:
+            "linear-gradient(to top, rgba(17, 17, 17, 0.75) 0%, rgba(34, 34, 34, 0) 100%)",
+        }}
+      />
+
+      {/* Photos — Figma node 1467:14083 */}
+      <div
+        style={{
+          position: "absolute",
+          left: 54.5,
+          top: 79,
+          width: 41,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+          pointerEvents: "auto",
+        }}
+      >
+        <div
+          style={{ position: "relative", width: 32, height: 32, flexShrink: 0 }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "20.31%",
+              right: "10.94%",
+              bottom: "20.31%",
+              left: "14.06%",
+              border: "2.5px solid #FFFFFF",
+              borderRadius: 4,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "35.94%",
+              right: "11.83%",
+              bottom: "20.31%",
+              left: "17.19%",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/home/capture-photo-mountain.svg"
+              alt=""
+              draggable={false}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              top: "29.69%",
+              right: "57.81%",
+              bottom: "57.81%",
+              left: "29.69%",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/home/capture-photo-dot.svg"
+              alt=""
+              draggable={false}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
+        </div>
+        <span style={CAPTURE_LABEL_FONT}>Photos</span>
+      </div>
+
+      {/* Text — Figma node 1467:14078 */}
+      <div
+        style={{
+          position: "absolute",
+          left: 297.5,
+          top: 79,
+          width: 41,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+          pointerEvents: "auto",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/home/capture-text.svg"
+          alt=""
+          draggable={false}
+          style={{ width: 32, height: 32, flexShrink: 0 }}
+        />
+        <span style={CAPTURE_LABEL_FONT}>Text</span>
+      </div>
+
+      {/* 中央按钮 — Figma node 1467:14086 (home_btn_normal) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 151,
+          top: 50,
+          width: 90,
+          height: 90,
+          pointerEvents: "auto",
+        }}
+      >
+        {/* 外环 (Ellipse29) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/home/capture-btn-ring.svg"
+          alt=""
+          draggable={false}
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 80,
+            height: 80,
+          }}
+        />
+        {/* 蓝色圆 (Ellipse28) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/home/capture-btn-blue.svg"
+          alt=""
+          draggable={false}
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 60,
+            height: 60,
+          }}
+        />
+        {/* button container 32x32 */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 32,
+            height: 32,
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/figma/home/capture-btn-corner.svg"
+            alt=""
+            draggable={false}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/figma/home/capture-btn-x.svg"
+            alt=""
+            draggable={false}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 18,
+              height: 18,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* 顶部 Segmented (Direct Solve / Guided Solve) — Figma node 1467:14119 */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: 0,
+          transform: "translateX(-50%)",
+          padding: 2,
+          borderRadius: 100,
+          background: "rgba(0, 0, 0, 0.16)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          display: "flex",
+          alignItems: "center",
+          pointerEvents: "auto",
+        }}
+      >
+        <div
+          style={{
+            width: 116,
+            height: 32,
+            paddingLeft: 16,
+            paddingRight: 16,
+            borderRadius: 100,
+            background: "#FFFFFF",
+            border: "0.5px solid #FFFFFF",
+            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.24)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <span style={{ ...SEGMENT_TEXT_BASE, fontWeight: 600 }}>
+            Direct Solve
+          </span>
+        </div>
+        <div
+          style={{
+            width: 116,
+            height: 32,
+            paddingLeft: 16,
+            paddingRight: 16,
+            borderRadius: 100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <span style={{ ...SEGMENT_TEXT_BASE, fontWeight: 500 }}>
+            Guided Solve
+          </span>
+        </div>
       </div>
     </div>
   );
