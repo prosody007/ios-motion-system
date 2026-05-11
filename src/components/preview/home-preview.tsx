@@ -11,7 +11,6 @@ const TAB_ACTIVE = "#007AFF";
 const TAB_INACTIVE = "#989B9E";
 const TAB_BG =
   "linear-gradient(180deg, rgba(17, 17, 17, 0.8) 0%, #111111 100%)";
-const TAB_TOP_BORDER = "#F6F8FA";
 
 const TABS = [
   { id: "scan", label: "Scan", Icon: ScanIcon },
@@ -151,7 +150,6 @@ export function HomePreview() {
         style={{
           bottom: 0,
           background: TAB_BG,
-          borderTop: `1px solid ${TAB_TOP_BORDER}`,
           paddingTop: 6,
           paddingBottom: 24,
         }}
