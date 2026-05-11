@@ -154,6 +154,13 @@ export function HomePreview() {
         <div className="flex items-center" style={{ gap: 24 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            src="/figma/home/history.svg"
+            alt=""
+            draggable={false}
+            style={{ width: 32, height: 32, flexShrink: 0 }}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/figma/home/lightning.svg"
             alt=""
             draggable={false}
