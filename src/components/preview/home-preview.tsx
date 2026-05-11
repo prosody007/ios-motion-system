@@ -1,8 +1,22 @@
 "use client";
 
+import { useState } from "react";
+import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
+
 const STATUS_BAR_H = 44;
 const HOME_INDICATOR_H = 34;
 const FG = "#000000";
+
+const TAB_ACTIVE = "#007AFF";
+const TAB_INACTIVE = "#989B9E";
+const TAB_BG = "#FFFFFF";
+const TAB_TOP_BORDER = "#F6F8FA";
+
+const TABS = [
+  { id: "scan", label: "Scan", Icon: ScanIcon },
+  { id: "study", label: "Study", Icon: StudyIcon },
+  { id: "me", label: "Me", Icon: MeIcon },
+];
 
 function StatusIcons() {
   return (
@@ -74,6 +88,15 @@ function StatusIcons() {
 }
 
 export function HomePreview() {
+  const [active, setActive] = useState(0);
+  const [tapped, setTapped] = useState(-1);
+
+  const tap = (i: number) => {
+    setActive(i);
+    setTapped(i);
+    setTimeout(() => setTapped(-1), 140);
+  };
+
   return (
     <div
       className="absolute inset-0 select-none overflow-hidden"
@@ -119,6 +142,64 @@ export function HomePreview() {
         <div className="flex items-center" style={{ height: 11.336 }}>
           <StatusIcons />
         </div>
+      </div>
+
+      {/* Bottom Tab Bar (Scan / Study / Me) */}
+      <div
+        className="absolute left-0 right-0 flex"
+        style={{
+          bottom: 0,
+          background: TAB_BG,
+          borderTop: `1px solid ${TAB_TOP_BORDER}`,
+          paddingTop: 6,
+          paddingBottom: 24,
+        }}
+      >
+        {TABS.map((tab, i) => {
+          const isActive = active === i;
+          const isTapped = tapped === i;
+          const color = isActive ? TAB_ACTIVE : TAB_INACTIVE;
+          const Icon = tab.Icon;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              className="flex-1 flex flex-col items-center border-none bg-transparent cursor-pointer pt-1 pb-1"
+              style={{ gap: 3 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                tap(i);
+              }}
+            >
+              <span
+                className="inline-flex items-center justify-center"
+                style={{
+                  width: 28,
+                  height: 28,
+                  color,
+                  transform: isTapped ? "scale(0.88)" : "scale(1)",
+                  transition: isTapped
+                    ? "transform 0.07s ease-in, color 0.18s ease"
+                    : "transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), color 0.18s ease",
+                }}
+              >
+                <Icon />
+              </span>
+              <span
+                style={{
+                  fontSize: 10,
+                  lineHeight: 1.21,
+                  fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  fontWeight: isActive ? 600 : 500,
+                  color,
+                  transition: "color 0.18s ease",
+                }}
+              >
+                {tab.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Home indicator */}

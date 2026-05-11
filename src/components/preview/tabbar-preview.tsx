@@ -204,7 +204,7 @@ export function TabBarBadgePreview() {
   );
 }
 
-function ScanIcon() {
+export function ScanIcon() {
   return (
     <svg width="23" height="21" viewBox="0 0 23 21" fill="none">
       <path
@@ -228,7 +228,7 @@ function ScanIcon() {
   );
 }
 
-function StudyIcon() {
+export function StudyIcon() {
   return (
     <svg width="18" height="22" viewBox="0 0 18 22" fill="none">
       <rect
@@ -263,7 +263,7 @@ function StudyIcon() {
   );
 }
 
-function MeIcon() {
+export function MeIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
       <path
