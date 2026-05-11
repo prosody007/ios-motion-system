@@ -457,8 +457,13 @@ function CaptureMode({
   );
 }
 
-const SEGMENT_LABELS = ["Quick Solve", "Guided Solve"];
+const SEGMENT_OPTIONS = [
+  { label: "Quick Solve", icon: "/figma/home/seg-quick-icon.svg" },
+  { label: "Guided Solve", icon: "/figma/home/seg-guided-icon.svg" },
+];
 const SEGMENT_SPRING = "cubic-bezier(0.32, 0.72, 0, 1)";
+const SEGMENT_ICON_ACTIVE = "#F6A507";
+const SEGMENT_ICON_INACTIVE = "rgba(255, 255, 255, 0.9)";
 
 function SegmentedControl({
   selected,
@@ -526,38 +531,61 @@ function SegmentedControl({
           pointerEvents: "none",
         }}
       />
-      {SEGMENT_LABELS.map((label, i) => (
-        <button
-          key={label}
-          type="button"
-          onPointerDown={() => setPressed(true)}
-          onPointerUp={() => setPressed(false)}
-          onPointerCancel={() => setPressed(false)}
-          onPointerLeave={() => setPressed(false)}
-          onClick={() => setSelected(i)}
-          style={{
-            position: "relative",
-            zIndex: 1,
-            border: "none",
-            background: "transparent",
-            cursor: "pointer",
-            width: 116,
-            height: 32,
-            paddingLeft: 16,
-            paddingRight: 16,
-            borderRadius: 100,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            ...SEGMENT_TEXT_BASE,
-            color: selected === i ? "#111111" : "rgba(255, 255, 255, 0.9)",
-            fontWeight: 600,
-          }}
-        >
-          {label}
-        </button>
-      ))}
+      {SEGMENT_OPTIONS.map((opt, i) => {
+        const isActive = selected === i;
+        return (
+          <button
+            key={opt.label}
+            type="button"
+            onPointerDown={() => setPressed(true)}
+            onPointerUp={() => setPressed(false)}
+            onPointerCancel={() => setPressed(false)}
+            onPointerLeave={() => setPressed(false)}
+            onClick={() => setSelected(i)}
+            style={{
+              position: "relative",
+              zIndex: 1,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              width: 116,
+              height: 32,
+              paddingLeft: 12,
+              paddingRight: 12,
+              gap: 4,
+              borderRadius: 100,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              ...SEGMENT_TEXT_BASE,
+              color: isActive ? "#111111" : "rgba(255, 255, 255, 0.9)",
+              fontWeight: 600,
+            }}
+          >
+            <span
+              aria-hidden="true"
+              style={{
+                width: 16,
+                height: 16,
+                flexShrink: 0,
+                backgroundColor: isActive
+                  ? SEGMENT_ICON_ACTIVE
+                  : SEGMENT_ICON_INACTIVE,
+                maskImage: `url(${opt.icon})`,
+                WebkitMaskImage: `url(${opt.icon})`,
+                maskSize: "contain",
+                WebkitMaskSize: "contain",
+                maskRepeat: "no-repeat",
+                WebkitMaskRepeat: "no-repeat",
+                maskPosition: "center",
+                WebkitMaskPosition: "center",
+              }}
+            />
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
