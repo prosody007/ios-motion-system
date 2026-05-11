@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 
-const STATUS_BAR_H = 44;
 const HOME_INDICATOR_H = 34;
-const FG = "#000000";
+const STATUS_BAR_FG = "#FFFFFF";
 
 const TAB_ACTIVE = "#007AFF";
 const TAB_INACTIVE = "#989B9E";
@@ -17,75 +16,6 @@ const TABS = [
   { id: "study", label: "Study", Icon: StudyIcon },
   { id: "me", label: "Me", Icon: MeIcon },
 ];
-
-function StatusIcons() {
-  return (
-    <svg
-      width="66.661"
-      height="11.336"
-      viewBox="0 0 66.661 11.336"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ color: FG }}
-    >
-      {/* Cellular signal — 4 bars */}
-      <rect x="0" y="7" width="3" height="4.336" rx="0.6" fill="currentColor" />
-      <rect x="4.5" y="5" width="3" height="6.336" rx="0.6" fill="currentColor" />
-      <rect x="9" y="3" width="3" height="8.336" rx="0.6" fill="currentColor" />
-      <rect x="13.5" y="1" width="3" height="10.336" rx="0.6" fill="currentColor" />
-
-      {/* Wi-Fi */}
-      <path
-        d="M21.5 8.4 q3.4 -3 6.8 0"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M19.7 6.4 q5.2 -4.8 10.4 0"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M18 4.4 q6.9 -6.4 13.8 0"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <circle cx="24.9" cy="10.1" r="1" fill="currentColor" />
-
-      {/* Battery */}
-      <rect
-        x="42.833"
-        y="0.503"
-        width="21"
-        height="10.333"
-        rx="2.167"
-        stroke="currentColor"
-        strokeOpacity="0.35"
-      />
-      <path
-        d="M65.333 3.67 V 7.67"
-        stroke="currentColor"
-        strokeOpacity="0.4"
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
-      <rect
-        x="44.333"
-        y="2.003"
-        width="18"
-        height="7.336"
-        rx="1.167"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
 
 export function HomePreview() {
   const [active, setActive] = useState(0);
@@ -112,35 +42,68 @@ export function HomePreview() {
         style={{ objectFit: "cover", objectPosition: "center center" }}
       />
 
-      {/* Status bar */}
+      {/* Status bar — 1:1 与 Figma 节点 1460:15612 对齐 */}
       <div
-        className="absolute left-0 right-0 top-0 flex items-center justify-between"
-        style={{
-          height: STATUS_BAR_H,
-          paddingLeft: 21,
-          paddingRight: 14.34,
-          paddingTop: 15,
-          paddingBottom: 12,
-        }}
+        className="absolute left-0 right-0 top-0 flex flex-col items-start justify-center"
+        style={{ paddingTop: 20, paddingBottom: 8 }}
       >
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: 54,
-            height: 17,
-            color: FG,
-            fontFamily:
-              "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
-            fontWeight: 600,
-            fontSize: 14,
-            letterSpacing: "-0.28px",
-            textAlign: "center",
-          }}
-        >
-          9:41
-        </div>
-        <div className="flex items-center" style={{ height: 11.336 }}>
-          <StatusIcons />
+        <div className="flex w-full shrink-0 items-center justify-between">
+          {/* Time */}
+          <div
+            className="flex items-center justify-center min-w-0"
+            style={{ flex: "1 0 0", paddingLeft: 16, paddingRight: 6 }}
+          >
+            <p
+              className="m-0 whitespace-nowrap text-center"
+              style={{
+                fontFamily:
+                  "'SF Pro', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                fontWeight: 590,
+                fontSize: 17,
+                lineHeight: "22px",
+                color: STATUS_BAR_FG,
+                fontVariationSettings: "'wdth' 100",
+              }}
+            >
+              9:41
+            </p>
+          </div>
+
+          {/* Dynamic Island spacer */}
+          <div style={{ width: 124, height: 10, flexShrink: 0 }} />
+
+          {/* Levels */}
+          <div
+            className="flex items-center justify-center min-w-0"
+            style={{
+              flex: "1 0 0",
+              gap: 7,
+              paddingLeft: 6,
+              paddingRight: 16,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/home/cellular.svg"
+              alt=""
+              draggable={false}
+              style={{ width: 19.2, height: 12.226, flexShrink: 0 }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/home/wifi.svg"
+              alt=""
+              draggable={false}
+              style={{ width: 17.142, height: 12.328, flexShrink: 0 }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/home/battery.svg"
+              alt=""
+              draggable={false}
+              style={{ width: 27.328, height: 13, flexShrink: 0 }}
+            />
+          </div>
         </div>
       </div>
 
