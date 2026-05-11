@@ -9,7 +9,8 @@ const FG = "#000000";
 
 const TAB_ACTIVE = "#007AFF";
 const TAB_INACTIVE = "#989B9E";
-const TAB_BG = "#FFFFFF";
+const TAB_BG =
+  "linear-gradient(180deg, rgba(17, 17, 17, 0.8) 0%, #111111 100%)";
 const TAB_TOP_BORDER = "#F6F8FA";
 
 const TABS = [
