@@ -1672,7 +1672,7 @@ export function FlashCardTransitionPreview() {
                 className="flex items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90 disabled:cursor-default disabled:active:scale-100"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!buttonsDisabled) startButtonTransition("next");
+                  if (!buttonsDisabled) startButtonTransition("prev");
                 }}
                 aria-label="Previous card"
                 style={{
@@ -1693,7 +1693,7 @@ export function FlashCardTransitionPreview() {
                 className="flex items-center justify-center rounded-full border-none p-0 cursor-pointer transition-transform duration-100 active:scale-90 disabled:cursor-default disabled:active:scale-100"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!buttonsDisabled) startButtonTransition("prev");
+                  if (!buttonsDisabled) startButtonTransition("next");
                 }}
                 aria-label="Next card"
                 style={{
