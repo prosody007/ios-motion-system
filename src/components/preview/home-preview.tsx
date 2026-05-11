@@ -458,11 +458,18 @@ function CaptureMode({
 }
 
 const SEGMENT_OPTIONS = [
-  { label: "Quick Solve", icon: "/figma/home/seg-quick-icon.svg" },
-  { label: "Guided Solve", icon: "/figma/home/seg-guided-icon.svg" },
+  {
+    label: "Quick Solve",
+    icon: "/figma/home/seg-quick-icon.svg",
+    activeColor: "#F6A507",
+  },
+  {
+    label: "Guided Solve",
+    icon: "/figma/home/seg-guided-icon.svg",
+    activeColor: "#007AFF",
+  },
 ];
 const SEGMENT_SPRING = "cubic-bezier(0.32, 0.72, 0, 1)";
-const SEGMENT_ICON_ACTIVE = "#F6A507";
 const SEGMENT_ICON_INACTIVE = "rgba(255, 255, 255, 0.9)";
 
 function SegmentedControl({
@@ -576,7 +583,7 @@ function SegmentedControl({
                 height: 16,
                 flexShrink: 0,
                 backgroundColor: isActive
-                  ? SEGMENT_ICON_ACTIVE
+                  ? opt.activeColor
                   : SEGMENT_ICON_INACTIVE,
                 maskImage: `url(${opt.icon})`,
                 WebkitMaskImage: `url(${opt.icon})`,
