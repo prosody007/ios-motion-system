@@ -30,7 +30,7 @@ import type { CardsSection } from "@/types/motion";
  * ---------------------------------------------------------------- */
 
 const PHONE_W = 437;
-const PHONE_H = 892;
+const PHONE_H = 890;
 const SCREEN_OFFSET_X = 22;
 const SCREEN_OFFSET_Y = 21;
 const SCREEN_W = 393;
