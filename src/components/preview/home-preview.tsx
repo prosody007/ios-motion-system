@@ -406,8 +406,12 @@ function CaptureMode() {
         <span style={CAPTURE_LABEL_FONT}>Text</span>
       </div>
 
-      {/* 中央按钮 — Figma node 1467:14086 (home_btn_normal) */}
-      <div
+      {/* 中央按钮 — Figma node 1467:14086 (home_btn_normal)，整体导出图片 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/home/capture-btn.png"
+        alt=""
+        draggable={false}
         style={{
           position: "absolute",
           left: 151,
@@ -415,72 +419,9 @@ function CaptureMode() {
           width: 90,
           height: 90,
           pointerEvents: "auto",
+          userSelect: "none",
         }}
-      >
-        {/* 外环 (Ellipse29) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/figma/home/capture-btn-ring.svg"
-          alt=""
-          draggable={false}
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 80,
-            height: 80,
-          }}
-        />
-        {/* 蓝色圆 (Ellipse28) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/figma/home/capture-btn-blue.svg"
-          alt=""
-          draggable={false}
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 60,
-            height: 60,
-          }}
-        />
-        {/* button container 32x32 */}
-        <div
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 32,
-            height: 32,
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/figma/home/capture-btn-corner.svg"
-            alt=""
-            draggable={false}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/figma/home/capture-btn-x.svg"
-            alt=""
-            draggable={false}
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 18,
-              height: 18,
-            }}
-          />
-        </div>
-      </div>
+      />
 
       {/* 顶部 Segmented (Direct Solve / Guided Solve) — Figma node 1467:14119 */}
       <div
