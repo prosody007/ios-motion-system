@@ -47,7 +47,7 @@ export function HomePreview() {
       <div
         className="absolute left-0 right-0 top-0 pointer-events-none"
         style={{
-          height: 160,
+          height: 320,
           background:
             "linear-gradient(to bottom, rgba(17, 17, 17, 0.75) 0%, rgba(34, 34, 34, 0) 100%)",
         }}
