@@ -21,6 +21,7 @@ const TABS = [
 export function HomePreview() {
   const [active, setActive] = useState(0);
   const [tapped, setTapped] = useState(-1);
+  const [captureMode, setCaptureMode] = useState(0);
 
   const tap = (i: number) => {
     setActive(i);
@@ -212,9 +213,11 @@ export function HomePreview() {
         </div>
       </div>
 
+      <InfoModule mode={captureMode} />
+
       {/* Capture mode panel + Bottom Tab Bar */}
       <div className="absolute left-0 right-0 bottom-0 flex flex-col">
-        <CaptureMode />
+        <CaptureMode mode={captureMode} setMode={setCaptureMode} />
 
         <div
           className="flex"
@@ -315,7 +318,13 @@ const SEGMENT_TEXT_BASE = {
   whiteSpace: "nowrap" as const,
 };
 
-function CaptureMode() {
+function CaptureMode({
+  mode,
+  setMode,
+}: {
+  mode: number;
+  setMode: (n: number) => void;
+}) {
   return (
     <div
       className="relative w-full"
@@ -441,18 +450,23 @@ function CaptureMode() {
         }}
       />
 
-      {/* 顶部 Segmented (Direct Solve / Guided Solve) — Figma node 1467:14119
+      {/* 顶部 Segmented (Quick Solve / Guided Solve) — Figma node 1467:14119
           交互动画与 Segmented Control 共用：滑动指示器 + 按压 0.96 缩放 */}
-      <SegmentedControl />
+      <SegmentedControl selected={mode} setSelected={setMode} />
     </div>
   );
 }
 
-const SEGMENT_LABELS = ["Direct Solve", "Guided Solve"];
+const SEGMENT_LABELS = ["Quick Solve", "Guided Solve"];
 const SEGMENT_SPRING = "cubic-bezier(0.32, 0.72, 0, 1)";
 
-function SegmentedControl() {
-  const [selected, setSelected] = useState(0);
+function SegmentedControl({
+  selected,
+  setSelected,
+}: {
+  selected: number;
+  setSelected: (n: number) => void;
+}) {
   const [pressed, setPressed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [bounds, setBounds] = useState<{ left: number; width: number }[]>([]);
@@ -544,6 +558,56 @@ function SegmentedControl() {
           {label}
         </button>
       ))}
+    </div>
+  );
+}
+
+const INFO_TEXTS = [
+  "Get the full step-by-step solution",
+  "Snap for step-by-step solution",
+];
+
+function InfoModule({ mode }: { mode: number }) {
+  return (
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        left: "50%",
+        top: 258,
+        transform: "translateX(-50%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 64,
+      }}
+    >
+      <p
+        style={{
+          margin: 0,
+          minWidth: "max-content",
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          fontWeight: 700,
+          fontSize: 18,
+          lineHeight: 1.3,
+          color: "#FFFFFF",
+          textAlign: "center",
+          textShadow: "0px 0px 3px rgba(17, 17, 17, 0.8)",
+        }}
+      >
+        {INFO_TEXTS[mode]}
+      </p>
+      <div style={{ position: "relative", width: 52, height: 52 }}>
+        <div style={{ position: "absolute", inset: "-5.77%" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/figma/home/info-icon.svg"
+            alt=""
+            draggable={false}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
