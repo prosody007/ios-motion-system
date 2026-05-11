@@ -29,8 +29,8 @@ import type { CardsSection } from "@/types/motion";
  *  右侧 demo 列表 fixed 距视口最右 40px，垂直居中。
  * ---------------------------------------------------------------- */
 
-const PHONE_W = 438;
-const PHONE_H = 894;
+const PHONE_W = 437;
+const PHONE_H = 892;
 const SCREEN_OFFSET_X = 22;
 const SCREEN_OFFSET_Y = 21;
 const SCREEN_W = 393;
