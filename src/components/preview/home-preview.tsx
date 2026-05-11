@@ -206,6 +206,8 @@ export function HomePreview() {
             background: TAB_BG,
             paddingTop: 6,
             paddingBottom: 24,
+            position: "relative",
+            zIndex: 20,
           }}
         >
           {TABS.map((tab, i) => {
@@ -259,7 +261,7 @@ export function HomePreview() {
       {/* Home indicator (drawn on top of the dark tab bar) */}
       <div
         className="absolute left-0 right-0 bottom-0 pointer-events-none"
-        style={{ height: HOME_INDICATOR_H }}
+        style={{ height: HOME_INDICATOR_H, zIndex: 30 }}
       >
         <div
           className="absolute"
