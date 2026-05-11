@@ -108,6 +108,87 @@ export function HomePreview() {
         </div>
       </div>
 
+      {/* Tool bar — 1:1 与 Figma 节点 1465:13774 对齐 */}
+      <div
+        className="absolute left-0 right-0 flex items-center justify-between"
+        style={{
+          top: 50,
+          height: 48,
+          paddingLeft: 24,
+          paddingRight: 24,
+          paddingTop: 8,
+          paddingBottom: 8,
+        }}
+      >
+        <div className="flex items-center" style={{ gap: 24 }}>
+          <div style={{ position: "relative", width: 32, height: 32, flexShrink: 0 }}>
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 24,
+                height: 24,
+                border: "2px dashed #FFFFFF",
+                borderRadius: 6,
+              }}
+            />
+          </div>
+          <div style={{ position: "relative", width: 32, height: 32, flexShrink: 0 }}>
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 24,
+                height: 24,
+                border: "2px dashed #FFFFFF",
+                borderRadius: 6,
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center" style={{ gap: 24 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/figma/home/lightning.svg"
+            alt=""
+            draggable={false}
+            style={{ width: 32, height: 32, flexShrink: 0 }}
+          />
+          <div
+            style={{
+              position: "relative",
+              width: 32,
+              height: 32,
+              flexShrink: 0,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: 6,
+                top: 4,
+                width: 20,
+                height: 24,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/figma/home/calculator.svg"
+                alt=""
+                draggable={false}
+                style={{ width: "100%", height: "100%" }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Capture mode panel + Bottom Tab Bar */}
       <div className="absolute left-0 right-0 bottom-0 flex flex-col">
         <div
