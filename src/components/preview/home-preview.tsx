@@ -500,7 +500,7 @@ function SegmentedControl({
         transform: "translateX(-50%)",
         padding: 2,
         borderRadius: 100,
-        background: "rgba(0, 0, 0, 0.16)",
+        background: "rgba(0, 0, 0, 0.2)",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
         display: "flex",
@@ -553,7 +553,7 @@ function SegmentedControl({
             ...SEGMENT_TEXT_BASE,
             color: selected === i ? "#111111" : "rgba(255, 255, 255, 0.9)",
             fontWeight: 600,
-            transition: "color 0.18s ease",
+            transition: `color 0.34s ${SEGMENT_SPRING}`,
           }}
         >
           {label}
