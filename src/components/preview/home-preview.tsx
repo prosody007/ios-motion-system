@@ -5,7 +5,7 @@ import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 
 const HOME_INDICATOR_H = 34;
 const STATUS_BAR_FG = "#FFFFFF";
-const CAPTURE_MODE_PANEL_H = 172;
+const CAPTURE_MODE_PANEL_H = 160;
 
 const TAB_ACTIVE = "#007AFF";
 const TAB_INACTIVE = "#989B9E";
