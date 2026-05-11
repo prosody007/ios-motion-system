@@ -552,8 +552,8 @@ function SegmentedControl({
             flexShrink: 0,
             ...SEGMENT_TEXT_BASE,
             color: selected === i ? "#111111" : "rgba(255, 255, 255, 0.9)",
-            fontWeight: selected === i ? 600 : 500,
-            transition: "font-weight 0.18s ease, color 0.18s ease",
+            fontWeight: 600,
+            transition: "color 0.18s ease",
           }}
         >
           {label}
