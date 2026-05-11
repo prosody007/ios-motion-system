@@ -201,7 +201,7 @@ export function HomePreview() {
         })}
       </div>
 
-      {/* Home indicator */}
+      {/* Home indicator (drawn on top of the dark tab bar) */}
       <div
         className="absolute left-0 right-0 bottom-0 pointer-events-none"
         style={{ height: HOME_INDICATOR_H }}
@@ -215,7 +215,7 @@ export function HomePreview() {
             width: 144,
             height: 5,
             borderRadius: 100,
-            background: FG,
+            background: "#FFFFFF",
           }}
         />
       </div>
