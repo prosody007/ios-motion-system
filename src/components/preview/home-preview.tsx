@@ -553,7 +553,7 @@ function SegmentedControl({
             ...SEGMENT_TEXT_BASE,
             color: selected === i ? "#111111" : "rgba(255, 255, 255, 0.9)",
             fontWeight: 600,
-            transition: "color 0.32s cubic-bezier(0.4, 0, 0.2, 1)",
+            transition: "color 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
           {label}
