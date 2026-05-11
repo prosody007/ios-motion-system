@@ -323,7 +323,7 @@ function CaptureMode() {
         style={{
           position: "absolute",
           left: 54.5,
-          top: 79,
+          bottom: 20,
           width: 41,
           display: "flex",
           flexDirection: "column",
@@ -389,7 +389,7 @@ function CaptureMode() {
         style={{
           position: "absolute",
           left: 297.5,
-          top: 79,
+          bottom: 20,
           width: 41,
           display: "flex",
           flexDirection: "column",
@@ -417,7 +417,7 @@ function CaptureMode() {
         style={{
           position: "absolute",
           left: 151,
-          top: 50,
+          bottom: 20,
           width: 90,
           height: 90,
           pointerEvents: "auto",
@@ -466,7 +466,7 @@ function SegmentedControl() {
       style={{
         position: "absolute",
         left: "50%",
-        top: 0,
+        bottom: 124,
         transform: "translateX(-50%)",
         padding: 2,
         borderRadius: 100,
