@@ -76,9 +76,19 @@ function StatusIcons() {
 export function HomePreview() {
   return (
     <div
-      className="absolute inset-0 select-none"
+      className="absolute inset-0 select-none overflow-hidden"
       style={{ background: "#FFFFFF" }}
     >
+      {/* Background image */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/home/camera.png"
+        alt=""
+        draggable={false}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ objectFit: "cover", objectPosition: "center center" }}
+      />
+
       {/* Status bar */}
       <div
         className="absolute left-0 right-0 top-0 flex items-center justify-between"
