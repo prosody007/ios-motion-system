@@ -43,6 +43,16 @@ export function HomePreview() {
         style={{ objectFit: "cover", objectPosition: "center center" }}
       />
 
+      {/* 顶部蒙层 — 与底部蒙层方向相反，叠在背景图片之上 */}
+      <div
+        className="absolute left-0 right-0 top-0 pointer-events-none"
+        style={{
+          height: 160,
+          background:
+            "linear-gradient(to bottom, rgba(17, 17, 17, 0.75) 0%, rgba(34, 34, 34, 0) 100%)",
+        }}
+      />
+
       {/* Status bar — 1:1 与 Figma 节点 1460:15612 对齐 */}
       <div
         className="absolute left-0 right-0 top-0 flex flex-col items-start justify-center"
