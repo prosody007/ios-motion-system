@@ -43,6 +43,12 @@ export function HomePreview() {
         style={{ objectFit: "cover", objectPosition: "center center" }}
       />
 
+      {/* 全屏蒙层 — 纯黑 10% 透明度，叠在背景图片之上 */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "rgba(0, 0, 0, 0.1)" }}
+      />
+
       {/* 顶部蒙层 — 与底部蒙层方向相反，叠在背景图片之上 */}
       <div
         className="absolute left-0 right-0 top-0 pointer-events-none"
