@@ -508,6 +508,11 @@ function SegmentedControl({
   const thumbLeft = activeBounds?.left ?? 0;
   const thumbWidth = activeBounds?.width ?? 0;
 
+  const guidedBounds = bounds[1];
+  const guidedCenter = guidedBounds
+    ? guidedBounds.left + guidedBounds.width / 2
+    : null;
+
   return (
     <div
       ref={containerRef}
@@ -527,6 +532,9 @@ function SegmentedControl({
         pointerEvents: "auto",
       }}
     >
+      {guidedCenter !== null ? (
+        <CapturePopover guidedCenter={guidedCenter} />
+      ) : null}
       <div
         aria-hidden="true"
         style={{
@@ -649,6 +657,58 @@ function InfoModule({ mode }: { mode: number }) {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+// Popover (Figma 节点 1490:16064)：箭头底部对齐 segmented 内的 Guided Solve 中心
+const POPOVER_W = 200;
+const POPOVER_H = 200;
+const POPOVER_RADIUS = 38;
+const POPOVER_ARROW_W = 56;
+const POPOVER_ARROW_H = 13;
+const POPOVER_ARROW_GAP = 4;
+const POPOVER_BG = "rgba(255, 255, 255, 0.84)";
+const POPOVER_SHADOW = "0px 10px 50px rgba(0, 0, 0, 0.3)";
+
+function CapturePopover({ guidedCenter }: { guidedCenter: number }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: -(POPOVER_H + POPOVER_ARROW_H + POPOVER_ARROW_GAP),
+        left: guidedCenter - POPOVER_W / 2,
+        width: POPOVER_W,
+        height: POPOVER_H,
+        borderRadius: POPOVER_RADIUS,
+        background: POPOVER_BG,
+        backdropFilter: "blur(65px)",
+        WebkitBackdropFilter: "blur(65px)",
+        boxShadow: POPOVER_SHADOW,
+        pointerEvents: "auto",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: -POPOVER_ARROW_H,
+          left: POPOVER_W / 2 - POPOVER_ARROW_W / 2,
+          width: POPOVER_ARROW_W,
+          height: POPOVER_ARROW_H,
+          backgroundColor: POPOVER_BG,
+          backdropFilter: "blur(65px)",
+          WebkitBackdropFilter: "blur(65px)",
+          maskImage: "url(/figma/home/popover-arrow.svg)",
+          WebkitMaskImage: "url(/figma/home/popover-arrow.svg)",
+          maskSize: "contain",
+          WebkitMaskSize: "contain",
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+        }}
+      />
     </div>
   );
 }
