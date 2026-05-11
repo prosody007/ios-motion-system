@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 
 const HOME_INDICATOR_H = 34;
@@ -425,45 +425,92 @@ function CaptureMode() {
         }}
       />
 
-      {/* 顶部 Segmented (Direct Solve / Guided Solve) — Figma node 1467:14119 */}
+      {/* 顶部 Segmented (Direct Solve / Guided Solve) — Figma node 1467:14119
+          交互动画与 Segmented Control 共用：滑动指示器 + 按压 0.96 缩放 */}
+      <SegmentedControl />
+    </div>
+  );
+}
+
+const SEGMENT_LABELS = ["Direct Solve", "Guided Solve"];
+const SEGMENT_SPRING = "cubic-bezier(0.32, 0.72, 0, 1)";
+
+function SegmentedControl() {
+  const [selected, setSelected] = useState(0);
+  const [pressed, setPressed] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [bounds, setBounds] = useState<{ left: number; width: number }[]>([]);
+
+  useEffect(() => {
+    const measure = () => {
+      if (!containerRef.current) return;
+      const buttons = containerRef.current.querySelectorAll("button");
+      const next = Array.from(buttons).map((b) => {
+        const el = b as HTMLElement;
+        return { left: el.offsetLeft, width: el.offsetWidth };
+      });
+      setBounds(next);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const activeBounds = bounds[selected];
+  const thumbLeft = activeBounds?.left ?? 0;
+  const thumbWidth = activeBounds?.width ?? 0;
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: 0,
+        transform: "translateX(-50%)",
+        padding: 2,
+        borderRadius: 100,
+        background: "rgba(0, 0, 0, 0.16)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        display: "flex",
+        alignItems: "center",
+        pointerEvents: "auto",
+      }}
+    >
       <div
+        aria-hidden="true"
         style={{
           position: "absolute",
-          left: "50%",
-          top: 0,
-          transform: "translateX(-50%)",
-          padding: 2,
+          top: 2,
+          bottom: 2,
+          left: thumbLeft,
+          width: thumbWidth,
           borderRadius: 100,
-          background: "rgba(0, 0, 0, 0.16)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          display: "flex",
-          alignItems: "center",
-          pointerEvents: "auto",
+          background: "#FFFFFF",
+          border: "0.5px solid #FFFFFF",
+          boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.24)",
+          transform: `scale(${pressed ? 0.96 : 1})`,
+          transformOrigin: "center",
+          transition: `left 0.34s ${SEGMENT_SPRING}, width 0.3s ${SEGMENT_SPRING}, transform 0.15s ease-out`,
+          pointerEvents: "none",
         }}
-      >
-        <div
+      />
+      {SEGMENT_LABELS.map((label, i) => (
+        <button
+          key={label}
+          type="button"
+          onPointerDown={() => setPressed(true)}
+          onPointerUp={() => setPressed(false)}
+          onPointerCancel={() => setPressed(false)}
+          onPointerLeave={() => setPressed(false)}
+          onClick={() => setSelected(i)}
           style={{
-            width: 116,
-            height: 32,
-            paddingLeft: 16,
-            paddingRight: 16,
-            borderRadius: 100,
-            background: "#FFFFFF",
-            border: "0.5px solid #FFFFFF",
-            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.24)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <span style={{ ...SEGMENT_TEXT_BASE, fontWeight: 600 }}>
-            Direct Solve
-          </span>
-        </div>
-        <div
-          style={{
+            position: "relative",
+            zIndex: 1,
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
             width: 116,
             height: 32,
             paddingLeft: 16,
@@ -473,13 +520,14 @@ function CaptureMode() {
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
+            ...SEGMENT_TEXT_BASE,
+            fontWeight: selected === i ? 600 : 500,
+            transition: "font-weight 0.18s ease",
           }}
         >
-          <span style={{ ...SEGMENT_TEXT_BASE, fontWeight: 500 }}>
-            Guided Solve
-          </span>
-        </div>
-      </div>
+          {label}
+        </button>
+      ))}
     </div>
   );
 }
