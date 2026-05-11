@@ -56,6 +56,7 @@ const PHONE_VISUAL_W = PHONE_W + PHONE_VISUAL_PAD_LEFT + PHONE_VISUAL_PAD_RIGHT;
 const PHONE_VISUAL_H = PHONE_H + PHONE_VISUAL_PAD_TOP + PHONE_VISUAL_PAD_BOTTOM;
 const PHONE_SCALE_BOOST = 1.43;
 const PHONE_BODY_NUDGE_X = 24;
+const PHONE_BODY_NUDGE_Y = 2;
 let cachedPhoneScale: number | null = null;
 
 const UnifiedControlsProvider = ({ children }: { children: ReactNode }) => (
@@ -306,7 +307,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
           style={{
             position: "absolute",
             left: -PHONE_VISUAL_PAD_LEFT * scale + PHONE_BODY_NUDGE_X * scale,
-            top: -PHONE_VISUAL_PAD_TOP * scale,
+            top: -PHONE_VISUAL_PAD_TOP * scale + PHONE_BODY_NUDGE_Y * scale,
             width: PHONE_VISUAL_W * scale,
             height: PHONE_VISUAL_H * scale,
             overflow: "visible",
