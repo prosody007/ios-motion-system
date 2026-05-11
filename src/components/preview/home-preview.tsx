@@ -510,6 +510,7 @@ function SegmentedControl({
         WebkitBackdropFilter: "blur(8px)",
         display: "flex",
         alignItems: "center",
+        gap: 4,
         pointerEvents: "auto",
       }}
     >
@@ -548,7 +549,6 @@ function SegmentedControl({
               border: "none",
               background: "transparent",
               cursor: "pointer",
-              width: 116,
               height: 32,
               paddingLeft: 12,
               paddingRight: 12,
