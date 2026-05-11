@@ -477,18 +477,24 @@ function SegmentedControl({
   const [bounds, setBounds] = useState<{ left: number; width: number }[]>([]);
 
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const buttons = Array.from(
+      container.querySelectorAll("button"),
+    ) as HTMLElement[];
     const measure = () => {
-      if (!containerRef.current) return;
-      const buttons = containerRef.current.querySelectorAll("button");
-      const next = Array.from(buttons).map((b) => {
-        const el = b as HTMLElement;
-        return { left: el.offsetLeft, width: el.offsetWidth };
-      });
-      setBounds(next);
+      setBounds(
+        buttons.map((el) => ({ left: el.offsetLeft, width: el.offsetWidth })),
+      );
     };
     measure();
+    const ro = new ResizeObserver(measure);
+    buttons.forEach((b) => ro.observe(b));
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
   }, []);
 
   const activeBounds = bounds[selected];
