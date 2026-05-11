@@ -15,7 +15,7 @@ import {
   LoadingPreview,
   LoadingRecordingBarsPreview,
 } from "./loading-preview";
-import { HapticImpactPreview, HapticPairingPreview, HapticSelectionPreview, HapticIncreaseDecreasePreview } from "./haptic-previews";
+import { HomePreview } from "./home-preview";
 import { ZoomTransitionPreview, MatchedGeometryPreview, FullScreenCoverPreview } from "./transition-previews";
 import { AnyTransitionPreview, ViewModifierTransitionPreview, VCTransitionPreview } from "./custom-transition-previews";
 import { CheckboxPreview, ConsentCheckPreview, RadioPreview } from "./checkbox-preview";
@@ -76,10 +76,7 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-loading-spinner": LoadingPreview,
   "ios-loading-grow": LoadingGrowPreview,
   "ios-loading-recording-bars": LoadingRecordingBarsPreview,
-  "ios-haptic-impact": HapticImpactPreview,
-  "ios-haptic-notification": HapticPairingPreview,
-  "ios-haptic-selection": HapticSelectionPreview,
-  "ios-haptic-increase-decrease": HapticIncreaseDecreasePreview,
+  "ios-home": HomePreview,
   "ios-page-nav-transition": ZoomTransitionPreview,
   "ios-page-matched-geometry": MatchedGeometryPreview,
   "ios-page-fullscreen": FullScreenCoverPreview,

@@ -8,7 +8,7 @@ import { sheetSection } from "./sheet";
 import { navigationSection } from "./navigation";
 import { toggleSection } from "./toggle";
 import { loadingSection } from "./loading";
-import { hapticsSection } from "./haptics";
+import { homeSection } from "./home";
 
 import { pageTransitionsSection } from "./page-transitions";
 import { customTransitionsSection } from "./custom-transitions";
@@ -58,7 +58,7 @@ export const sectionMap: Record<string, SectionData> = {
   navigation: navigationSection,
   toggle: toggleSection,
   loading: loadingSection,
-  haptics: hapticsSection,
+  home: homeSection,
 
   "page-transitions": pageTransitionsSection,
   "custom-transitions": customTransitionsSection,

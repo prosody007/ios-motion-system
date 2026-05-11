@@ -54,8 +54,8 @@ export const categories: Category[] = [
   { slug: "custom-transitions", title: "Custom Transitions", icon: "🎭", description: "自定义过渡与视图修饰动画" },
   { slug: "hero-transition", title: "Hero Transition", icon: "🖼", description: "图片 Hero 过渡与放大切换" },
 
-  // 触觉
-  { slug: "haptics", title: "Haptics", icon: "📳", description: "触觉反馈与动画配合方式" },
+  // 实例
+  { slug: "home", title: "Home", icon: "🏠", description: "相机首页背景实例（按 Figma 设计稿）" },
 
   // 高级动效
   { slug: "counter", title: "Counter", icon: "#", description: "数字过渡与计数变化效果" },

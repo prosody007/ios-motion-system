@@ -55,7 +55,7 @@ export const docsNavGroups: DocsNavGroup[] = [
       "hero-transition",
     ],
   },
-  { label: "触觉", slugs: ["haptics"] },
+  { label: "实例", slugs: ["home"] },
   {
     label: "高级动效",
     slugs: [
@@ -104,7 +104,7 @@ export const docsNavMetaMap: Record<string, DocsNavMeta> = {
   "page-transitions": { primary: "Page Transitions", secondary: "" },
   "custom-transitions": { primary: "Custom Transitions", secondary: "" },
   "hero-transition": { primary: "Hero Transition", secondary: "" },
-  haptics: { primary: "Haptics", secondary: "" },
+  home: { primary: "Home", secondary: "" },
   counter: { primary: "Counter", secondary: "" },
   "scroll-driven": { primary: "Scroll-Driven", secondary: "" },
   keyframe: { primary: "Keyframes", secondary: "" },
