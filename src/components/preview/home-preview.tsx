@@ -579,7 +579,7 @@ function InfoModule({ mode }: { mode: number }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 64,
+        gap: 48,
       }}
     >
       <p
