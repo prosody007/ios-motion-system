@@ -37,7 +37,7 @@ const SCREEN_W = 393;
 const SCREEN_H = 852;
 const SCREEN_RADIUS = 54;
 const PHONE_DROP_SHADOW =
-  "drop-shadow(20px 20px 60px rgba(251, 233, 217, 0.7)) drop-shadow(120px 100px 240px rgba(28, 19, 14, 0.3))";
+  "drop-shadow(20px 20px 60px rgba(251, 233, 217, 0.7)) drop-shadow(140px 100px 240px rgba(28, 19, 14, 0.4))";
 const DEMO_LIST_W = 260;
 const DEMO_LIST_RIGHT = 40;
 const DEMO_LIST_COLUMN_W = DEMO_LIST_W + DEMO_LIST_RIGHT;
