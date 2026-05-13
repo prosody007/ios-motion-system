@@ -89,6 +89,8 @@ export function AppSidebar() {
               </ul>
             </section>
           ))}
+          {/* 底部留白：让最末项与窗口底部之间多出 80px 间距 */}
+          <div aria-hidden="true" style={{ height: 80 }} />
         </nav>
       </div>
     </aside>
