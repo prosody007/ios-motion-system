@@ -107,11 +107,11 @@ export function ConsentCheckPreview() {
   return (
     <div className="w-full max-w-[320px] select-none">
       <div
-        className="flex items-start gap-3 cursor-pointer py-1"
+        className="flex items-center gap-3 cursor-pointer py-1"
         onClick={() => setAgreed((v) => !v)}
       >
         <div
-          className="w-[20px] h-[20px] rounded-[6px] flex items-center justify-center flex-shrink-0 mt-0.5"
+          className="w-[20px] h-[20px] rounded-[6px] flex items-center justify-center flex-shrink-0"
           style={{
             border: `1.5px solid ${agreed ? "#007AFF" : "rgba(60,60,67,0.35)"}`,
             background: agreed ? "#007AFF" : "transparent",
