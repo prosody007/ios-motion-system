@@ -99,6 +99,52 @@ VStack(alignment: .leading, spacing: 12) {
 }`,
     },
     {
+      title: "Select All Checkbox",
+      tags: [
+        { text: "0.32s", variant: "duration" },
+        { text: "indeterminate", variant: "easing" },
+      ],
+      previewId: "ios-select-all-check",
+      code: `// SwiftUI — 三态全选：未选 / 部分选中（indeterminate）/ 全选
+@State private var items: [(id: Int, label: String, checked: Bool)] = [
+    (1, "Apple", false),
+    (2, "Banana", true),
+    (3, "Cherry", false),
+]
+
+private var trueCount: Int { items.filter { $0.checked }.count }
+private var allChecked: Bool { trueCount == items.count }
+private var indeterminate: Bool { trueCount > 0 && trueCount < items.count }
+
+VStack(alignment: .leading, spacing: 6) {
+    HStack(spacing: 12) {
+        TriStateBox(allChecked: allChecked, indeterminate: indeterminate)
+        Text("全选 (\\(trueCount)/\\(items.count))")
+    }
+    .contentShape(Rectangle())
+    .onTapGesture {
+        let next = !allChecked
+        for i in items.indices { items[i].checked = next }
+    }
+
+    Divider()
+
+    ForEach(items.indices, id: \\.self) { i in
+        HStack(spacing: 12) {
+            CheckBox(checked: items[i].checked)
+            Text(items[i].label)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { items[i].checked.toggle() }
+    }
+}
+
+// 关键状态：
+// - 子项 trueCount/total 三态 → indeterminate 用一根白色短横线，scaleX 0→1 生长
+// - 全选对勾 与 indeterminate 横线 互斥显示
+// - 切换全选时 单次状态变更带动所有子项一起切，spring 不弹（Apple 的列表多选风格）`,
+    },
+    {
       title: "List Selection",
       tags: [
         { text: "0.32s", variant: "duration" },

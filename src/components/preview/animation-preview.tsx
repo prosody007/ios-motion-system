@@ -18,7 +18,12 @@ import {
 import { HomePreview } from "./home-preview";
 import { ZoomTransitionPreview, MatchedGeometryPreview, FullScreenCoverPreview } from "./transition-previews";
 import { AnyTransitionPreview, ViewModifierTransitionPreview, VCTransitionPreview } from "./custom-transition-previews";
-import { CheckboxPreview, ConsentCheckPreview, RadioPreview } from "./checkbox-preview";
+import {
+  CheckboxPreview,
+  ConsentCheckPreview,
+  RadioPreview,
+  SelectAllCheckPreview,
+} from "./checkbox-preview";
 import { SegmentedPreview } from "./segmented-preview";
 import { SliderPreview, StepperPreview } from "./slider-preview";
 import { TextFieldFocusPreview, TextFieldShakePreview } from "./textfield-preview";
@@ -86,6 +91,7 @@ const previewMap: Record<string, React.ComponentType> = {
   // Batch 1
   "ios-checkbox": CheckboxPreview,
   "ios-consent-check": ConsentCheckPreview,
+  "ios-select-all-check": SelectAllCheckPreview,
   "ios-radio": RadioPreview,
   "ios-segmented": SegmentedPreview,
   "ios-slider": SliderPreview,
