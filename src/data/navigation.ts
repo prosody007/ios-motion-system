@@ -55,7 +55,6 @@ export const docsNavGroups: DocsNavGroup[] = [
       "hero-transition",
     ],
   },
-  { label: "实例", slugs: ["home"] },
   {
     label: "高级动效",
     slugs: [
@@ -66,6 +65,10 @@ export const docsNavGroups: DocsNavGroup[] = [
       "lottie",
       "border-glow",
     ],
+  },
+  {
+    label: "实例",
+    slugs: ["home", "example-card-stack", "example-card-flip-swipe"],
   },
 ];
 
@@ -105,6 +108,11 @@ export const docsNavMetaMap: Record<string, DocsNavMeta> = {
   "custom-transitions": { primary: "Custom Transitions", secondary: "" },
   "hero-transition": { primary: "Hero Transition", secondary: "" },
   home: { primary: "Home", secondary: "" },
+  "example-card-stack": { primary: "Flash Card Stack", secondary: "" },
+  "example-card-flip-swipe": {
+    primary: "Flash Card Flip Swipe Away",
+    secondary: "",
+  },
   counter: { primary: "Counter", secondary: "" },
   "scroll-driven": { primary: "Scroll-Driven", secondary: "" },
   keyframe: { primary: "Keyframes", secondary: "" },
