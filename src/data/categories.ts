@@ -9,7 +9,7 @@ export const categories: Category[] = [
   { slug: "spring-curves", title: "Spring & Timing", icon: "📈", description: "Spring 与 timing 曲线参考" },
 
   // 组件微交互
-  { slug: "button", title: "Button / Tap", icon: "👆", description: "按钮按压反馈与点击状态" },
+  { slug: "button", title: "Button", icon: "👆", description: "按钮按压反馈与点击状态" },
   { slug: "toggle", title: "Toggle / Switch", icon: "🔘", description: "开关控件的切换动画" },
   { slug: "checkbox", title: "Checkbox", icon: "☑", description: "勾选、单选与选择状态反馈" },
   { slug: "segmented", title: "Segmented Control", icon: "▤", description: "分段控件的切换与指示器运动" },

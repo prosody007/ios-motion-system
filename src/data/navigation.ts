@@ -76,7 +76,7 @@ export const docsNavMetaMap: Record<string, DocsNavMeta> = {
   skills: { primary: "Skills", secondary: "" },
   tokens: { primary: "Duration & Curve", secondary: "" },
   "spring-curves": { primary: "Spring & Timing", secondary: "" },
-  button: { primary: "Button / Tap", secondary: "" },
+  button: { primary: "Button", secondary: "" },
   toggle: { primary: "Toggle / Switch", secondary: "" },
   checkbox: { primary: "Checkbox", secondary: "" },
   segmented: { primary: "Segmented Control", secondary: "" },
