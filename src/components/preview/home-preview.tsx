@@ -739,11 +739,11 @@ function CapturePopover({
   // 从上到下逐个 translateY(10)+opacity 0 → translateY(0)+opacity 1，柔和减速曲线。
   // 关闭时不反向触发（外层 wrapper 整体缩回带走），所以只看 contentVisible
   const childStyle = (index: number) => {
-    const delay = 0.08 + index * 0.09;
+    const delay = 0.06 + index * 0.07;
     return {
       opacity: contentVisible ? 1 : 0,
       transform: contentVisible ? "translateY(0)" : "translateY(10px)",
-      transition: `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
+      transition: `opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
       willChange: "transform, opacity" as const,
     };
   };
@@ -780,7 +780,7 @@ function CapturePopover({
         opacity: entered ? 1 : 0,
         transition: closing
           ? "transform 0.18s cubic-bezier(0.4, 0, 1, 1), opacity 0.14s cubic-bezier(0.4, 0, 1, 1)"
-          : "transform 0.69s cubic-bezier(0.34, 1.36, 0.4, 1), opacity 0.36s cubic-bezier(0.4, 0, 0.2, 1)",
+          : "transform 0.55s cubic-bezier(0.34, 1.36, 0.4, 1), opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1)",
         // 把投影统一放在 wrapper 上：基于「主体 + 箭头」合并形状一次性生成，
         // 避免主体 boxShadow 与箭头独立 drop-shadow 在交界处双倍叠加形成暗缝
         filter: "drop-shadow(0px 20px 50px rgba(0, 0, 0, 0.3))",
