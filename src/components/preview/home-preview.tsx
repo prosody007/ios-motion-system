@@ -657,7 +657,7 @@ function SegmentedControl({
 
 const INFO_TEXTS = [
   "Get the full step-by-step solution",
-  "Snap for step-by-step solution",
+  "Answers hidden, reveal step by step",
 ];
 
 function InfoModule({ mode }: { mode: number }) {
