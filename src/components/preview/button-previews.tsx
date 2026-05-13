@@ -2,12 +2,16 @@
 
 import { useState, type CSSProperties } from "react";
 
-// 公共容器：让按钮宽度撑满预览屏幕，左右各留 24px 外边距
+// 公共容器：把按钮置于预览屏幕底部，宽度充满 + 左右各 24px 外边距，
+// 底部预留 40px 给 iOS home indicator 安全区
 function FullWidthButtonShell({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="w-full"
       style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 40,
         paddingLeft: 24,
         paddingRight: 24,
         boxSizing: "border-box",
