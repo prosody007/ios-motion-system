@@ -297,13 +297,13 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
  */
 const DisplayDeviceContext = createContext<DeviceKind | null>(null);
 
-const DEVICE_SWITCH_OUT_MS = 1100; // 当前设备向上飞出（同时透明度 1 -> 0）
-const DEVICE_SWITCH_IN_MS = 1100; // 新设备由下飞入（同时透明度 0 -> 1）
-// 飞出未完即开始飞入，制造"上一个飞出 / 下一个已经登场"的 overlap 错觉
-// （此处旧元素接近屏幕外+opacity≈0，所以 snap 跳到底不可见）
-const DEVICE_SWITCH_OVERLAP_MS = 500;
-// easeInOutQuint — 慢启动 / 中间快 / 慢落定，最丝滑的 ease-in-out 曲线
-const DEVICE_SWITCH_EASE = "cubic-bezier(0.83, 0, 0.17, 1)";
+// 飞出极短（让旧设备快速消失），飞入慢（柔和落定），无间隔过度
+const DEVICE_SWITCH_OUT_MS = 380;
+const DEVICE_SWITCH_IN_MS = 1100;
+// 飞出曲线：ease-in（开始慢、结尾加速冲出），减少元素在屏幕中央徘徊的时间
+const DEVICE_SWITCH_EASE_OUT = "cubic-bezier(0.55, 0, 1, 0.45)";
+// 飞入曲线：easeOutExpo / smooth — 极柔和的减速落定
+const DEVICE_SWITCH_EASE_IN = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 type SwitchPhase = "idle" | "out" | "snap";
 
@@ -323,7 +323,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => setPhase("idle"));
       });
-    }, DEVICE_SWITCH_OUT_MS - DEVICE_SWITCH_OVERLAP_MS);
+    }, DEVICE_SWITCH_OUT_MS);
     return () => window.clearTimeout(t1);
   }, [globalDevice, displayDevice]);
 
@@ -452,8 +452,8 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
                   phase === "snap"
                     ? "none"
                     : phase === "out"
-                      ? `transform ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}, opacity ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}`
-                      : `transform ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}, opacity ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}`,
+                      ? `transform ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE_OUT}, opacity ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE_OUT}`
+                      : `transform ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE_IN}, opacity ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE_IN}`,
                 willChange: "transform, opacity",
                 // 提示浏览器把这一层做成独立合成层，避免动画期间重绘 / 丢帧
                 backfaceVisibility: "hidden",
