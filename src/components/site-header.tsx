@@ -42,7 +42,8 @@ export function SiteHeader() {
 
 const DEVICE_OPTIONS: { id: DeviceKind; label: string; icon: () => ReactNode }[] = [
   { id: "phone", label: "iPhone", icon: () => <PhoneIcon /> },
-  { id: "ipad", label: "iPad", icon: () => <IPadIcon /> },
+  { id: "ipad", label: "iPad（横屏）", icon: () => <IPadIcon /> },
+  { id: "ipad-portrait", label: "iPad（竖屏）", icon: () => <IPadPortraitIcon /> },
 ];
 
 const SEGMENT_SPRING = "cubic-bezier(0.32, 0.72, 0, 1)";
@@ -160,6 +161,25 @@ function IPadIcon() {
     >
       <rect x="2.5" y="4" width="19" height="16" rx="2.5" />
       <line x1="18.5" y1="11" x2="18.5" y2="13" />
+    </svg>
+  );
+}
+
+function IPadPortraitIcon() {
+  return (
+    <svg
+      width="14"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="4" y="2.5" width="16" height="19" rx="2.5" />
+      <line x1="11" y1="18.5" x2="13" y2="18.5" />
     </svg>
   );
 }

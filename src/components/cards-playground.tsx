@@ -58,6 +58,15 @@ type DevicePreset = {
   FRAME_NUDGE_Y: number;
   /** 设备外壳 PNG 路径 */
   framePngSrc: string;
+  /**
+   * 外壳 PNG 顺时针旋转角度（默认 0）。仅 90 度场景做了旋转布局适配，
+   * 同时需要给出原 PNG 的尺寸以正确摆放。
+   */
+  chassisRotateDeg?: number;
+  /** 外壳 PNG 原始像素宽度（旋转布局时需要） */
+  chassisSrcW?: number;
+  /** 外壳 PNG 原始像素高度（旋转布局时需要） */
+  chassisSrcH?: number;
   /** 投影（CSS filter: drop-shadow 字符串） */
   dropShadow: string;
 };
@@ -104,6 +113,29 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     BODY_NUDGE_X: 0,
     FRAME_NUDGE_Y: 0,
     framePngSrc: "/figma/category/ipad-frame.png",
+    dropShadow: IPAD_DROP_SHADOW,
+  },
+  // 竖屏 iPad — 复用同一张 ipad-frame.png，PNG 顺时针旋转 90° 显示
+  // 整体尺寸从 1320×940 交换为 940×1320，屏幕区域同步交换偏移与尺寸
+  "ipad-portrait": {
+    W: 940,
+    H: 1320,
+    SCREEN_OFFSET_X: 53,
+    SCREEN_OFFSET_Y: 55,
+    SCREEN_W: 834,
+    SCREEN_H: 1210,
+    SCREEN_RADIUS: 36,
+    VISUAL_PAD_TOP: 140,
+    VISUAL_PAD_RIGHT: 320,
+    VISUAL_PAD_BOTTOM: 260,
+    VISUAL_PAD_LEFT: 140,
+    SCALE_BOOST: 1.3,
+    BODY_NUDGE_X: 0,
+    FRAME_NUDGE_Y: 0,
+    framePngSrc: "/figma/category/ipad-frame.png",
+    chassisRotateDeg: 90,
+    chassisSrcW: 1320,
+    chassisSrcH: 940,
     dropShadow: IPAD_DROP_SHADOW,
   },
 };
@@ -527,16 +559,32 @@ function PhoneFrame({ children }: { children: ReactNode }) {
         src={preset.framePngSrc}
         alt=""
         draggable={false}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          pointerEvents: "none",
-          userSelect: "none",
-          zIndex: 2,
-          transform: `translateY(${preset.FRAME_NUDGE_Y}px)`,
-        }}
+        style={
+          preset.chassisRotateDeg && preset.chassisSrcW && preset.chassisSrcH
+            ? {
+                // 旋转布局：用原始 PNG 像素尺寸渲染，然后 rotate(90deg) 落到 W×H box
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: preset.chassisSrcW,
+                height: preset.chassisSrcH,
+                pointerEvents: "none",
+                userSelect: "none",
+                zIndex: 2,
+                transformOrigin: "0 0",
+                transform: `translate(${preset.W}px, ${preset.FRAME_NUDGE_Y}px) rotate(${preset.chassisRotateDeg}deg)`,
+              }
+            : {
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
+                userSelect: "none",
+                zIndex: 2,
+                transform: `translateY(${preset.FRAME_NUDGE_Y}px)`,
+              }
+        }
       />
     </div>
   );

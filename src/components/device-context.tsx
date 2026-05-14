@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
-export type DeviceKind = "phone" | "ipad";
+export type DeviceKind = "phone" | "ipad" | "ipad-portrait";
 
 type DeviceContextValue = {
   device: DeviceKind;
@@ -28,8 +28,11 @@ export function DeviceProvider({
 }) {
   const [device, setDevice] = useState<DeviceKind>(initial);
 
+  // 循环切换：phone → ipad → ipad-portrait → phone
   const toggleDevice = useCallback(() => {
-    setDevice((prev) => (prev === "phone" ? "ipad" : "phone"));
+    setDevice((prev) =>
+      prev === "phone" ? "ipad" : prev === "ipad" ? "ipad-portrait" : "phone",
+    );
   }, []);
 
   const value = useMemo(
