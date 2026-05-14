@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { DeviceProvider } from "@/components/device-context";
 
 export const metadata: Metadata = {
   title: "Motion System — iOS 交互动效规范",
@@ -18,18 +19,20 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full">
       <body className="h-[100svh] overflow-hidden antialiased">
-        <TooltipProvider>
-          <SiteHeader />
-          <div className="flex h-[calc(100svh-4rem)] w-full mt-16">
-            <AppSidebar />
-            <main className="flex min-w-0 flex-1 justify-center overflow-hidden">
-              <div className="flex h-full w-full max-w-[1280px] min-h-0 flex-col px-10 pb-8 pt-10">
-                <div className="min-h-0 flex-1">{children}</div>
-                <SiteFooter />
-              </div>
-            </main>
-          </div>
-        </TooltipProvider>
+        <DeviceProvider>
+          <TooltipProvider>
+            <SiteHeader />
+            <div className="flex h-[calc(100svh-4rem)] w-full mt-16">
+              <AppSidebar />
+              <main className="flex min-w-0 flex-1 justify-center overflow-hidden">
+                <div className="flex h-full w-full max-w-[1280px] min-h-0 flex-col px-10 pb-8 pt-10">
+                  <div className="min-h-0 flex-1">{children}</div>
+                  <SiteFooter />
+                </div>
+              </main>
+            </div>
+          </TooltipProvider>
+        </DeviceProvider>
       </body>
     </html>
   );

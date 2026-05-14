@@ -12,6 +12,7 @@ import { CardProvider } from "@/components/card-context";
 import { getControlsEntry } from "@/components/preview/controls-registry";
 import { SpringPlaygroundProvider } from "@/components/preview/spring-playground/context";
 import { BorderGlowProvider } from "@/components/preview/border-glow/context";
+import { useDevice, type DeviceKind } from "@/components/device-context";
 import type { CardsSection } from "@/types/motion";
 
 /* ----------------------------------------------------------------
@@ -29,13 +30,72 @@ import type { CardsSection } from "@/types/motion";
  *  右侧 demo 列表 fixed 距视口最右 40px，垂直居中。
  * ---------------------------------------------------------------- */
 
-const PHONE_W = 437;
-const PHONE_H = 890;
-const SCREEN_OFFSET_X = 22;
-const SCREEN_OFFSET_Y = 21;
-const SCREEN_W = 393;
-const SCREEN_H = 852;
-const SCREEN_RADIUS = 54;
+/**
+ * Device presets — 一组设备共用同一组键，AutoScaledDeviceFrame / DeviceFrame
+ * 根据当前 device 选取对应 preset。新设备只需新增一条配置。
+ */
+type DevicePreset = {
+  /** 设备整体尺寸（包含外壳像素） */
+  W: number;
+  H: number;
+  /** 屏幕区域在设备中的偏移与尺寸 */
+  SCREEN_OFFSET_X: number;
+  SCREEN_OFFSET_Y: number;
+  SCREEN_W: number;
+  SCREEN_H: number;
+  SCREEN_RADIUS: number;
+  /** 包裹设备的视觉 padding（用于让 drop-shadow 不被裁剪） */
+  VISUAL_PAD_TOP: number;
+  VISUAL_PAD_RIGHT: number;
+  VISUAL_PAD_BOTTOM: number;
+  VISUAL_PAD_LEFT: number;
+  /** scale 上限放大系数，用于在小预览区里把设备显示得更大 */
+  SCALE_BOOST: number;
+  /** 设备水平/垂直微调（外壳与屏幕对齐时的像素修正） */
+  BODY_NUDGE_X: number;
+  FRAME_NUDGE_Y: number;
+  /** 设备外壳 PNG 路径 */
+  framePngSrc: string;
+};
+
+const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
+  phone: {
+    W: 437,
+    H: 890,
+    SCREEN_OFFSET_X: 22,
+    SCREEN_OFFSET_Y: 21,
+    SCREEN_W: 393,
+    SCREEN_H: 852,
+    SCREEN_RADIUS: 54,
+    VISUAL_PAD_TOP: 140,
+    VISUAL_PAD_RIGHT: 320,
+    VISUAL_PAD_BOTTOM: 260,
+    VISUAL_PAD_LEFT: 140,
+    SCALE_BOOST: 1.43,
+    BODY_NUDGE_X: 24,
+    FRAME_NUDGE_Y: 2,
+    framePngSrc: "/figma/category/phone-frame.png",
+  },
+  ipad: {
+    // Figma 1646:23248 — 横屏 iPad，1320×940，屏幕 1210×834 偏移 (55, 53)
+    W: 1320,
+    H: 940,
+    SCREEN_OFFSET_X: 55,
+    SCREEN_OFFSET_Y: 53,
+    SCREEN_W: 1210,
+    SCREEN_H: 834,
+    SCREEN_RADIUS: 36,
+    VISUAL_PAD_TOP: 140,
+    VISUAL_PAD_RIGHT: 320,
+    VISUAL_PAD_BOTTOM: 260,
+    VISUAL_PAD_LEFT: 140,
+    SCALE_BOOST: 1.0,
+    BODY_NUDGE_X: 0,
+    FRAME_NUDGE_Y: 0,
+    framePngSrc: "/figma/category/ipad-frame.png",
+  },
+};
+
 const PHONE_DROP_SHADOW =
   "drop-shadow(20px 20px 60px rgba(251, 233, 217, 0.7)) drop-shadow(140px 100px 240px rgba(28, 19, 14, 0.4))";
 const DEMO_LIST_W = 260;
@@ -48,16 +108,11 @@ const DEMO_OPTION_INDICATOR_W = 12;
 const DEMO_OPTION_INDICATOR_H = 2;
 const DEMO_OPTION_INDICATOR_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 const PHONE_PREVIEW_GAP = 6;
-const PHONE_VISUAL_PAD_TOP = 140;
-const PHONE_VISUAL_PAD_RIGHT = 320;
-const PHONE_VISUAL_PAD_BOTTOM = 260;
-const PHONE_VISUAL_PAD_LEFT = 140;
-const PHONE_VISUAL_W = PHONE_W + PHONE_VISUAL_PAD_LEFT + PHONE_VISUAL_PAD_RIGHT;
-const PHONE_VISUAL_H = PHONE_H + PHONE_VISUAL_PAD_TOP + PHONE_VISUAL_PAD_BOTTOM;
-const PHONE_SCALE_BOOST = 1.43;
-const PHONE_BODY_NUDGE_X = 24;
-const PHONE_FRAME_NUDGE_Y = 2;
-let cachedPhoneScale: number | null = null;
+
+// Spring playground 控件需要按 Phone 实际宽度对齐（即便切到 iPad 也保持一致 UI 宽度）
+const PHONE_W_FOR_CONTROLS = DEVICE_PRESETS.phone.W;
+
+const cachedDeviceScale: Partial<Record<DeviceKind, number>> = {};
 
 const UnifiedControlsProvider = ({ children }: { children: ReactNode }) => (
   <SpringPlaygroundProvider>
@@ -135,7 +190,7 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
                 <div
                   className="w-full shrink-0"
                   style={{
-                    width: isSpringPlaygroundControls ? "100%" : PHONE_W,
+                    width: isSpringPlaygroundControls ? "100%" : PHONE_W_FOR_CONTROLS,
                     paddingInline: isSpringPlaygroundControls ? 80 : 0,
                     boxSizing: "border-box",
                     maxHeight: isSpringPlaygroundControls
@@ -227,10 +282,15 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
 }
 
 function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
+  const { device } = useDevice();
+  const preset = DEVICE_PRESETS[device];
+  const visualW = preset.W + preset.VISUAL_PAD_LEFT + preset.VISUAL_PAD_RIGHT;
+  const visualH = preset.H + preset.VISUAL_PAD_TOP + preset.VISUAL_PAD_BOTTOM;
+
   const viewportRef = useRef<HTMLDivElement>(null);
   const [scaleState, setScaleState] = useState(() => ({
-    scale: cachedPhoneScale ?? 1,
-    ready: cachedPhoneScale !== null,
+    scale: cachedDeviceScale[device] ?? 1,
+    ready: cachedDeviceScale[device] !== undefined,
   }));
 
   useLayoutEffect(() => {
@@ -249,14 +309,14 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       );
       const nextScale = Math.min(
         1,
-        availableWidth / PHONE_VISUAL_W,
-        availableHeight / PHONE_VISUAL_H,
+        availableWidth / visualW,
+        availableHeight / visualH,
       );
-      const boostedScale = Math.min(1, nextScale * PHONE_SCALE_BOOST);
+      const boostedScale = Math.min(1, nextScale * preset.SCALE_BOOST);
       const resolvedScale = Number.isFinite(boostedScale)
         ? Math.max(0, boostedScale)
         : 1;
-      cachedPhoneScale = resolvedScale;
+      cachedDeviceScale[device] = resolvedScale;
       setScaleState((prev) => {
         if (prev.ready && Math.abs(prev.scale - resolvedScale) < 0.0005) {
           return prev;
@@ -283,7 +343,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       window.cancelAnimationFrame(rafId);
       window.removeEventListener("resize", scheduleUpdate);
     };
-  }, []);
+  }, [device, preset.SCALE_BOOST, visualW, visualH]);
 
   const scale = scaleState.scale;
 
@@ -296,8 +356,8 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       <div
         className="relative shrink-0"
         style={{
-          width: PHONE_W * scale,
-          height: PHONE_H * scale,
+          width: preset.W * scale,
+          height: preset.H * scale,
           overflow: "visible",
           visibility: scaleState.ready ? "visible" : "hidden",
           pointerEvents: "none",
@@ -306,18 +366,18 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
         <div
           style={{
             position: "absolute",
-            left: -PHONE_VISUAL_PAD_LEFT * scale + PHONE_BODY_NUDGE_X * scale,
-            top: -PHONE_VISUAL_PAD_TOP * scale,
-            width: PHONE_VISUAL_W * scale,
-            height: PHONE_VISUAL_H * scale,
+            left: -preset.VISUAL_PAD_LEFT * scale + preset.BODY_NUDGE_X * scale,
+            top: -preset.VISUAL_PAD_TOP * scale,
+            width: visualW * scale,
+            height: visualH * scale,
             overflow: "visible",
             pointerEvents: "none",
           }}
         >
           <div
             style={{
-              width: PHONE_VISUAL_W,
-              height: PHONE_VISUAL_H,
+              width: visualW,
+              height: visualH,
               transform: `scale(${scale})`,
               transformOrigin: "top left",
               overflow: "visible",
@@ -328,10 +388,10 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
             <div
               style={{
                 position: "absolute",
-                left: PHONE_VISUAL_PAD_LEFT,
-                top: PHONE_VISUAL_PAD_TOP,
-                width: PHONE_W,
-                height: PHONE_H,
+                left: preset.VISUAL_PAD_LEFT,
+                top: preset.VISUAL_PAD_TOP,
+                width: preset.W,
+                height: preset.H,
                 pointerEvents: "auto",
               }}
             >
@@ -345,27 +405,30 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
 }
 
 /**
- * PhoneFrame — 保持局部自包含：手机外壳与 screen 的尺寸、圆角、层级都写在组件内。
- * 这样不会依赖全局类名，demo 始终被裁在 393×852 预览区里。
+ * PhoneFrame — 保持局部自包含：设备外壳与 screen 的尺寸、圆角、层级都写在组件内。
+ * 根据 useDevice() 切换 phone / ipad 配置。
  */
 function PhoneFrame({ children }: { children: ReactNode }) {
+  const { device } = useDevice();
+  const preset = DEVICE_PRESETS[device];
+
   return (
     <div
       className="relative shrink-0"
       style={{
-        width: PHONE_W,
-        height: PHONE_H,
+        width: preset.W,
+        height: preset.H,
         filter: PHONE_DROP_SHADOW,
       }}
     >
       <div
         className="absolute overflow-hidden bg-white flex items-center justify-center"
         style={{
-          left: SCREEN_OFFSET_X,
-          top: SCREEN_OFFSET_Y,
-          width: SCREEN_W,
-          height: SCREEN_H,
-          borderRadius: SCREEN_RADIUS,
+          left: preset.SCREEN_OFFSET_X,
+          top: preset.SCREEN_OFFSET_Y,
+          width: preset.SCREEN_W,
+          height: preset.SCREEN_H,
+          borderRadius: preset.SCREEN_RADIUS,
           zIndex: 1,
           isolation: "isolate",
         }}
@@ -391,7 +454,7 @@ function PhoneFrame({ children }: { children: ReactNode }) {
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/figma/category/phone-frame.png"
+        src={preset.framePngSrc}
         alt=""
         draggable={false}
         style={{
@@ -402,7 +465,7 @@ function PhoneFrame({ children }: { children: ReactNode }) {
           pointerEvents: "none",
           userSelect: "none",
           zIndex: 2,
-          transform: `translateY(${PHONE_FRAME_NUDGE_Y}px)`,
+          transform: `translateY(${preset.FRAME_NUDGE_Y}px)`,
         }}
       />
     </div>
