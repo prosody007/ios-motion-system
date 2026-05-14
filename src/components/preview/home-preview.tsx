@@ -977,45 +977,35 @@ function CapturePopover({
                   alignItems: "center",
                 }}
               >
-                {/* 缩略图容器（节点 1559:15071）：height 100, rounded 16, overflow-clip, width 100% */}
+                {/* 缩略图容器（节点 1559:15071）：phone 时 width 321 / height 100；
+                    用 aspect-ratio 321:100 让 popover 加宽时缩略图等比例放大（不再写死高度） */}
                 <div
                   style={{
                     position: "relative",
                     width: "100%",
-                    height: 100,
+                    aspectRatio: "321 / 100",
                     borderRadius: 16,
                     overflow: "hidden",
                     flexShrink: 0,
                   }}
                 >
-                  {/* 内层图片（节点 1559:15072）：absolute height 187 width 343 left -33 top -41，
-                      用于精确还原裁切位置（设计稿用大图偏移定位） */}
-                  <div
+                  {/* 图片用 object-fit cover 充满容器，object-position center
+                      模拟 Figma 设计稿 (-33, -41) 偏移裁切位置（中央偏上） */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/figma/home/popover/video-thumb.png"
+                    alt=""
+                    draggable={false}
                     style={{
                       position: "absolute",
-                      left: -33,
-                      top: -41,
-                      width: 343,
-                      height: 187,
-                      borderRadius: 16,
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center",
+                      pointerEvents: "none",
                     }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/figma/home/popover/video-thumb.png"
-                      alt=""
-                      draggable={false}
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: 16,
-                        pointerEvents: "none",
-                      }}
-                    />
-                  </div>
+                  />
                 </div>
 
                 {/* 文案行（节点 1559:15073）：column items-start justify-center px 8 width 100%
