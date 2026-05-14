@@ -10,19 +10,19 @@ import {
 import { BASE_SCREEN_W, BASE_SCREEN_H } from "./device-layout";
 
 /**
- * DemoCanvas — demo 自适应外壳。
+ * DemoCanvas — demo 自适应外壳。两种模式：
  *
- * 用法：把 demo 现有内容包在 `<DemoCanvas>` 内，`children` 仍按 393×852（默认）
- * 设计稿坐标编写，DemoCanvas 会：
- *   1. 测量 demo 容器（PhoneFrame screen 区域）实际尺寸
- *   2. 计算 `scale = min(W/baseW, H/baseH)` 等比缩放，保证内容不裁切
- *   3. 把内容居中到 device screen 内
+ * mode = "fit"（默认，最简易、适合复杂动画 demo）：
+ *   children 仍按 baseW × baseH（默认 393×852）设计稿写，由 DemoCanvas 等比 scale 居中
+ *   到当前 device screen 内，不裁切、不变形。所有动画 transform 数值不需要改。
  *
- * 这样每个 demo 不用改内部一行，就能在 phone / iPad 横竖屏自动适配；
- * 同时所有动画的 transform / left / top 数值（基于 baseW × baseH）都不需要改。
+ * mode = "fill"（真自适应，适合用百分比 / flex 重新布局过的 demo）：
+ *   不做 transform 缩放，children 直接挂载到 device screen 等大的容器里，
+ *   内部布局自行响应（百分比、flex、clamp、left/right、translateX(-50%) 居中等）。
  */
 export function DemoCanvas({
   children,
+  mode = "fit",
   baseW = BASE_SCREEN_W,
   baseH = BASE_SCREEN_H,
   background,
@@ -30,6 +30,7 @@ export function DemoCanvas({
   style,
 }: {
   children: ReactNode;
+  mode?: "fit" | "fill";
   baseW?: number;
   baseH?: number;
   background?: CSSProperties["background"];
@@ -40,6 +41,7 @@ export function DemoCanvas({
   const [scale, setScale] = useState(1);
 
   useLayoutEffect(() => {
+    if (mode !== "fit") return;
     const el = containerRef.current;
     if (!el) return;
     const update = () => {
@@ -53,7 +55,19 @@ export function DemoCanvas({
     ro.observe(el);
     update();
     return () => ro.disconnect();
-  }, [baseW, baseH]);
+  }, [mode, baseW, baseH]);
+
+  if (mode === "fill") {
+    return (
+      <div
+        ref={containerRef}
+        className={`absolute inset-0 overflow-hidden ${className ?? ""}`.trim()}
+        style={{ background, ...style }}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div

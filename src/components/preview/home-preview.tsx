@@ -38,7 +38,7 @@ export function HomePreview() {
   };
 
   return (
-    <DemoCanvas background="#FFFFFF" baseW={393} baseH={852}>
+    <DemoCanvas mode="fill" background="#FFFFFF">
     <div
       className="absolute inset-0 select-none overflow-hidden"
       style={{ background: "#FFFFFF" }}
@@ -355,7 +355,9 @@ function CaptureMode({
       <div
         style={{
           position: "absolute",
-          left: 54.5,
+          // 19% 对应 phone 393 内 left=75（width 41 居中于 75 处）；fill 模式下随 device 比例展开
+          left: "19%",
+          transform: "translateX(-50%)",
           bottom: 20,
           width: 41,
           display: "flex",
@@ -421,7 +423,9 @@ function CaptureMode({
       <div
         style={{
           position: "absolute",
-          left: 297.5,
+          // 81% 对应 phone 393 内 left=318；fill 模式下随 device 比例展开
+          left: "81%",
+          transform: "translateX(-50%)",
           bottom: 20,
           width: 41,
           display: "flex",
@@ -441,7 +445,8 @@ function CaptureMode({
         <span style={CAPTURE_LABEL_FONT}>Text</span>
       </div>
 
-      {/* 中央按钮 — Figma node 1467:14086 (home_btn_normal)，整体导出图片 */}
+      {/* 中央按钮 — Figma node 1467:14086 (home_btn_normal)，整体导出图片
+          fill 模式下用 left:50% + translateX(-50%) 居中，宽容 device screen 比例变化 */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/figma/home/capture-btn.png"
@@ -450,8 +455,9 @@ function CaptureMode({
         onClick={onReplayPopover}
         style={{
           position: "absolute",
-          left: 151,
+          left: "50%",
           bottom: 20,
+          transform: "translateX(-50%)",
           width: 90,
           height: 90,
           pointerEvents: "auto",
