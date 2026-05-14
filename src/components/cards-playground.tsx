@@ -97,13 +97,13 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     dropShadow: PHONE_DROP_SHADOW,
   },
   ipad: {
-    // Figma 1646:23248 — 横屏 iPad，1320×940，屏幕 1210×834 偏移 (55, 53)
-    W: 1320,
+    // Figma 1670:23510 — 横屏 iPad，1300×940，屏幕 1178×818 偏移 (61, 61)
+    W: 1300,
     H: 940,
-    SCREEN_OFFSET_X: 55,
-    SCREEN_OFFSET_Y: 53,
-    SCREEN_W: 1210,
-    SCREEN_H: 834,
+    SCREEN_OFFSET_X: 61,
+    SCREEN_OFFSET_Y: 61,
+    SCREEN_W: 1178,
+    SCREEN_H: 818,
     SCREEN_RADIUS: 36,
     VISUAL_PAD_TOP: 140,
     VISUAL_PAD_RIGHT: 320,
@@ -115,15 +115,15 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     framePngSrc: "/figma/category/ipad-frame.png",
     dropShadow: IPAD_DROP_SHADOW,
   },
-  // 竖屏 iPad — 复用同一张 ipad-frame.png，PNG 顺时针旋转 90° 显示
-  // 整体尺寸从 1320×940 交换为 940×1320，屏幕区域同步交换偏移与尺寸
+  // 竖屏 iPad — 复用横屏 ipad-frame.png，PNG 顺时针旋转 90° 显示
+  // 横屏 1300×940 旋转 90° 后变为 940×1300；屏幕区域 (61,61)/1178×818 旋转 90° 后变 (61,61)/818×1178
   "ipad-portrait": {
     W: 940,
-    H: 1320,
-    SCREEN_OFFSET_X: 53,
-    SCREEN_OFFSET_Y: 55,
-    SCREEN_W: 834,
-    SCREEN_H: 1210,
+    H: 1300,
+    SCREEN_OFFSET_X: 61,
+    SCREEN_OFFSET_Y: 61,
+    SCREEN_W: 818,
+    SCREEN_H: 1178,
     SCREEN_RADIUS: 36,
     VISUAL_PAD_TOP: 140,
     VISUAL_PAD_RIGHT: 320,
@@ -134,7 +134,7 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     FRAME_NUDGE_Y: 0,
     framePngSrc: "/figma/category/ipad-frame.png",
     chassisRotateDeg: 90,
-    chassisSrcW: 1320,
+    chassisSrcW: 1300,
     chassisSrcH: 940,
     dropShadow: IPAD_DROP_SHADOW,
   },
