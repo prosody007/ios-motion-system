@@ -56,7 +56,14 @@ type DevicePreset = {
   FRAME_NUDGE_Y: number;
   /** 设备外壳 PNG 路径 */
   framePngSrc: string;
+  /** 投影（CSS filter: drop-shadow 字符串） */
+  dropShadow: string;
 };
+
+const PHONE_DROP_SHADOW =
+  "drop-shadow(20px 20px 60px rgba(251, 233, 217, 0.7)) drop-shadow(140px 100px 240px rgba(28, 19, 14, 0.4))";
+// iPad 投影：x 80 / y 120 / blur 240 / 颜色 #000 24%
+const IPAD_DROP_SHADOW = "drop-shadow(80px 120px 240px rgba(0, 0, 0, 0.24))";
 
 const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
   phone: {
@@ -75,6 +82,7 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     BODY_NUDGE_X: 24,
     FRAME_NUDGE_Y: 2,
     framePngSrc: "/figma/category/phone-frame.png",
+    dropShadow: PHONE_DROP_SHADOW,
   },
   ipad: {
     // Figma 1646:23248 — 横屏 iPad，1320×940，屏幕 1210×834 偏移 (55, 53)
@@ -93,11 +101,10 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     BODY_NUDGE_X: 0,
     FRAME_NUDGE_Y: 0,
     framePngSrc: "/figma/category/ipad-frame.png",
+    dropShadow: IPAD_DROP_SHADOW,
   },
 };
 
-const PHONE_DROP_SHADOW =
-  "drop-shadow(20px 20px 60px rgba(251, 233, 217, 0.7)) drop-shadow(140px 100px 240px rgba(28, 19, 14, 0.4))";
 const DEMO_LIST_W = 260;
 const DEMO_LIST_RIGHT = 40;
 const DEMO_LIST_COLUMN_W = DEMO_LIST_W + DEMO_LIST_RIGHT;
@@ -418,7 +425,7 @@ function PhoneFrame({ children }: { children: ReactNode }) {
       style={{
         width: preset.W,
         height: preset.H,
-        filter: PHONE_DROP_SHADOW,
+        filter: preset.dropShadow,
       }}
     >
       <div
