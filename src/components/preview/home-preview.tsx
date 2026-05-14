@@ -291,24 +291,7 @@ export function HomePreview() {
         </div>
       </div>
 
-      {/* Home indicator (drawn on top of the dark tab bar) */}
-      <div
-        className="absolute left-0 right-0 bottom-0 pointer-events-none"
-        style={{ height: HOME_INDICATOR_H, zIndex: 30 }}
-      >
-        <div
-          className="absolute"
-          style={{
-            bottom: 8,
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: 144,
-            height: 5,
-            borderRadius: 100,
-            background: "#FFFFFF",
-          }}
-        />
-      </div>
+      {/* Home indicator 已统一由 PhoneFrame 渲染，这里不再重复 */}
     </div>
   );
 }
