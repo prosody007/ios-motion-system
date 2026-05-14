@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { DemoCanvas } from "./demo-canvas";
 
 /* ----------------------------------------------------------------
  *  CardExpandPreview · 卡片展开
@@ -1466,13 +1467,10 @@ export function FlashCardTransitionPreview() {
     : FLASH_STACK_PANEL_QUIZ_HEIGHT;
 
   return (
-    <div
-      className="relative select-none overflow-hidden"
-      style={{
-        width: FLASH_STACK_FRAME_W,
-        height: FLASH_STACK_FRAME_H,
-        background: "#FFFFFF",
-      }}
+    <DemoCanvas
+      background="#FFFFFF"
+      baseW={FLASH_STACK_FRAME_W}
+      baseH={FLASH_STACK_FRAME_H}
     >
       <style>{`
         @keyframes ${animId}-exit-next {
@@ -1711,7 +1709,7 @@ export function FlashCardTransitionPreview() {
           </>
         )}
       </div>
-    </div>
+    </DemoCanvas>
   );
 }
 
