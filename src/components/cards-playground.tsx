@@ -74,10 +74,10 @@ type DevicePreset = {
 const PHONE_DROP_SHADOW =
   "drop-shadow(20px 20px 60px rgba(251, 233, 217, 0.7)) drop-shadow(140px 100px 240px rgba(28, 19, 14, 0.4))";
 // iPad 投影 — 双层叠加：
-//   1) x 40 / y 40 / blur 80   / #5F6C95 24%
-//   2) x 80 / y 120 / blur 240 / #191C32 25%
+//   1) x 40 / y 40 / blur 80   / #5F6C95 16%
+//   2) x 80 / y 120 / blur 240 / #191C32 20%
 const IPAD_DROP_SHADOW =
-  "drop-shadow(40px 40px 80px rgba(95, 108, 149, 0.24)) drop-shadow(80px 120px 240px rgba(25, 28, 50, 0.25))";
+  "drop-shadow(40px 40px 80px rgba(95, 108, 149, 0.16)) drop-shadow(80px 120px 240px rgba(25, 28, 50, 0.2))";
 
 const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
   phone: {
