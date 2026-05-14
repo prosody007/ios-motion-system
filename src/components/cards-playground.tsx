@@ -115,8 +115,8 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     framePngSrc: "/figma/category/ipad-frame.png",
     dropShadow: IPAD_DROP_SHADOW,
   },
-  // 竖屏 iPad — 复用横屏 ipad-frame.png，PNG 顺时针旋转 90° 显示
-  // 横屏 1300×940 旋转 90° 后变为 940×1300；屏幕区域 (61,61)/1178×818 旋转 90° 后变 (61,61)/818×1178
+  // 竖屏 iPad — Figma 1674:23511 独立竖屏外壳，940×1300，屏幕 818×1178 偏移 (61, 61)
+  // 注：figma 导出的 PNG 屏幕区域是绿色占位，由 screen 层（zIndex 高于外壳）盖住即可
   "ipad-portrait": {
     W: 940,
     H: 1300,
@@ -132,10 +132,7 @@ const DEVICE_PRESETS: Record<DeviceKind, DevicePreset> = {
     SCALE_BOOST: 1.3,
     BODY_NUDGE_X: 0,
     FRAME_NUDGE_Y: 0,
-    framePngSrc: "/figma/category/ipad-frame.png",
-    chassisRotateDeg: 90,
-    chassisSrcW: 1300,
-    chassisSrcH: 940,
+    framePngSrc: "/figma/category/ipad-frame-portrait.png",
     dropShadow: IPAD_DROP_SHADOW,
   },
 };
@@ -531,7 +528,7 @@ function PhoneFrame({ children }: { children: ReactNode }) {
           width: preset.SCREEN_W,
           height: preset.SCREEN_H,
           borderRadius: preset.SCREEN_RADIUS,
-          zIndex: 1,
+          zIndex: 3,
           isolation: "isolate",
         }}
       >
