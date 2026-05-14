@@ -749,11 +749,14 @@ function CapturePopover({
     window.setTimeout(() => onClose(), 180);
   };
 
+  // popover 宽度：仅 iPad 竖屏放大 20%（phone / iPad 横屏保持 353）
+  const { device } = useDevice();
+  const popoverW = device === "ipad-portrait" ? Math.round(POPOVER_W * 1.2) : POPOVER_W;
   // popover 在屏幕水平居中，转换到 SegmentedControl 容器的本地坐标系
-  const popoverLeftInContainer = (containerWidth - POPOVER_W) / 2;
+  const popoverLeftInContainer = (containerWidth - popoverW) / 2;
   // 箭头中心在 popover 内部的横向位置（对齐 Guided Solve 中心）
   const arrowCenterInPopover = guidedCenter - popoverLeftInContainer;
-  const originX = (arrowCenterInPopover / POPOVER_W) * 100;
+  const originX = (arrowCenterInPopover / popoverW) * 100;
 
   return (
     <div
@@ -762,7 +765,7 @@ function CapturePopover({
         // 用 bottom 锚定到 SegmentedControl 容器顶部 + gap，再让 popover 自身高度自适应
         bottom: `calc(100% + ${POPOVER_SEGMENT_GAP}px)`,
         left: popoverLeftInContainer,
-        width: POPOVER_W,
+        width: popoverW,
         // 给底部箭头预留位置（箭头 absolute 在 wrapper 底部）
         paddingBottom: POPOVER_ARROW_H,
         boxSizing: "content-box",
@@ -782,7 +785,7 @@ function CapturePopover({
       <div
         style={{
           position: "relative",
-          width: POPOVER_W,
+          width: popoverW,
           overflow: "hidden",
           borderRadius: POPOVER_RADIUS,
         }}
