@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
+import { DemoCanvas } from "./demo-canvas";
 
 const HOME_INDICATOR_H = 34;
 const STATUS_BAR_FG = "#FFFFFF";
@@ -37,6 +38,7 @@ export function HomePreview() {
   };
 
   return (
+    <DemoCanvas background="#FFFFFF" baseW={393} baseH={852}>
     <div
       className="absolute inset-0 select-none overflow-hidden"
       style={{ background: "#FFFFFF" }}
@@ -293,6 +295,7 @@ export function HomePreview() {
 
       {/* Home indicator 已统一由 PhoneFrame 渲染，这里不再重复 */}
     </div>
+    </DemoCanvas>
   );
 }
 
