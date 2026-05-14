@@ -2,7 +2,7 @@
 
 import { useState, type CSSProperties } from "react";
 
-// 公共容器：底部 CTA — Apple 系统标准位置（home indicator 34pt + 呼吸 16pt = bottom 50pt），
+// 公共容器：底部 CTA — home indicator 34pt + 呼吸 8pt = bottom 42pt，
 // 宽度充满 + 左右各 24pt 外边距
 function FullWidthButtonShell({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +11,7 @@ function FullWidthButtonShell({ children }: { children: React.ReactNode }) {
         position: "absolute",
         left: 0,
         right: 0,
-        bottom: 50,
+        bottom: 42,
         paddingLeft: 24,
         paddingRight: 24,
         boxSizing: "border-box",
