@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 import { DemoCanvas } from "./demo-canvas";
+import { useDevice } from "@/components/device-context";
 
 const HOME_INDICATOR_H = 34;
 const STATUS_BAR_FG = "#FFFFFF";
