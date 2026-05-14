@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 import { DemoCanvas } from "./demo-canvas";
-import { useDevice } from "@/components/device-context";
 
 const HOME_INDICATOR_H = 34;
 const STATUS_BAR_FG = "#FFFFFF";
@@ -750,14 +749,11 @@ function CapturePopover({
     window.setTimeout(() => onClose(), 180);
   };
 
-  // popover 宽度按 device 调整：phone 353（90% phone width），iPad 上放大到 480
-  const { device } = useDevice();
-  const popoverW = device === "phone" ? POPOVER_W : 480;
   // popover 在屏幕水平居中，转换到 SegmentedControl 容器的本地坐标系
-  const popoverLeftInContainer = (containerWidth - popoverW) / 2;
+  const popoverLeftInContainer = (containerWidth - POPOVER_W) / 2;
   // 箭头中心在 popover 内部的横向位置（对齐 Guided Solve 中心）
   const arrowCenterInPopover = guidedCenter - popoverLeftInContainer;
-  const originX = (arrowCenterInPopover / popoverW) * 100;
+  const originX = (arrowCenterInPopover / POPOVER_W) * 100;
 
   return (
     <div
@@ -766,7 +762,7 @@ function CapturePopover({
         // 用 bottom 锚定到 SegmentedControl 容器顶部 + gap，再让 popover 自身高度自适应
         bottom: `calc(100% + ${POPOVER_SEGMENT_GAP}px)`,
         left: popoverLeftInContainer,
-        width: popoverW,
+        width: POPOVER_W,
         // 给底部箭头预留位置（箭头 absolute 在 wrapper 底部）
         paddingBottom: POPOVER_ARROW_H,
         boxSizing: "content-box",
@@ -786,7 +782,7 @@ function CapturePopover({
       <div
         style={{
           position: "relative",
-          width: popoverW,
+          width: POPOVER_W,
           overflow: "hidden",
           borderRadius: POPOVER_RADIUS,
         }}
