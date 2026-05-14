@@ -297,10 +297,10 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
  */
 const DisplayDeviceContext = createContext<DeviceKind | null>(null);
 
-const DEVICE_SWITCH_OUT_MS = 800; // 当前设备向上飞出（同时透明度 1 -> 0）
-const DEVICE_SWITCH_IN_MS = 800; // 新设备由下飞入（同时透明度 0 -> 1）
-// smooth 曲线（接近 SwiftUI .smooth）
-const DEVICE_SWITCH_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+const DEVICE_SWITCH_OUT_MS = 1100; // 当前设备向上飞出（同时透明度 1 -> 0）
+const DEVICE_SWITCH_IN_MS = 1100; // 新设备由下飞入（同时透明度 0 -> 1）
+// easeInOutQuint — 慢启动 / 中间快 / 慢落定，最丝滑的 ease-in-out 曲线
+const DEVICE_SWITCH_EASE = "cubic-bezier(0.83, 0, 0.17, 1)";
 
 type SwitchPhase = "idle" | "out" | "snap";
 
@@ -452,6 +452,9 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
                       ? `transform ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}, opacity ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}`
                       : `transform ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}, opacity ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}`,
                 willChange: "transform, opacity",
+                // 提示浏览器把这一层做成独立合成层，避免动画期间重绘 / 丢帧
+                backfaceVisibility: "hidden",
+                transformStyle: "preserve-3d",
               }}
             >
               <DisplayDeviceContext.Provider value={displayDevice}>
