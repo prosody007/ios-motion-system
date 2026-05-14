@@ -2,8 +2,8 @@
 
 import { useState, type CSSProperties } from "react";
 
-// 公共容器：把按钮贴在 iOS Home Indicator 顶部（底部 34px 是 home indicator 区域，必须流出），
-// 宽度充满 + 左右各 24px 外边距
+// 公共容器：底部 CTA — Apple 系统标准位置（home indicator 34pt + 呼吸 16pt = bottom 50pt），
+// 宽度充满 + 左右各 24pt 外边距
 function FullWidthButtonShell({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -11,7 +11,7 @@ function FullWidthButtonShell({ children }: { children: React.ReactNode }) {
         position: "absolute",
         left: 0,
         right: 0,
-        bottom: 34,
+        bottom: 50,
         paddingLeft: 24,
         paddingRight: 24,
         boxSizing: "border-box",
