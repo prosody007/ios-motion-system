@@ -297,10 +297,10 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
  */
 const DisplayDeviceContext = createContext<DeviceKind | null>(null);
 
-const DEVICE_SWITCH_OUT_MS = 500; // 当前设备向上飞出的 transition 时长
-const DEVICE_SWITCH_HOLD_MS = 500; // 飞出完成后停留（延迟）时长
-const DEVICE_SWITCH_IN_MS = 500; // 新设备由下飞入的 transition 时长
-const DEVICE_SWITCH_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+const DEVICE_SWITCH_OUT_MS = 800; // 当前设备向上飞出（同时透明度 1 -> 0）
+const DEVICE_SWITCH_IN_MS = 800; // 新设备由下飞入（同时透明度 0 -> 1）
+// smooth 曲线（接近 SwiftUI .smooth）
+const DEVICE_SWITCH_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 type SwitchPhase = "idle" | "out" | "snap";
 
@@ -320,7 +320,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => setPhase("idle"));
       });
-    }, DEVICE_SWITCH_OUT_MS + DEVICE_SWITCH_HOLD_MS);
+    }, DEVICE_SWITCH_OUT_MS);
     return () => window.clearTimeout(t1);
   }, [globalDevice, displayDevice]);
 
@@ -434,20 +434,24 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
                 width: preset.W,
                 height: preset.H,
                 pointerEvents: "auto",
-                // 切换动画：当前飞出（向上 -150%）-> 瞬移到 +150%（无过渡）-> 由下飞回 0
+                // 切换动画：
+                // - out: translateY 0 -> -150%，opacity 1 -> 0（飞出同时淡出）
+                // - snap: 瞬移到 +150%、opacity 0（无过渡）
+                // - idle (飞入): 回到 translateY 0、opacity 1
                 transform:
                   phase === "out"
                     ? "translateY(-150%)"
                     : phase === "snap"
                       ? "translateY(150%)"
                       : "translateY(0)",
+                opacity: phase === "idle" ? 1 : 0,
                 transition:
                   phase === "snap"
                     ? "none"
                     : phase === "out"
-                      ? `transform ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}`
-                      : `transform ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}`,
-                willChange: "transform",
+                      ? `transform ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}, opacity ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}`
+                      : `transform ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}, opacity ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}`,
+                willChange: "transform, opacity",
               }}
             >
               <DisplayDeviceContext.Provider value={displayDevice}>
