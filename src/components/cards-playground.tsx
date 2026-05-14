@@ -299,6 +299,9 @@ const DisplayDeviceContext = createContext<DeviceKind | null>(null);
 
 const DEVICE_SWITCH_OUT_MS = 1100; // 当前设备向上飞出（同时透明度 1 -> 0）
 const DEVICE_SWITCH_IN_MS = 1100; // 新设备由下飞入（同时透明度 0 -> 1）
+// 飞出未完即开始飞入，制造"上一个飞出 / 下一个已经登场"的 overlap 错觉
+// （此处旧元素接近屏幕外+opacity≈0，所以 snap 跳到底不可见）
+const DEVICE_SWITCH_OVERLAP_MS = 500;
 // easeInOutQuint — 慢启动 / 中间快 / 慢落定，最丝滑的 ease-in-out 曲线
 const DEVICE_SWITCH_EASE = "cubic-bezier(0.83, 0, 0.17, 1)";
 
@@ -320,7 +323,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => setPhase("idle"));
       });
-    }, DEVICE_SWITCH_OUT_MS);
+    }, DEVICE_SWITCH_OUT_MS - DEVICE_SWITCH_OVERLAP_MS);
     return () => window.clearTimeout(t1);
   }, [globalDevice, displayDevice]);
 
