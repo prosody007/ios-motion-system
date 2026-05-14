@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useDevice } from "@/components/device-context";
+import type { ReactNode } from "react";
+import { useDevice, type DeviceKind } from "@/components/device-context";
 
 export function SiteHeader() {
   return (
@@ -31,7 +32,7 @@ export function SiteHeader() {
         <div className="flex min-w-0 flex-1 items-center justify-between pl-10">
           <div />
           <div className="hidden lg:block">
-            <DeviceToggle />
+            <DeviceSegmentedControl />
           </div>
         </div>
       </div>
@@ -39,36 +40,101 @@ export function SiteHeader() {
   );
 }
 
+const DEVICE_OPTIONS: { id: DeviceKind; label: string; icon: () => ReactNode }[] = [
+  { id: "phone", label: "iPhone", icon: () => <PhoneIcon /> },
+  { id: "ipad", label: "iPad", icon: () => <IPadIcon /> },
+];
+
+const SEGMENT_SPRING = "cubic-bezier(0.32, 0.72, 0, 1)";
+
 /**
- * Device toggle — 默认 phone，点击切到 ipad（再点回 phone）。
- * 用单一图标按钮表达当前状态：phone 状态显示手机图标，ipad 状态显示平板图标。
+ * Segmented Control 风格设备切换：
+ * - 两段（iPhone / iPad），白色 thumb 跟随选中项滑动
+ * - 与 Home page Capture 模式 segmented 视觉风格一致
  */
-function DeviceToggle() {
-  const { device, toggleDevice } = useDevice();
-  const isPhone = device === "phone";
+function DeviceSegmentedControl() {
+  const { device, setDevice } = useDevice();
+  const selectedIndex = DEVICE_OPTIONS.findIndex((o) => o.id === device);
+
+  const CELL_W = 36;
+  const CELL_H = 28;
+  const PADDING = 2;
 
   return (
-    <button
-      type="button"
-      onClick={toggleDevice}
-      aria-label={isPhone ? "切换到 iPad 模拟器" : "切换到 iPhone 模拟器"}
-      title={isPhone ? "切换到 iPad" : "切换到 iPhone"}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[rgba(5,5,5,0.06)] bg-white text-[rgba(0,0,0,0.72)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors hover:bg-[rgba(0,0,0,0.04)]"
+    <div
+      role="tablist"
+      aria-label="设备切换"
+      style={{
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        padding: PADDING,
+        borderRadius: 100,
+        background: "rgba(0, 0, 0, 0.06)",
+        gap: 2,
+      }}
     >
-      {isPhone ? <PhoneIcon /> : <IPadIcon />}
-    </button>
+      {/* thumb（白色滑块） */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: PADDING,
+          left: PADDING,
+          width: CELL_W,
+          height: CELL_H,
+          borderRadius: 100,
+          background: "#FFFFFF",
+          boxShadow:
+            "0 3px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.04)",
+          transform: `translateX(${selectedIndex * (CELL_W + 2)}px)`,
+          transition: `transform 0.34s ${SEGMENT_SPRING}`,
+        }}
+      />
+      {DEVICE_OPTIONS.map((opt) => {
+        const isActive = opt.id === device;
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            aria-label={opt.label}
+            title={opt.label}
+            onClick={() => setDevice(opt.id)}
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: CELL_W,
+              height: CELL_H,
+              border: "none",
+              background: "transparent",
+              padding: 0,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: isActive ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.5)",
+              transition: "color 0.2s ease-out",
+            }}
+          >
+            {opt.icon()}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
 function PhoneIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.6"
+      strokeWidth="1.7"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -82,8 +148,8 @@ function PhoneIcon() {
 function IPadIcon() {
   return (
     <svg
-      width="18"
-      height="18"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

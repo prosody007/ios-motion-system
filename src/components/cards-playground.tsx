@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  createContext,
+  useContext,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -288,16 +290,48 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
   );
 }
 
+/**
+ * DisplayDevice — 切换动画期间，显示中的设备 ≠ 全局当前设备。
+ * AutoScaledPhoneFrame 在切换过渡期间向后代提供 displayDevice，让 PhoneFrame 渲染对应外壳；
+ * 全局 device 变化时由 AutoScaledPhoneFrame 内的状态机延迟同步过来，确保动画完整。
+ */
+const DisplayDeviceContext = createContext<DeviceKind | null>(null);
+
+const DEVICE_SWITCH_OUT_MS = 500; // 当前设备向上飞出的 transition 时长
+const DEVICE_SWITCH_HOLD_MS = 500; // 飞出完成后停留（延迟）时长
+const DEVICE_SWITCH_IN_MS = 500; // 新设备由下飞入的 transition 时长
+const DEVICE_SWITCH_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+
+type SwitchPhase = "idle" | "out" | "snap";
+
 function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
-  const { device } = useDevice();
-  const preset = DEVICE_PRESETS[device];
+  const { device: globalDevice } = useDevice();
+  const [displayDevice, setDisplayDevice] = useState<DeviceKind>(globalDevice);
+  const [phase, setPhase] = useState<SwitchPhase>("idle");
+
+  // 切换状态机：idle -> out -> (hold) -> snap (无过渡，瞬移到下方) -> idle (向上飞回)
+  useEffect(() => {
+    if (globalDevice === displayDevice) return;
+    setPhase("out");
+    const t1 = window.setTimeout(() => {
+      setPhase("snap");
+      setDisplayDevice(globalDevice);
+      // 双 RAF 等 snap 那一帧渲染完成，再切回 idle 触发"由下向上"的 transition
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setPhase("idle"));
+      });
+    }, DEVICE_SWITCH_OUT_MS + DEVICE_SWITCH_HOLD_MS);
+    return () => window.clearTimeout(t1);
+  }, [globalDevice, displayDevice]);
+
+  const preset = DEVICE_PRESETS[displayDevice];
   const visualW = preset.W + preset.VISUAL_PAD_LEFT + preset.VISUAL_PAD_RIGHT;
   const visualH = preset.H + preset.VISUAL_PAD_TOP + preset.VISUAL_PAD_BOTTOM;
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const [scaleState, setScaleState] = useState(() => ({
-    scale: cachedDeviceScale[device] ?? 1,
-    ready: cachedDeviceScale[device] !== undefined,
+    scale: cachedDeviceScale[displayDevice] ?? 1,
+    ready: cachedDeviceScale[displayDevice] !== undefined,
   }));
 
   useLayoutEffect(() => {
@@ -323,7 +357,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       const resolvedScale = Number.isFinite(boostedScale)
         ? Math.max(0, boostedScale)
         : 1;
-      cachedDeviceScale[device] = resolvedScale;
+      cachedDeviceScale[displayDevice] = resolvedScale;
       setScaleState((prev) => {
         if (prev.ready && Math.abs(prev.scale - resolvedScale) < 0.0005) {
           return prev;
@@ -350,7 +384,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
       window.cancelAnimationFrame(rafId);
       window.removeEventListener("resize", scheduleUpdate);
     };
-  }, [device, preset.SCALE_BOOST, visualW, visualH]);
+  }, [displayDevice, preset.SCALE_BOOST, visualW, visualH]);
 
   const scale = scaleState.scale;
 
@@ -400,9 +434,25 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
                 width: preset.W,
                 height: preset.H,
                 pointerEvents: "auto",
+                // 切换动画：当前飞出（向上 -150%）-> 瞬移到 +150%（无过渡）-> 由下飞回 0
+                transform:
+                  phase === "out"
+                    ? "translateY(-150%)"
+                    : phase === "snap"
+                      ? "translateY(150%)"
+                      : "translateY(0)",
+                transition:
+                  phase === "snap"
+                    ? "none"
+                    : phase === "out"
+                      ? `transform ${DEVICE_SWITCH_OUT_MS}ms ${DEVICE_SWITCH_EASE}`
+                      : `transform ${DEVICE_SWITCH_IN_MS}ms ${DEVICE_SWITCH_EASE}`,
+                willChange: "transform",
               }}
             >
-              {children}
+              <DisplayDeviceContext.Provider value={displayDevice}>
+                {children}
+              </DisplayDeviceContext.Provider>
             </div>
           </div>
         </div>
@@ -416,7 +466,9 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
  * 根据 useDevice() 切换 phone / ipad 配置。
  */
 function PhoneFrame({ children }: { children: ReactNode }) {
-  const { device } = useDevice();
+  const { device: globalDevice } = useDevice();
+  const ctxDevice = useContext(DisplayDeviceContext);
+  const device = ctxDevice ?? globalDevice;
   const preset = DEVICE_PRESETS[device];
 
   return (
