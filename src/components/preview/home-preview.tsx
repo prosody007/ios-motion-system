@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ScanIcon, StudyIcon, MeIcon } from "./tabbar-preview";
 import { DemoCanvas } from "./demo-canvas";
-import { useDevice } from "@/components/device-context";
+import { useDisplayDevice } from "@/components/device-context";
 
 const HOME_INDICATOR_H = 34;
 const STATUS_BAR_FG = "#FFFFFF";
@@ -751,7 +751,9 @@ function CapturePopover({
   };
 
   // popover 宽度：仅 iPad 竖屏放大 20%（phone / iPad 横屏保持 353）
-  const { device } = useDevice();
+  // 注意用 useDisplayDevice：切换设备时 demo 仍按"正在显示中的"device 渲染，
+  // 等飞入新模拟器后才切换到新 device，避免旧模拟器还在动画就被改尺寸
+  const device = useDisplayDevice();
   const popoverW = device === "ipad-portrait" ? Math.round(POPOVER_W * 1.2) : POPOVER_W;
   // popover 在屏幕水平居中，转换到 SegmentedControl 容器的本地坐标系
   const popoverLeftInContainer = (containerWidth - popoverW) / 2;

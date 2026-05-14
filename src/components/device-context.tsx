@@ -19,6 +19,17 @@ type DeviceContextValue = {
 
 const DeviceContext = createContext<DeviceContextValue | null>(null);
 
+/**
+ * 切换动画期间，"正在显示中的设备"（外观 / 尺寸 / 内部 demo 都基于它）。
+ * 由 cards-playground 的 AutoScaledPhoneFrame 在飞出/飞入动画过程中提供，
+ * 飞出阶段一直是旧 device，snap + 飞入开始才切到新 device。
+ *
+ * demo 内部应该消费 useDisplayDevice() 而不是 useDevice()，
+ * 否则切换瞬间 demo 立即按新 device 渲染，但模拟器还在飞出动画显示旧外观，
+ * 视觉上"旧模拟器里的内容跟着新 device 变了"，会出现错位。
+ */
+export const DisplayDeviceContext = createContext<DeviceKind | null>(null);
+
 export function DeviceProvider({
   children,
   initial = "phone",
@@ -56,4 +67,14 @@ export function useDevice(): DeviceContextValue {
     };
   }
   return ctx;
+}
+
+/**
+ * Hook：拿到"正在显示中的 device"。优先返回 DisplayDeviceContext 的值，
+ * 没有时 fallback 到全局 device。demo 内部应该一律用这个，避免切换动画错位。
+ */
+export function useDisplayDevice(): DeviceKind {
+  const display = useContext(DisplayDeviceContext);
+  const { device } = useDevice();
+  return display ?? device;
 }

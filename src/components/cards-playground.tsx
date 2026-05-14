@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  createContext,
-  useContext,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -14,7 +12,12 @@ import { CardProvider } from "@/components/card-context";
 import { getControlsEntry } from "@/components/preview/controls-registry";
 import { SpringPlaygroundProvider } from "@/components/preview/spring-playground/context";
 import { BorderGlowProvider } from "@/components/preview/border-glow/context";
-import { useDevice, type DeviceKind } from "@/components/device-context";
+import {
+  useDevice,
+  useDisplayDevice,
+  DisplayDeviceContext,
+  type DeviceKind,
+} from "@/components/device-context";
 import type { CardsSection } from "@/types/motion";
 
 /* ----------------------------------------------------------------
@@ -322,13 +325,6 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
   );
 }
 
-/**
- * DisplayDevice — 切换动画期间，显示中的设备 ≠ 全局当前设备。
- * AutoScaledPhoneFrame 在切换过渡期间向后代提供 displayDevice，让 PhoneFrame 渲染对应外壳；
- * 全局 device 变化时由 AutoScaledPhoneFrame 内的状态机延迟同步过来，确保动画完整。
- */
-const DisplayDeviceContext = createContext<DeviceKind | null>(null);
-
 // 飞出极短（让旧设备快速消失），飞入慢（柔和落定），无间隔过度
 const DEVICE_SWITCH_OUT_MS = 380;
 const DEVICE_SWITCH_IN_MS = 1100;
@@ -508,9 +504,7 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
  * 根据 useDevice() 切换 phone / ipad 配置。
  */
 function PhoneFrame({ children }: { children: ReactNode }) {
-  const { device: globalDevice } = useDevice();
-  const ctxDevice = useContext(DisplayDeviceContext);
-  const device = ctxDevice ?? globalDevice;
+  const device = useDisplayDevice();
   const preset = DEVICE_PRESETS[device];
 
   return (
