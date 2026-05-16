@@ -16,6 +16,7 @@ import {
   LoadingRecordingBarsPreview,
 } from "./loading-preview";
 import { HomePreview } from "./home-preview";
+import { TutorPreview } from "./tutor-preview";
 import { ZoomTransitionPreview, MatchedGeometryPreview, FullScreenCoverPreview } from "./transition-previews";
 import { AnyTransitionPreview, ViewModifierTransitionPreview, VCTransitionPreview } from "./custom-transition-previews";
 import {
@@ -82,6 +83,7 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-loading-grow": LoadingGrowPreview,
   "ios-loading-recording-bars": LoadingRecordingBarsPreview,
   "ios-home": HomePreview,
+  "ios-tutor": TutorPreview,
   "ios-page-nav-transition": ZoomTransitionPreview,
   "ios-page-matched-geometry": MatchedGeometryPreview,
   "ios-page-fullscreen": FullScreenCoverPreview,
