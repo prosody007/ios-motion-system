@@ -300,6 +300,10 @@ function TutorRingCarousel({
     ...TUTOR_CAROUSEL_CARDS,
   ];
   const logicalIndex = ((trackIndex % count) + count) % count;
+  // 连续虚拟位置：track 本身在拖动时用 dragOffset 平移，
+  // 每张卡片的 rotate / scale / y 也必须使用同一个连续位置计算，
+  // 否则拖动过程中只有位置变，旋转会等松手后才跳变。
+  const visualTrackIndex = trackIndex - dragOffset / CARD_STEP;
 
   useEffect(() => {
     setActiveIndex(logicalIndex);
@@ -394,12 +398,15 @@ function TutorRingCarousel({
         }}
       >
         {tripledCards.map((card, index) => {
-          const offset = index - trackIndex;
+          const offset = index - visualTrackIndex;
           const distance = Math.abs(offset);
           const clamped = Math.max(-2, Math.min(2, offset));
-          const scale = distance === 0 ? 1 : distance === 1 ? 0.96 : 0.9;
-          const rotate = distance === 0 ? 0 : clamped * 4;
-          const y = distance === 0 ? 0 : 10;
+          const scale =
+            distance <= 1
+              ? 1 - distance * 0.04
+              : Math.max(0.9, 0.96 - (distance - 1) * 0.06);
+          const rotate = clamped * 4;
+          const y = Math.min(10, distance * 10);
 
           return (
             <button
