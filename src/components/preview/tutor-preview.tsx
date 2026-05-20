@@ -295,7 +295,7 @@ function TutorRingCarousel({
         style={{
           transform: `translate(calc(-${CARD_W / 2}px - ${trackIndex * CARD_STEP}px + ${dragOffset}px), 0px)`,
           transition: transitionEnabled
-            ? "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1)"
+            ? "transform 1.008s cubic-bezier(0.32, 0.72, 0, 1)"
             : "none",
         }}
         onTransitionEnd={(event) => {
@@ -336,7 +336,7 @@ function TutorRingCarousel({
                 opacity: 1,
                 transformOrigin: "center center",
                 transition: transitionEnabled
-                  ? "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1)"
+                  ? "transform 1.008s cubic-bezier(0.32, 0.72, 0, 1)"
                   : "none",
                 willChange: "transform",
               }}
