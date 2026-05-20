@@ -162,54 +162,15 @@ export function TutorPreview() {
         {/* 底部 CTA */}
         <BottomCTA />
 
-        {/* Tab Bar */}
-        <div
-          className="absolute left-0 right-0"
-          style={{
-            bottom: 0,
-            height: 83,
-            paddingTop: 8,
-            paddingBottom: 24,
-            display: "flex",
-            background: "#FFFFFF",
-            borderTop: "0.5px solid rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          {TAB_ITEMS.map((tab, i) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(i)}
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 4,
-                background: "transparent",
-                border: "none",
-                padding: 0,
-                cursor: "pointer",
-              }}
-            >
-              <tab.Icon active={activeTab === i} />
-              <span
-                style={{
-                  fontFamily:
-                    "'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif",
-                  fontSize: 10,
-                  fontWeight: activeTab === i ? 600 : 500,
-                  lineHeight: "12px",
-                  color: activeTab === i ? "#0A6CF4" : "#9A9DA1",
-                  letterSpacing: -0.05,
-                }}
-              >
-                {tab.label}
-              </span>
-            </button>
-          ))}
-        </div>
+        {/* 底部导航栏 — Figma node 2004:17484，@3x PNG 原图直接渲染 */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/tutor-bottom-nav.png"
+          alt=""
+          draggable={false}
+          className="absolute left-0 bottom-0 pointer-events-none select-none"
+          style={{ width: 393, height: "auto" }}
+        />
       </div>
     </DemoCanvas>
   );
