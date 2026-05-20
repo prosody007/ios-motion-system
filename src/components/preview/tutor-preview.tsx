@@ -269,6 +269,7 @@ function TutorRingCarousel({
   const pointerStartX = useRef<number | null>(null);
   const dragDeltaX = useRef(0);
   const count = TUTOR_CARD_IMAGES.length;
+  const CARD_SPACING = 203;
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -292,8 +293,10 @@ function TutorRingCarousel({
     <div
       className="absolute left-0 right-0"
       style={{
+        // 对齐 Figma：Frame 2147226036 是 176px 高，放在底部 CTA 上方。
+        // 子卡片允许溢出这个 frame，整体作为一个圆环轮播区域。
         bottom: 198,
-        height: 262,
+        height: 176,
         overflow: "visible",
         touchAction: "pan-y",
       }}
@@ -324,10 +327,12 @@ function TutorRingCarousel({
       {TUTOR_CARD_IMAGES.map((card, index) => {
         const offset = normalizeOffset(index);
         const abs = Math.abs(offset);
-        const isVisible = abs <= 2 || abs === 3;
+        const isVisible = abs <= 2;
         const opacity = abs > 2 ? 0 : 1;
-        const scale = abs === 0 ? 1 : abs === 1 ? 0.96 : 0.9;
-        const x = offset * 276;
+        const scale = abs === 0 ? 1 : abs === 1 ? 1 : 0.96;
+        // Figma 子卡坐标：left -105.46 / 105 / 301，中心间距约 203px。
+        // 这里用 frame 坐标系的中心点 196.5 推导，保证卡片紧挨在同一个圆环轨道上。
+        const y = abs === 0 ? 0 : 10.66;
         const zIndex = 10 - abs;
 
         return (
@@ -339,7 +344,7 @@ function TutorRingCarousel({
             style={{
               position: "absolute",
               left: "50%",
-              top: 0,
+              top: y,
               width: card.width,
               height: "auto",
               padding: 0,
@@ -349,7 +354,7 @@ function TutorRingCarousel({
               opacity,
               zIndex,
               pointerEvents: isVisible ? "auto" : "none",
-              transform: `translateX(calc(-50% + ${x}px)) scale(${scale})`,
+              transform: `translateX(calc(-50% + ${offset * CARD_SPACING}px)) scale(${scale})`,
               transition:
                 "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.28s ease-out",
               willChange: "transform, opacity",
