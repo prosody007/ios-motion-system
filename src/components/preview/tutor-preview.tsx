@@ -107,13 +107,13 @@ export function TutorPreview() {
           }}
         />
 
-        {/* 状态栏 */}
-        <StatusBar />
+        {/* 顶部 Title 区 — Figma node 2004:17288：状态栏 + Tutor 工具栏 */}
+        <TutorTitleHeader />
 
         {/* 头像 + 三个分页点 + 名称 + 副标题 */}
         <div
           className="absolute left-0 right-0 flex flex-col items-center"
-          style={{ top: 78 }}
+          style={{ top: 132 }}
         >
           {/* Lexie 头像 — 圆形，180×180 */}
           <div
@@ -375,17 +375,116 @@ function TutorRingCarousel({
   );
 }
 
+function TutorTitleHeader() {
+  return (
+    <div
+      className="absolute left-0 right-0 top-0"
+      style={{
+        height: 92,
+        zIndex: 20,
+        pointerEvents: "none",
+      }}
+    >
+      <StatusBar />
+
+      {/* 工具栏 — Figma node 2004:17308 / Title */}
+      <div
+        className="absolute left-0 right-0 flex items-stretch"
+        style={{
+          top: 44,
+          height: 48,
+          padding: "12px 16px 4px",
+          boxSizing: "border-box",
+          gap: 10,
+        }}
+      >
+        {/* 左侧占位，与右侧 Share and More Icons 等宽逻辑保持中心 Tutor */}
+        <div style={{ flex: 1, minWidth: 0 }} />
+
+        {/* 中间 Model selection：Tutor */}
+        <div
+          className="flex items-center justify-center"
+          style={{
+            height: 32,
+            borderRadius: 100,
+            padding: "0 2px",
+            boxSizing: "border-box",
+          }}
+        >
+          <span
+            style={{
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "16px",
+              color: "#111111",
+            }}
+          >
+            Tutor
+          </span>
+        </div>
+
+        {/* 右侧 1.00X + history icon */}
+        <div
+          className="flex items-center justify-end"
+          style={{
+            flex: 1,
+            minWidth: 0,
+            gap: 8,
+          }}
+        >
+          <div
+            className="flex items-center justify-center"
+            style={{
+              padding: "8px 10px",
+              borderRadius: 100,
+              background: "rgba(0, 0, 0, 0.06)",
+              boxSizing: "border-box",
+              height: 28,
+            }}
+          >
+            <span
+              style={{
+                fontFamily:
+                  "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                fontWeight: 600,
+                fontSize: 12,
+                lineHeight: "12px",
+                color: "#111111",
+              }}
+            >
+              1.00X
+            </span>
+          </div>
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+            }}
+          >
+            <HistoryIcon />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatusBar() {
   return (
     <div
       className="absolute left-0 right-0 flex items-center"
       style={{
         top: 0,
-        height: 54,
-        paddingLeft: 24,
-        paddingRight: 24,
-        paddingTop: 18,
+        height: 44,
+        paddingLeft: 21,
+        paddingRight: 14.34,
+        paddingTop: 15,
         justifyContent: "space-between",
+        boxSizing: "border-box",
       }}
     >
       <span
@@ -472,6 +571,34 @@ function BatteryIcon() {
         height="5"
         rx="1"
         fill="rgba(0,0,0,0.35)"
+      />
+    </svg>
+  );
+}
+
+function HistoryIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
+      <path
+        d="M16 5.5a10.5 10.5 0 1 1-7.43 3.08"
+        stroke="#111111"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.25 5.4v4.8h4.8"
+        stroke="#111111"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 10.4v6.2l4.1 2.55"
+        stroke="#111111"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
