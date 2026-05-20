@@ -125,91 +125,20 @@ export function TutorPreview() {
         {/* 顶部 Title 区 — Figma node 2004:17288：状态栏 + Tutor 工具栏 */}
         <TutorTitleHeader />
 
-        {/* 头像 + 三个分页点 + 名称 + 副标题 */}
-        <div
-          className="absolute left-0 right-0 flex flex-col items-center"
-          style={{ top: 132 }}
-        >
-          {/* Lexie 头像 — 圆形，180×180 */}
-          <div
-            style={{
-              width: 180,
-              height: 180,
-              borderRadius: "50%",
-              overflow: "hidden",
-              background: "#FFFFFF",
-              boxShadow:
-                "0 8px 24px rgba(20, 30, 60, 0.08), 0 1px 4px rgba(20, 30, 60, 0.04)",
-              flexShrink: 0,
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/figma/tutor/lexie-avatar.png"
-              alt=""
-              draggable={false}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "center 12%",
-              }}
-            />
-          </div>
-
-          {/* 三个分页指示点 */}
-          <div
-            className="flex items-center"
-            style={{ gap: 8, marginTop: 16 }}
-          >
-            {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                style={{
-                  width: i === 2 ? 8 : 6,
-                  height: i === 2 ? 8 : 6,
-                  borderRadius: "50%",
-                  background:
-                    i === 2 ? "#111111" : "rgba(0, 0, 0, 0.18)",
-                  transition: "all 0.2s ease",
-                }}
-              />
-            ))}
-          </div>
-
-          {/* 名称 */}
-          <p
-            style={{
-              margin: 0,
-              marginTop: 18,
-              fontFamily:
-                "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif",
-              fontSize: 28,
-              fontWeight: 700,
-              lineHeight: "32px",
-              color: "#111111",
-              letterSpacing: -0.4,
-            }}
-          >
-            Lexie
-          </p>
-
-          {/* 副标题 */}
-          <p
-            style={{
-              margin: 0,
-              marginTop: 6,
-              fontFamily:
-                "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif",
-              fontSize: 16,
-              fontWeight: 400,
-              lineHeight: "20px",
-              color: "rgba(0, 0, 0, 0.45)",
-            }}
-          >
-            Friendly . keeps it light
-          </p>
-        </div>
+        {/* 新 Hero 区 — Figma node 2004:17323，@3x PNG 原图直接渲染 */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/tutor-teacher-hero.png"
+          alt=""
+          draggable={false}
+          className="absolute pointer-events-none select-none"
+          style={{
+            top: 132,
+            left: 0,
+            width: 393,
+            height: "auto",
+          }}
+        />
 
         {/* 推荐卡片 carousel — 6 张原图 PNG 组成无限圆环轮播 */}
         <TutorRingCarousel activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
@@ -667,7 +596,14 @@ function TutorTitleHeader() {
               borderRadius: 16,
             }}
           >
-            <HistoryIcon />
+            {/* Figma node 2004:17366，@3x PNG 原图直接渲染 */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/tutor/tutor-history-icon.png"
+              alt=""
+              draggable={false}
+              style={{ width: 32, height: 32 }}
+            />
           </div>
         </div>
       </div>
@@ -773,34 +709,6 @@ function BatteryIcon() {
         height="5"
         rx="1"
         fill="rgba(0,0,0,0.35)"
-      />
-    </svg>
-  );
-}
-
-function HistoryIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
-      <path
-        d="M16 5.5a10.5 10.5 0 1 1-7.43 3.08"
-        stroke="#111111"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M8.25 5.4v4.8h4.8"
-        stroke="#111111"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M16 10.4v6.2l4.1 2.55"
-        stroke="#111111"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );
