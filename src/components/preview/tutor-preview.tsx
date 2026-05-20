@@ -95,25 +95,31 @@ export function TutorPreview() {
         className="absolute inset-0 select-none overflow-hidden"
         style={{ background: "#F6F8FA" }}
       >
-        {/* 椭圆光斑 — Figma node 1743:24116
-            蓝色 #B7C7FF 模糊扩散 */}
+        {/* 顶部背景光斑 — Figma node 2042:18327
+            由 393×200 蓝色矩形 blur(300) + 80×80 绿色椭圆 blur(200) 叠加生成 */}
         <div
           aria-hidden="true"
-          className="absolute pointer-events-none"
+          className="absolute left-0 top-0 pointer-events-none"
           style={{
-            top: -80,
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: 540,
-            height: 460,
+            width: 393,
+            height: 200,
+            background: "rgba(38, 92, 255, 0.7)",
+            filter: "blur(300px)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute left-0 top-0 pointer-events-none"
+          style={{
+            width: 80,
+            height: 80,
             borderRadius: "50%",
-            background:
-              "radial-gradient(60% 60% at 50% 50%, rgba(160, 180, 255, 0.55) 0%, rgba(200, 210, 240, 0.2) 60%, rgba(200, 210, 240, 0) 100%)",
-            filter: "blur(20px)",
+            background: "#6EFF7F",
+            filter: "blur(200px)",
           }}
         />
 
-        {/* 噪点矩形 — Figma node 1743:24108：白色 44% 不透明，叠在光斑上 */}
+        {/* 白色蒙层 — Figma node 1743:24108：白色 44% 不透明，叠在光斑上 */}
         <div
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none"
