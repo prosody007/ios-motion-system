@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -24,42 +25,56 @@ import { DemoCanvas } from "./demo-canvas";
  * 9. Tab Bar（Scan / Lecture Notes / Study(active) / Me）
  */
 
-type TutorCardImage = {
+type TutorCarouselCard = {
   id: string;
-  src: string;
-  width: number;
+  question: string;
+  tagText: string;
+  tagBg: string;
+  tagColor: string;
 };
 
-const TUTOR_CARD_IMAGES: TutorCardImage[] = [
+const TUTOR_CAROUSEL_CARDS: TutorCarouselCard[] = [
   {
     id: "plant",
-    src: "/figma/tutor/tutor-card-plant.png",
-    width: 776 / 3,
+    question: "Why is this plant growing linearly?",
+    tagText: "Biology",
+    tagBg: "#EAF4F9",
+    tagColor: "#0B99BC",
   },
   {
     id: "rollercoaster",
-    src: "/figma/tutor/tutor-card-coaster.png",
-    width: 744 / 3,
+    question: "Why doesn't a roller coaster loop fall?",
+    tagText: "Algebra",
+    tagBg: "#ECF5FF",
+    tagColor: "#007AFF",
   },
   {
     id: "grease",
-    src: "/figma/tutor/tutor-card-chemistry.png",
-    width: 776 / 3,
+    question: "How does soap actually break down grease?",
+    tagText: "Chemistry",
+    tagBg: "#ECF5ED",
+    tagColor: "#33A354",
   },
   {
-    id: "plant-2",
-    src: "/figma/tutor/tutor-card-plant.png",
-    width: 776 / 3,
+    id: "gravity",
+    question: "Why do astronauts float inside spacecraft?",
+    tagText: "Physics",
+    tagBg: "#F0ECFF",
+    tagColor: "#6E42D7",
   },
   {
-    id: "rollercoaster-2",
-    src: "/figma/tutor/tutor-card-coaster.png",
-    width: 744 / 3,
+    id: "fractions",
+    question: "How do fractions turn into decimals?",
+    tagText: "Math",
+    tagBg: "#FFF2E5",
+    tagColor: "#D46B08",
   },
   {
-    id: "grease-2",
-    src: "/figma/tutor/tutor-card-chemistry.png",
-    width: 776 / 3,
+    id: "photosynthesis",
+    question: "How does sunlight become plant energy?",
+    tagText: "Biology",
+    tagBg: "#EAF4F9",
+    tagColor: "#0B99BC",
   },
 ];
 
@@ -269,19 +284,20 @@ function TutorRingCarousel({
   const pointerStartX = useRef<number | null>(null);
   const dragDeltaX = useRef(0);
   const [trackIndex, setTrackIndex] = useState(
-    TUTOR_CARD_IMAGES.length + activeIndex,
+    TUTOR_CAROUSEL_CARDS.length + activeIndex,
   );
   const [dragging, setDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [transitionEnabled, setTransitionEnabled] = useState(true);
-  const count = TUTOR_CARD_IMAGES.length;
-  const CARD_W = 776 / 3;
-  const CARD_STEP = 203;
-  const GAP = CARD_STEP - CARD_W;
+  const count = TUTOR_CAROUSEL_CARDS.length;
+  const CARD_W = 184;
+  const CARD_H = 174;
+  // Figma Frame 2147226036 子卡坐标：left -91 / 105 / 301，中心间距 196px。
+  const CARD_STEP = 196;
   const tripledCards = [
-    ...TUTOR_CARD_IMAGES,
-    ...TUTOR_CARD_IMAGES,
-    ...TUTOR_CARD_IMAGES,
+    ...TUTOR_CAROUSEL_CARDS,
+    ...TUTOR_CAROUSEL_CARDS,
+    ...TUTOR_CAROUSEL_CARDS,
   ];
   const logicalIndex = ((trackIndex % count) + count) % count;
 
@@ -366,9 +382,8 @@ function TutorRingCarousel({
       }}
     >
       <div
-        className="absolute top-0 left-1/2 flex items-start will-change-transform"
+        className="absolute top-0 left-1/2 will-change-transform"
         style={{
-          gap: GAP,
           transform: `translate(calc(-${CARD_W / 2}px - ${trackIndex * CARD_STEP}px + ${dragOffset}px), 0px)`,
           transition: transitionEnabled
             ? "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1)"
@@ -379,9 +394,12 @@ function TutorRingCarousel({
         }}
       >
         {tripledCards.map((card, index) => {
-          const distance = Math.abs(index - trackIndex);
+          const offset = index - trackIndex;
+          const distance = Math.abs(offset);
+          const clamped = Math.max(-2, Math.min(2, offset));
           const scale = distance === 0 ? 1 : distance === 1 ? 0.96 : 0.9;
-          const y = distance === 0 ? 0 : 10.66;
+          const rotate = distance === 0 ? 0 : clamped * 4;
+          const y = distance === 0 ? 0 : 10;
 
           return (
             <button
@@ -393,42 +411,162 @@ function TutorRingCarousel({
                 setTrackIndex(index);
               }}
               style={{
-                position: "relative",
+                position: "absolute",
+                left: index * CARD_STEP,
+                top: 0,
                 width: CARD_W,
-                height: 262,
-                flexShrink: 0,
+                height: CARD_H,
                 padding: 0,
                 border: "none",
                 background: "transparent",
                 cursor: "pointer",
-                transform: `translateY(${y}px) scale(${scale})`,
+                transform: `translateY(${y}px) rotate(${rotate}deg) scale(${scale})`,
                 opacity: 1,
+                transformOrigin: "center center",
                 transition: transitionEnabled
                   ? "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1)"
                   : "none",
                 willChange: "transform",
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={card.src}
-                alt=""
-                draggable={false}
-                style={{
-                  width: card.width,
-                  height: "auto",
-                  display: "block",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                  pointerEvents: "none",
-                  userSelect: "none",
-                }}
-              />
+              <TutorCarouselCardView card={card} />
             </button>
           );
         })}
       </div>
     </div>
+  );
+}
+
+function TutorCarouselCardView({ card }: { card: TutorCarouselCard }) {
+  return (
+    <div
+      style={{
+        width: 184,
+        height: 174,
+        borderRadius: 24,
+        background: "#FFFFFF",
+        boxShadow: "0px 16px 32px rgba(0, 0, 0, 0.04)",
+        padding: 12,
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+        pointerEvents: "none",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          minHeight: 0,
+        }}
+      >
+        <CardSignalIcon />
+        <p
+          style={{
+            margin: 0,
+            fontFamily:
+              "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+            fontWeight: 600,
+            fontSize: 14,
+            lineHeight: "16.8px",
+            color: "#111111",
+            textAlign: "left",
+            whiteSpace: "pre-line",
+          }}
+        >
+          {card.question}
+        </p>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            padding: "6px 8px",
+            borderRadius: 100,
+            background: card.tagBg,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <span
+            style={{
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 500,
+              fontSize: 10,
+              lineHeight: "10px",
+              color: card.tagColor,
+            }}
+          >
+            {card.tagText}
+          </span>
+        </div>
+        <div
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: 100,
+            background: "#EDEEF3",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <SmallChevronRight />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CardSignalIcon() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden>
+      <path
+        d="M20 28.4V20"
+        stroke="#007AFF"
+        strokeWidth="3.33"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.4 24.8a9.33 9.33 0 0 1 13.2 0"
+        stroke="#007AFF"
+        strokeWidth="3.33"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8.4 19.8a16.4 16.4 0 0 1 23.2 0"
+        stroke="#007AFF"
+        strokeWidth="3.33"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function SmallChevronRight() {
+  return (
+    <svg width="8" height="9" viewBox="0 0 8 9" fill="none" aria-hidden>
+      <path
+        d="M2 1.5L5.5 4.5L2 7.5"
+        stroke="#111111"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
