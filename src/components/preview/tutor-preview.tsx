@@ -125,23 +125,39 @@ export function TutorPreview() {
         {/* 顶部 Title 区 — Figma node 2004:17288：状态栏 + Tutor 工具栏 */}
         <TutorTitleHeader />
 
-        {/* 新 Hero 区 — Figma node 2004:17323，@3x PNG 原图直接渲染 */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/figma/tutor/tutor-teacher-hero.png"
-          alt=""
-          draggable={false}
-          className="absolute pointer-events-none select-none"
+        {/* Hero + Carousel 组 — Figma node 1761:15434
+            title 高 92，组距离 title top 外边距 40，因此 group top = 132；组内 gap = 48 */}
+        <div
+          className="absolute left-0 right-0"
           style={{
             top: 132,
-            left: 0,
-            width: 393,
-            height: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 48,
+            overflow: "visible",
           }}
-        />
+        >
+          {/* 新 Hero 区 — Figma node 2004:17323，@3x PNG 原图直接渲染 */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/figma/tutor/tutor-teacher-hero.png"
+            alt=""
+            draggable={false}
+            className="pointer-events-none select-none"
+            style={{
+              width: 393,
+              height: "auto",
+              display: "block",
+            }}
+          />
 
-        {/* 推荐卡片 carousel — 6 张原图 PNG 组成无限圆环轮播 */}
-        <TutorRingCarousel activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
+          {/* 推荐卡片 carousel — 6 张卡组成无限圆环轮播 */}
+          <TutorRingCarousel
+            activeIndex={activeIndex}
+            setActiveIndex={setActiveIndex}
+          />
+        </div>
 
         {/* 底部 CTA */}
         <BottomCTA />
@@ -270,11 +286,10 @@ function TutorRingCarousel({
 
   return (
     <div
-      className="absolute left-0 right-0"
+      className="relative w-full"
       style={{
-        // 对齐 Figma：Frame 2147226036 是 176px 高，放在底部 CTA 上方。
-        // 子卡片允许溢出这个 frame，整体作为一个圆环轮播区域。
-        bottom: 198,
+        // 对齐 Figma：Frame 2147226036 是 176px 高。
+        // 由父级 Frame 2147226037 负责与 hero 形成 gap 48 的组。
         height: 176,
         overflow: "visible",
         touchAction: "pan-y",
