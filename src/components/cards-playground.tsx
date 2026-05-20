@@ -529,23 +529,6 @@ function PhoneFrame({ children }: { children: ReactNode }) {
         }}
       >
         {children}
-        {/* 系统级 Home Indicator（所有 demo 共用，反相混合自动适配明暗背景） */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none"
-          style={{
-            position: "absolute",
-            left: "50%",
-            bottom: 8,
-            transform: "translateX(-50%)",
-            width: 144,
-            height: 5,
-            borderRadius: 100,
-            background: "#FFFFFF",
-            mixBlendMode: "difference",
-            zIndex: 1000,
-          }}
-        />
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
