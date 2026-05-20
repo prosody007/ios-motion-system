@@ -268,25 +268,55 @@ function TutorRingCarousel({
 }) {
   const pointerStartX = useRef<number | null>(null);
   const dragDeltaX = useRef(0);
+  const [trackIndex, setTrackIndex] = useState(
+    TUTOR_CARD_IMAGES.length + activeIndex,
+  );
+  const [dragging, setDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
   const count = TUTOR_CARD_IMAGES.length;
-  const CARD_SPACING = 203;
+  const CARD_W = 776 / 3;
+  const CARD_STEP = 203;
+  const GAP = CARD_STEP - CARD_W;
+  const tripledCards = [
+    ...TUTOR_CARD_IMAGES,
+    ...TUTOR_CARD_IMAGES,
+    ...TUTOR_CARD_IMAGES,
+  ];
+  const logicalIndex = ((trackIndex % count) + count) % count;
 
   useEffect(() => {
+    setActiveIndex(logicalIndex);
+  }, [logicalIndex, setActiveIndex]);
+
+  useEffect(() => {
+    if (dragging) return;
     const id = window.setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % count);
+      setTransitionEnabled(true);
+      setTrackIndex((prev) => prev + 1);
     }, 3000);
     return () => window.clearInterval(id);
-  }, [count, setActiveIndex]);
-
-  const normalizeOffset = (index: number) => {
-    let offset = index - activeIndex;
-    if (offset > count / 2) offset -= count;
-    if (offset < -count / 2) offset += count;
-    return offset;
-  };
+  }, [dragging]);
 
   const setByDirection = (direction: -1 | 1) => {
-    setActiveIndex((prev) => (prev + direction + count) % count);
+    setTransitionEnabled(true);
+    setTrackIndex((prev) => prev + direction);
+  };
+
+  const snapLoopBoundary = () => {
+    setTrackIndex((prev) => {
+      if (prev < count || prev >= count * 2) {
+        const normalized = count + (((prev % count) + count) % count);
+        if (normalized !== prev) {
+          setTransitionEnabled(false);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => setTransitionEnabled(true));
+          });
+          return normalized;
+        }
+      }
+      return prev;
+    });
   };
 
   return (
@@ -301,13 +331,18 @@ function TutorRingCarousel({
         touchAction: "pan-y",
       }}
       onPointerDown={(event) => {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
         pointerStartX.current = event.clientX;
         dragDeltaX.current = 0;
+        setDragging(true);
+        setTransitionEnabled(false);
         event.currentTarget.setPointerCapture(event.pointerId);
       }}
       onPointerMove={(event) => {
         if (pointerStartX.current === null) return;
-        dragDeltaX.current = event.clientX - pointerStartX.current;
+        const delta = event.clientX - pointerStartX.current;
+        dragDeltaX.current = delta;
+        setDragOffset(delta);
       }}
       onPointerUp={(event) => {
         if (pointerStartX.current === null) return;
@@ -315,67 +350,84 @@ function TutorRingCarousel({
         const delta = dragDeltaX.current;
         pointerStartX.current = null;
         dragDeltaX.current = 0;
-        if (Math.abs(delta) < 36) return;
+        setDragOffset(0);
+        setDragging(false);
+        setTransitionEnabled(true);
+        if (Math.abs(delta) < CARD_STEP * 0.18) return;
         // 左滑看下一张，右滑看上一张
         setByDirection(delta < 0 ? 1 : -1);
       }}
       onPointerCancel={() => {
         pointerStartX.current = null;
         dragDeltaX.current = 0;
+        setDragOffset(0);
+        setDragging(false);
+        setTransitionEnabled(true);
       }}
     >
-      {TUTOR_CARD_IMAGES.map((card, index) => {
-        const offset = normalizeOffset(index);
-        const abs = Math.abs(offset);
-        const isVisible = abs <= 2;
-        const opacity = abs > 2 ? 0 : 1;
-        const scale = abs === 0 ? 1 : abs === 1 ? 1 : 0.96;
-        // Figma 子卡坐标：left -105.46 / 105 / 301，中心间距约 203px。
-        // 这里用 frame 坐标系的中心点 196.5 推导，保证卡片紧挨在同一个圆环轨道上。
-        const y = abs === 0 ? 0 : 10.66;
-        const zIndex = 10 - abs;
+      <div
+        className="absolute top-0 left-1/2 flex items-start will-change-transform"
+        style={{
+          gap: GAP,
+          transform: `translate(calc(-${CARD_W / 2}px - ${trackIndex * CARD_STEP}px + ${dragOffset}px), 0px)`,
+          transition: transitionEnabled
+            ? "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1)"
+            : "none",
+        }}
+        onTransitionEnd={(event) => {
+          if (event.propertyName === "transform") snapLoopBoundary();
+        }}
+      >
+        {tripledCards.map((card, index) => {
+          const distance = Math.abs(index - trackIndex);
+          const scale = distance === 0 ? 1 : distance === 1 ? 0.96 : 0.9;
+          const y = distance === 0 ? 0 : 10.66;
 
-        return (
-          <button
-            key={card.id}
-            type="button"
-            aria-label={`Tutor card ${index + 1}`}
-            onClick={() => setActiveIndex(index)}
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: y,
-              width: card.width,
-              height: "auto",
-              padding: 0,
-              border: "none",
-              background: "transparent",
-              cursor: isVisible ? "pointer" : "default",
-              opacity,
-              zIndex,
-              pointerEvents: isVisible ? "auto" : "none",
-              transform: `translateX(calc(-50% + ${offset * CARD_SPACING}px)) scale(${scale})`,
-              transition:
-                "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.28s ease-out",
-              willChange: "transform, opacity",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={card.src}
-              alt=""
-              draggable={false}
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "block",
-                pointerEvents: "none",
-                userSelect: "none",
+          return (
+            <button
+              key={`${card.id}-${index}`}
+              type="button"
+              aria-label={`Tutor card ${index + 1}`}
+              onClick={() => {
+                setTransitionEnabled(true);
+                setTrackIndex(index);
               }}
-            />
-          </button>
-        );
-      })}
+              style={{
+                position: "relative",
+                width: CARD_W,
+                height: 262,
+                flexShrink: 0,
+                padding: 0,
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+                transform: `translateY(${y}px) scale(${scale})`,
+                opacity: 1,
+                transition: transitionEnabled
+                  ? "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1)"
+                  : "none",
+                willChange: "transform",
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={card.src}
+                alt=""
+                draggable={false}
+                style={{
+                  width: card.width,
+                  height: "auto",
+                  display: "block",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  pointerEvents: "none",
+                  userSelect: "none",
+                }}
+              />
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
