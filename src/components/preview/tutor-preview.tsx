@@ -183,29 +183,21 @@ export function TutorPreview() {
           </p>
         </div>
 
-        {/* 推荐卡片 carousel */}
-        <div
-          className="absolute left-0 right-0 flex items-center"
+        {/* 推荐卡片 carousel — Figma Frame 2147226036，@3x PNG 原图直接渲染 */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/tutor-card-carousel.png"
+          alt=""
+          draggable={false}
+          className="absolute pointer-events-none select-none"
           style={{
-            bottom: 240,
-            height: 168,
-            paddingLeft: 28,
-            paddingRight: 28,
-            gap: 16,
-            overflow: "visible",
-            justifyContent: "center",
+            left: "50%",
+            bottom: 198,
+            width: 665,
+            height: "auto",
+            transform: "translateX(-50%)",
           }}
-        >
-          {TUTOR_CARDS.map((card, i) => (
-            <TutorCardItem
-              key={card.id}
-              card={card}
-              isActive={i === activeIndex}
-              offset={i - activeIndex}
-              onClick={() => setActiveIndex(i)}
-            />
-          ))}
-        </div>
+        />
 
         {/* 底部 CTA */}
         <BottomCTA />
@@ -531,80 +523,33 @@ function BottomCTA() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: 14,
+        gap: 16,
         paddingLeft: 24,
         paddingRight: 24,
       }}
     >
-      {/* 键盘按钮 */}
-      <button
-        type="button"
-        style={{
-          width: 50,
-          height: 50,
-          borderRadius: 25,
-          background: "rgba(0, 0, 0, 0.05)",
-          border: "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          flexShrink: 0,
-        }}
-      >
-        <KeyboardIcon />
-      </button>
-
-      {/* Snap a photo 主按钮 */}
-      <button
-        type="button"
-        style={{
-          flex: 1,
-          height: 56,
-          borderRadius: 28,
-          background: "#0A6CF4",
-          border: "none",
-          color: "#FFFFFF",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 10,
-          cursor: "pointer",
-          boxShadow: "0 8px 22px rgba(10, 108, 244, 0.25)",
-        }}
-      >
-        <CameraIcon />
-        <span
-          style={{
-            fontFamily:
-              "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
-            fontSize: 17,
-            fontWeight: 600,
-            letterSpacing: -0.3,
-          }}
-        >
-          Snap a photo
-        </span>
-      </button>
-
-      {/* 麦克风按钮 */}
-      <button
-        type="button"
-        style={{
-          width: 50,
-          height: 50,
-          borderRadius: 25,
-          background: "rgba(0, 0, 0, 0.05)",
-          border: "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          flexShrink: 0,
-        }}
-      >
-        <MicIcon />
-      </button>
+      {/* 三个按钮均为 Figma @3x PNG 原图直接渲染，不做二次处理 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/tutor/tutor-btn-keyboard.png"
+        alt=""
+        draggable={false}
+        style={{ width: 58, height: 58, flexShrink: 0 }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/tutor/tutor-btn-snap.png"
+        alt=""
+        draggable={false}
+        style={{ width: 197, height: 58, flexShrink: 0 }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/tutor/tutor-btn-mic.png"
+        alt=""
+        draggable={false}
+        style={{ width: 58, height: 58, flexShrink: 0 }}
+      />
     </div>
   );
 }
