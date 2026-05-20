@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { DemoCanvas } from "./demo-canvas";
 
 /**
@@ -18,35 +24,42 @@ import { DemoCanvas } from "./demo-canvas";
  * 9. Tab Bar（Scan / Lecture Notes / Study(active) / Me）
  */
 
-type TutorCard = {
+type TutorCardImage = {
   id: string;
-  question: string;
-  tagText: string;
-  tagBg: string;
-  tagColor: string;
+  src: string;
+  width: number;
 };
 
-const TUTOR_CARDS: TutorCard[] = [
+const TUTOR_CARD_IMAGES: TutorCardImage[] = [
   {
     id: "plant",
-    question: "Why is this plant growing linearly?",
-    tagText: "Algebra",
-    tagBg: "#E5F0FF",
-    tagColor: "#0A6CF4",
+    src: "/figma/tutor/tutor-card-plant.png",
+    width: 776 / 3,
   },
   {
     id: "rollercoaster",
-    question: "Why doesn't a roller coaster loop fall?",
-    tagText: "Algebra",
-    tagBg: "#E5F0FF",
-    tagColor: "#0A6CF4",
+    src: "/figma/tutor/tutor-card-coaster.png",
+    width: 744 / 3,
   },
   {
     id: "grease",
-    question: "How does soap actually break down grease?",
-    tagText: "Chemistry",
-    tagBg: "#E1F5DA",
-    tagColor: "#1E7B0E",
+    src: "/figma/tutor/tutor-card-chemistry.png",
+    width: 776 / 3,
+  },
+  {
+    id: "plant-2",
+    src: "/figma/tutor/tutor-card-plant.png",
+    width: 776 / 3,
+  },
+  {
+    id: "rollercoaster-2",
+    src: "/figma/tutor/tutor-card-coaster.png",
+    width: 744 / 3,
+  },
+  {
+    id: "grease-2",
+    src: "/figma/tutor/tutor-card-chemistry.png",
+    width: 776 / 3,
   },
 ];
 
@@ -183,21 +196,8 @@ export function TutorPreview() {
           </p>
         </div>
 
-        {/* 推荐卡片 carousel — Figma Frame 2147226036，@3x PNG 原图直接渲染 */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/figma/tutor/tutor-card-carousel.png"
-          alt=""
-          draggable={false}
-          className="absolute pointer-events-none select-none"
-          style={{
-            left: "50%",
-            bottom: 198,
-            width: 665,
-            height: "auto",
-            transform: "translateX(-50%)",
-          }}
-        />
+        {/* 推荐卡片 carousel — 6 张原图 PNG 组成无限圆环轮播 */}
+        <TutorRingCarousel activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
 
         {/* 底部 CTA */}
         <BottomCTA />
@@ -258,6 +258,122 @@ export function TutorPreview() {
 /* -------------------------------------------------------------------------- */
 /*  Sub-components                                                             */
 /* -------------------------------------------------------------------------- */
+
+function TutorRingCarousel({
+  activeIndex,
+  setActiveIndex,
+}: {
+  activeIndex: number;
+  setActiveIndex: Dispatch<SetStateAction<number>>;
+}) {
+  const pointerStartX = useRef<number | null>(null);
+  const dragDeltaX = useRef(0);
+  const count = TUTOR_CARD_IMAGES.length;
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % count);
+    }, 3000);
+    return () => window.clearInterval(id);
+  }, [count, setActiveIndex]);
+
+  const normalizeOffset = (index: number) => {
+    let offset = index - activeIndex;
+    if (offset > count / 2) offset -= count;
+    if (offset < -count / 2) offset += count;
+    return offset;
+  };
+
+  const setByDirection = (direction: -1 | 1) => {
+    setActiveIndex((prev) => (prev + direction + count) % count);
+  };
+
+  return (
+    <div
+      className="absolute left-0 right-0"
+      style={{
+        bottom: 198,
+        height: 262,
+        overflow: "visible",
+        touchAction: "pan-y",
+      }}
+      onPointerDown={(event) => {
+        pointerStartX.current = event.clientX;
+        dragDeltaX.current = 0;
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }}
+      onPointerMove={(event) => {
+        if (pointerStartX.current === null) return;
+        dragDeltaX.current = event.clientX - pointerStartX.current;
+      }}
+      onPointerUp={(event) => {
+        if (pointerStartX.current === null) return;
+        event.currentTarget.releasePointerCapture(event.pointerId);
+        const delta = dragDeltaX.current;
+        pointerStartX.current = null;
+        dragDeltaX.current = 0;
+        if (Math.abs(delta) < 36) return;
+        // 左滑看下一张，右滑看上一张
+        setByDirection(delta < 0 ? 1 : -1);
+      }}
+      onPointerCancel={() => {
+        pointerStartX.current = null;
+        dragDeltaX.current = 0;
+      }}
+    >
+      {TUTOR_CARD_IMAGES.map((card, index) => {
+        const offset = normalizeOffset(index);
+        const abs = Math.abs(offset);
+        const isVisible = abs <= 2 || abs === 3;
+        const opacity = abs > 2 ? 0 : 1;
+        const scale = abs === 0 ? 1 : abs === 1 ? 0.96 : 0.9;
+        const x = offset * 276;
+        const zIndex = 10 - abs;
+
+        return (
+          <button
+            key={card.id}
+            type="button"
+            aria-label={`Tutor card ${index + 1}`}
+            onClick={() => setActiveIndex(index)}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: 0,
+              width: card.width,
+              height: "auto",
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: isVisible ? "pointer" : "default",
+              opacity,
+              zIndex,
+              pointerEvents: isVisible ? "auto" : "none",
+              transform: `translateX(calc(-50% + ${x}px)) scale(${scale})`,
+              transition:
+                "transform 0.56s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.28s ease-out",
+              willChange: "transform, opacity",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={card.src}
+              alt=""
+              draggable={false}
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                pointerEvents: "none",
+                userSelect: "none",
+              }}
+            />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function StatusBar() {
   return (
@@ -356,157 +472,6 @@ function BatteryIcon() {
         height="5"
         rx="1"
         fill="rgba(0,0,0,0.35)"
-      />
-    </svg>
-  );
-}
-
-function TutorCardItem({
-  card,
-  isActive,
-  offset,
-  onClick,
-}: {
-  card: TutorCard;
-  isActive: boolean;
-  offset: number;
-  onClick: () => void;
-}) {
-  const baseStyle: CSSProperties = {
-    position: "absolute",
-    left: "50%",
-    top: 0,
-    width: 246,
-    height: 168,
-    borderRadius: 20,
-    background: "#FFFFFF",
-    boxShadow:
-      "0 12px 32px rgba(20, 30, 60, 0.08), 0 2px 6px rgba(20, 30, 60, 0.04)",
-    padding: "20px 20px 16px",
-    boxSizing: "border-box",
-    cursor: "pointer",
-    transition:
-      "transform 0.45s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease-out",
-    transform: `translateX(calc(-50% + ${offset * 270}px)) scale(${isActive ? 1 : 0.92})`,
-    opacity: isActive ? 1 : 0.95,
-    transformOrigin: "center center",
-    display: "flex",
-    flexDirection: "column",
-    gap: 14,
-  };
-
-  return (
-    <div onClick={onClick} style={baseStyle}>
-      {/* 蓝色 wifi 图标 */}
-      <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 18,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        <CardWifiIcon />
-      </div>
-
-      {/* 问题 */}
-      <p
-        style={{
-          margin: 0,
-          fontFamily:
-            "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', sans-serif",
-          fontSize: 16,
-          fontWeight: 600,
-          lineHeight: "20px",
-          color: "#111111",
-          letterSpacing: -0.2,
-          flex: 1,
-        }}
-      >
-        {card.question}
-      </p>
-
-      {/* 标签 + 右侧箭头 */}
-      <div
-        className="flex items-center"
-        style={{ justifyContent: "space-between" }}
-      >
-        <div
-          style={{
-            padding: "4px 10px",
-            borderRadius: 100,
-            background: card.tagBg,
-          }}
-        >
-          <span
-            style={{
-              fontFamily:
-                "'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
-              fontSize: 13,
-              fontWeight: 500,
-              lineHeight: "16px",
-              color: card.tagColor,
-            }}
-          >
-            {card.tagText}
-          </span>
-        </div>
-        {isActive && (
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 14,
-              background: "rgba(0, 0, 0, 0.05)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <ChevronRightIcon />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function CardWifiIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
-      <path
-        d="M16 22a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
-        fill="#0A6CF4"
-      />
-      <path
-        d="M9.5 15.5a9 9 0 0 1 13 0"
-        stroke="#0A6CF4"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M5 11a14.5 14.5 0 0 1 22 0"
-        stroke="#0A6CF4"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-      <path
-        d="M5 3l4 4-4 4"
-        stroke="rgba(0, 0, 0, 0.5)"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );
