@@ -489,7 +489,6 @@ function TutorTitleHeader() {
       style={{
         height: 92,
         zIndex: 20,
-        pointerEvents: "none",
       }}
     >
       <StatusBar />
@@ -564,23 +563,12 @@ function TutorTitleHeader() {
               1.00X
             </span>
           </div>
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 16,
-            }}
-          >
-            {/* Figma node 2004:17366，@3x PNG 原图直接渲染 */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/figma/tutor/tutor-history-icon.png"
-              alt=""
-              draggable={false}
-              style={{ width: 32, height: 32 }}
-            />
-          </div>
+          <PressableImageButton
+            src="/figma/tutor/tutor-history-icon.png"
+            label="History"
+            width={32}
+            height={32}
+          />
         </div>
       </div>
     </div>
@@ -707,28 +695,77 @@ function BottomCTA() {
       }}
     >
       {/* 三个按钮均为 Figma @3x PNG 原图直接渲染，不做二次处理 */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <PressableImageButton
         src="/figma/tutor/tutor-btn-keyboard.png"
-        alt=""
-        draggable={false}
-        style={{ width: 58, height: 58, flexShrink: 0 }}
+        label="Keyboard"
+        width={58}
+        height={58}
       />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <PressableImageButton
         src="/figma/tutor/tutor-btn-snap.png"
-        alt=""
-        draggable={false}
-        style={{ width: 197, height: 58, flexShrink: 0 }}
+        label="Snap a photo"
+        width={197}
+        height={58}
       />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <PressableImageButton
         src="/figma/tutor/tutor-btn-mic.png"
-        alt=""
-        draggable={false}
-        style={{ width: 58, height: 58, flexShrink: 0 }}
+        label="Microphone"
+        width={58}
+        height={58}
       />
     </div>
+  );
+}
+
+function PressableImageButton({
+  src,
+  label,
+  width,
+  height,
+}: {
+  src: string;
+  label: string;
+  width: number;
+  height: number;
+}) {
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerLeave={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
+      style={{
+        width,
+        height,
+        padding: 0,
+        border: "none",
+        background: "transparent",
+        cursor: "pointer",
+        flexShrink: 0,
+        transform: pressed ? "scale(0.95)" : "scale(1)",
+        transition: "transform 0.1s ease-in-out",
+        transformOrigin: "center center",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        style={{
+          width,
+          height,
+          display: "block",
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      />
+    </button>
   );
 }
 
