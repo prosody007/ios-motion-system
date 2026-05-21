@@ -33,6 +33,19 @@ type TutorCarouselCard = {
   tagColor: string;
 };
 
+type HistoryItem = {
+  id: string;
+  kind: "worksheet" | "article" | "text" | "equation" | "diagram";
+  title: string;
+  body?: string;
+  accent?: string;
+};
+
+type HistorySection = {
+  label: string;
+  items: HistoryItem[];
+};
+
 const TUTOR_CAROUSEL_CARDS: TutorCarouselCard[] = [
   {
     id: "plant",
@@ -85,15 +98,137 @@ const TAB_ITEMS = [
   { id: "me", label: "Me", Icon: TabMeIcon, active: false },
 ];
 
+const SPEED_OPTIONS = ["0.50X", "0.75X", "1.00X", "1.25X", "1.50X"] as const;
+
+const HISTORY_SECTIONS: HistorySection[] = [
+  {
+    label: "Today",
+    items: [
+      {
+        id: "quadratic-graph",
+        kind: "worksheet",
+        title: "Find the polynomial of degree 5 that matches the graph.",
+        body: "10 points",
+        accent: "#EEF3FF",
+      },
+      {
+        id: "science-article",
+        kind: "article",
+        title: "Why would this article discuss products of biotechnology?",
+        body: "National Academies of Science, Engineering, and Medicine",
+        accent: "#EEF0EA",
+      },
+    ],
+  },
+  {
+    label: "Yesterday",
+    items: [
+      {
+        id: "physics-loop",
+        kind: "diagram",
+        title: "Why does a roller coaster stay on the track in a loop?",
+        body: "Centripetal force",
+        accent: "#FDF3F3",
+      },
+      {
+        id: "missing-text",
+        kind: "text",
+        title: "To get the best answer, please type the missing text below or retake the full question.",
+      },
+    ],
+  },
+  {
+    label: "05/18",
+    items: [
+      {
+        id: "radicals",
+        kind: "equation",
+        title: "Solve for x",
+        body: "√(x + 7) + √(2x - 1) = 8",
+        accent: "#F5F7F9",
+      },
+      {
+        id: "plant-growth",
+        kind: "text",
+        title: "Explain why the plant height increases linearly over time.",
+        body: "Use the data table to support your answer.",
+      },
+    ],
+  },
+  {
+    label: "05/17",
+    items: [
+      {
+        id: "fractions",
+        kind: "equation",
+        title: "Convert the fraction to a decimal",
+        body: "7 / 16",
+        accent: "#FFF5E8",
+      },
+      {
+        id: "chemistry",
+        kind: "diagram",
+        title: "How does soap break down grease?",
+        body: "Molecule structure",
+        accent: "#ECF5ED",
+      },
+    ],
+  },
+];
+
 export function TutorPreview() {
   const [activeIndex, setActiveIndex] = useState(1); // 中央卡（rollercoaster）选中
   const [activeTab, setActiveTab] = useState(2); // Study tab
+  const [historyVisible, setHistoryVisible] = useState(false);
+  const [historyClosing, setHistoryClosing] = useState(false);
+
+  const openHistory = () => {
+    setHistoryClosing(false);
+    setHistoryVisible(true);
+  };
+
+  const closeHistory = () => {
+    setHistoryClosing(true);
+  };
 
   return (
     <DemoCanvas mode="fill" background="#F6F8FA">
+      <style>
+        {`
+          @keyframes tutor-history-enter {
+            from {
+              transform: translateX(100%);
+              opacity: 0.98;
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+            }
+          }
+
+          @keyframes tutor-history-exit {
+            from {
+              transform: translateX(0);
+              opacity: 1;
+            }
+            to {
+              transform: translateX(100%);
+              opacity: 0.98;
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .tutor-history-page {
+              animation: none !important;
+            }
+          }
+        `}
+      </style>
       <div
         className="absolute inset-0 select-none overflow-hidden"
-        style={{ background: "#F6F8FA" }}
+        style={{
+          background: "#F6F8FA",
+        }}
       >
         {/* 顶部背景光斑 — Figma node 2042:18327
             由 393×200 蓝色矩形 blur(300) + 80×80 绿色椭圆 blur(200) 叠加生成 */}
@@ -129,7 +264,7 @@ export function TutorPreview() {
         />
 
         {/* 顶部 Title 区 — Figma node 2004:17288：状态栏 + Tutor 工具栏 */}
-        <TutorTitleHeader />
+        <TutorTitleHeader onOpenHistory={openHistory} />
 
         {/* Hero + Carousel 组 — Figma node 1761:15434
             title 高 92，组距离 title top 外边距 40，因此 group top = 132；组内 gap = 48 */}
@@ -178,6 +313,25 @@ export function TutorPreview() {
           style={{ width: 393, height: "auto" }}
         />
       </div>
+      {historyVisible ? (
+        <div
+          className="absolute inset-0 tutor-history-page"
+          style={{
+            zIndex: 80,
+            animation: historyClosing
+              ? "tutor-history-exit 350ms cubic-bezier(0.32, 0.72, 0, 1) both"
+              : "tutor-history-enter 350ms cubic-bezier(0.32, 0.72, 0, 1) both",
+            willChange: "transform, opacity",
+          }}
+          onAnimationEnd={() => {
+            if (!historyClosing) return;
+            setHistoryVisible(false);
+            setHistoryClosing(false);
+          }}
+        >
+          <TutorHistoryScreen onBack={closeHistory} />
+        </div>
+      ) : null}
     </DemoCanvas>
   );
 }
@@ -488,7 +642,12 @@ function SmallChevronRight() {
   );
 }
 
-function TutorTitleHeader() {
+function TutorTitleHeader({ onOpenHistory }: { onOpenHistory: () => void }) {
+  const [selectedSpeed, setSelectedSpeed] =
+    useState<(typeof SPEED_OPTIONS)[number]>("1.00X");
+  const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
+  const [speedButtonPressed, setSpeedButtonPressed] = useState(false);
+
   return (
     <div
       className="absolute left-0 right-0 top-0"
@@ -546,14 +705,31 @@ function TutorTitleHeader() {
             gap: 8,
           }}
         >
-          <div
+          <button
+            type="button"
+            aria-label="Select playback speed"
+            aria-expanded={speedMenuOpen}
             className="flex items-center justify-center"
+            onPointerDown={() => setSpeedButtonPressed(true)}
+            onPointerUp={() => setSpeedButtonPressed(false)}
+            onPointerLeave={() => setSpeedButtonPressed(false)}
+            onPointerCancel={() => setSpeedButtonPressed(false)}
+            onClick={() => setSpeedMenuOpen((open) => !open)}
             style={{
               padding: "8px 10px",
               borderRadius: 100,
-              background: "rgba(0, 0, 0, 0.06)",
+              background: speedButtonPressed
+                ? "rgba(0, 0, 0, 0.12)"
+                : "rgba(0, 0, 0, 0.06)",
               boxSizing: "border-box",
               height: 28,
+              border: "none",
+              cursor: "pointer",
+              transform: speedButtonPressed ? "scale(0.94)" : "scale(1)",
+              transformOrigin: "center center",
+              transition:
+                "transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1), background 120ms ease",
+              WebkitTapHighlightColor: "transparent",
             }}
           >
             <span
@@ -566,17 +742,558 @@ function TutorTitleHeader() {
                 color: "#111111",
               }}
             >
-              1.00X
+              {selectedSpeed}
             </span>
-          </div>
+          </button>
           <PressableImageButton
             src="/figma/tutor/tutor-history-icon.png"
             label="History"
             width={32}
             height={32}
+            onClick={onOpenHistory}
           />
         </div>
       </div>
+      {speedMenuOpen ? (
+        <>
+          <button
+            type="button"
+            aria-label="Close playback speed menu"
+            onClick={() => setSpeedMenuOpen(false)}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: 393,
+              height: 852,
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: "default",
+              zIndex: 30,
+              WebkitTapHighlightColor: "transparent",
+            }}
+          />
+          <SpeedSelectionMenu
+            selectedSpeed={selectedSpeed}
+            onSelect={(speed) => {
+              setSelectedSpeed(speed);
+              setSpeedMenuOpen(false);
+            }}
+          />
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function SpeedSelectionMenu({
+  selectedSpeed,
+  onSelect,
+}: {
+  selectedSpeed: (typeof SPEED_OPTIONS)[number];
+  onSelect: (speed: (typeof SPEED_OPTIONS)[number]) => void;
+}) {
+  return (
+    <>
+      <style>
+        {`
+          @keyframes tutor-speed-menu-pop {
+            0% {
+              opacity: 0;
+              transform: scale(0.9);
+            }
+            80% {
+              opacity: 1;
+              transform: scale(1.01);
+            }
+            100% {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .tutor-speed-menu-pop {
+              animation: none !important;
+            }
+          }
+        `}
+      </style>
+      <div
+        className="absolute flex flex-col items-center tutor-speed-menu-pop"
+        style={{
+          left: 261,
+          top: 90,
+          zIndex: 40,
+          transformOrigin: "top center",
+          animation:
+            "tutor-speed-menu-pop 240ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        }}
+      >
+        <svg
+          width="24"
+          height="6"
+          viewBox="0 0 24 6"
+          fill="none"
+          aria-hidden="true"
+          style={{ display: "block", flexShrink: 0 }}
+        >
+          <path d="M0 6L12 0L24 6H0Z" fill="#FFFFFF" />
+        </svg>
+        <div
+          className="flex flex-col items-start justify-center"
+          style={{
+            width: 100,
+            padding: 12,
+            gap: 24,
+            borderRadius: 12,
+            background: "#FFFFFF",
+            boxShadow: "0px 40px 28px rgba(0, 0, 0, 0.16)",
+            boxSizing: "border-box",
+          }}
+        >
+          {SPEED_OPTIONS.map((speed) => {
+            const selected = speed === selectedSpeed;
+            return (
+              <button
+                key={speed}
+                type="button"
+                onClick={() => onSelect(speed)}
+                style={{
+                  width: "100%",
+                  padding: 0,
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  fontFamily:
+                    "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                  fontWeight: 500,
+                  fontSize: 12,
+                  lineHeight: "12px",
+                  color: selected ? "#007AFF" : "#111111",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                {speed}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function TutorHistoryScreen({ onBack }: { onBack: () => void }) {
+  return (
+    <div
+      className="absolute inset-0 select-none overflow-hidden"
+      style={{ background: "#F6F8FA" }}
+    >
+      <TutorHistoryHeader onBack={onBack} />
+      <div
+        className="absolute left-0 right-0"
+        style={{
+          top: 92,
+          bottom: 0,
+          overflowY: "auto",
+          paddingBottom: 54,
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+        }}
+      >
+        {HISTORY_SECTIONS.map((section) => (
+          <HistorySectionView key={section.label} section={section} />
+        ))}
+      </div>
+      <HomeIndicator />
+    </div>
+  );
+}
+
+function TutorHistoryHeader({ onBack }: { onBack: () => void }) {
+  return (
+    <div
+      className="absolute left-0 right-0 top-0"
+      style={{
+        height: 92,
+        zIndex: 20,
+        background: "#F6F8FA",
+      }}
+    >
+      <StatusBar />
+      <div
+        className="absolute left-0 right-0 flex items-stretch"
+        style={{
+          top: 44,
+          height: 48,
+          padding: "12px 16px 4px",
+          boxSizing: "border-box",
+          gap: 40,
+        }}
+      >
+        <div className="flex items-center" style={{ flex: 1, minWidth: 0 }}>
+          <button
+            type="button"
+            aria-label="Back to Tutor"
+            onClick={onBack}
+            style={{
+              width: 32,
+              height: 32,
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            <BackArrowIcon />
+          </button>
+        </div>
+        <div
+          className="flex items-center"
+          style={{
+            height: 32,
+            gap: 6,
+            borderRadius: 100,
+            whiteSpace: "nowrap",
+          }}
+        >
+          <TutorAvatar />
+          <span
+            style={{
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "16px",
+              color: "#111111",
+            }}
+          >
+            AI Tutor
+          </span>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }} />
+      </div>
+    </div>
+  );
+}
+
+function HistorySectionView({ section }: { section: HistorySection }) {
+  return (
+    <section
+      style={{
+        width: "100%",
+        padding: "16px 16px 8px",
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      }}
+    >
+      <p
+        style={{
+          margin: 0,
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          fontWeight: 400,
+          fontSize: 12,
+          lineHeight: "12px",
+          color: "#989B9E",
+        }}
+      >
+        {section.label}
+      </p>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 174.5px)",
+          gap: 12,
+          height: 180,
+        }}
+      >
+        {section.items.map((item) => (
+          <HistoryCard key={item.id} item={item} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function HistoryCard({ item }: { item: HistoryItem }) {
+  return (
+    <button
+      type="button"
+      aria-label={item.title}
+      style={{
+        width: 174.5,
+        height: 180,
+        padding: 0,
+        border: "none",
+        borderRadius: 24,
+        background: "#FFFFFF",
+        cursor: "pointer",
+        position: "relative",
+        overflow: "hidden",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          width: 159,
+          height: 164,
+          transform: "translate(-50%, -50%)",
+          borderRadius: 18,
+          overflow: "hidden",
+        }}
+      >
+        <HistoryCardContent item={item} />
+      </div>
+    </button>
+  );
+}
+
+function HistoryCardContent({ item }: { item: HistoryItem }) {
+  if (item.kind === "worksheet") {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          padding: 8,
+          boxSizing: "border-box",
+          background: item.accent,
+          color: "#111111",
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+        }}
+      >
+        <p style={{ margin: "0 0 6px", fontSize: 6, lineHeight: "8px" }}>
+          ({item.body}) Polynomial. {item.title}
+        </p>
+        <MiniGraph />
+      </div>
+    );
+  }
+
+  if (item.kind === "article") {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          padding: 8,
+          boxSizing: "border-box",
+          background: item.accent,
+          color: "#111111",
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+        }}
+      >
+        <p style={{ margin: "0 0 6px", fontSize: 6, fontWeight: 700, lineHeight: "7px" }}>
+          2016-2017: {item.body}
+        </p>
+        <p style={{ margin: 0, fontSize: 6, lineHeight: "7.5px" }}>
+          "{item.title}" Use evidence from the passage to explain your answer.
+        </p>
+      </div>
+    );
+  }
+
+  if (item.kind === "equation") {
+    return (
+      <div
+        className="flex flex-col justify-center"
+        style={{
+          width: "100%",
+          height: "100%",
+          padding: 16,
+          boxSizing: "border-box",
+          background: item.accent,
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          color: "#111111",
+          textAlign: "left",
+        }}
+      >
+        <p style={{ margin: "0 0 14px", fontSize: 12, lineHeight: "15px", color: "#6B7075" }}>
+          {item.title}
+        </p>
+        <p style={{ margin: 0, fontSize: 18, lineHeight: "24px", fontWeight: 600 }}>
+          {item.body}
+        </p>
+      </div>
+    );
+  }
+
+  if (item.kind === "diagram") {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          padding: 14,
+          boxSizing: "border-box",
+          background: item.accent,
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          color: "#111111",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <SimpleDiagram />
+        <div>
+          <p style={{ margin: "0 0 5px", fontSize: 13, lineHeight: "16px", fontWeight: 600 }}>
+            {item.title}
+          </p>
+          <p style={{ margin: 0, fontSize: 10, lineHeight: "12px", color: "#6B7075" }}>
+            {item.body}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex flex-col justify-center"
+      style={{
+        width: "100%",
+        height: "100%",
+        padding: 16,
+        boxSizing: "border-box",
+        fontFamily:
+          "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+        color: "#111111",
+        textAlign: "left",
+      }}
+    >
+      <p
+        style={{
+          margin: 0,
+          fontWeight: 400,
+          fontSize: 16,
+          lineHeight: "24px",
+          display: "-webkit-box",
+          WebkitLineClamp: 5,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
+        {item.title}
+      </p>
+      {item.body ? (
+        <p
+          style={{
+            margin: "8px 0 0",
+            fontSize: 12,
+            lineHeight: "16px",
+            color: "#6B7075",
+          }}
+        >
+          {item.body}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function MiniGraph() {
+  return (
+    <svg width="143" height="118" viewBox="0 0 143 118" fill="none" aria-hidden>
+      <rect width="143" height="118" fill="#E7E5DA" />
+      {Array.from({ length: 15 }).map((_, index) => (
+        <line key={`v-${index}`} x1={index * 10} y1="0" x2={index * 10} y2="118" stroke="#C9C6B8" strokeWidth="0.5" />
+      ))}
+      {Array.from({ length: 13 }).map((_, index) => (
+        <line key={`h-${index}`} x1="0" y1={index * 10} x2="143" y2={index * 10} stroke="#C9C6B8" strokeWidth="0.5" />
+      ))}
+      <path d="M72 0V118M0 58H143" stroke="#676767" strokeWidth="1" />
+      <path d="M10 86C30 78 33 21 52 35C69 48 61 96 82 82C97 72 91 34 111 39C125 43 126 72 137 68" stroke="#111111" strokeWidth="1.5" fill="none" />
+      <path d="M102 31L123 43M117 28L133 55" stroke="#111111" strokeWidth="1" />
+    </svg>
+  );
+}
+
+function SimpleDiagram() {
+  return (
+    <svg width="131" height="56" viewBox="0 0 131 56" fill="none" aria-hidden>
+      <circle cx="30" cy="28" r="24" fill="#FFFFFF" />
+      <circle cx="101" cy="28" r="24" fill="#FFFFFF" />
+      <path d="M54 28H77" stroke="#111111" strokeWidth="2" strokeLinecap="round" />
+      <path d="M72 21L79 28L72 35" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <text x="30" y="31" textAnchor="middle" fontSize="9" fontWeight="700" fill="#111111">Force</text>
+      <text x="101" y="31" textAnchor="middle" fontSize="9" fontWeight="700" fill="#111111">Motion</text>
+    </svg>
+  );
+}
+
+function TutorAvatar() {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/figma/tutor/tutor-history-avatar.png"
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      style={{
+        width: 28,
+        height: 28,
+        display: "block",
+        flexShrink: 0,
+        pointerEvents: "none",
+        userSelect: "none",
+      }}
+    />
+  );
+}
+
+function BackArrowIcon() {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/figma/tutor/tutor-history-back.png"
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      style={{
+        width: 24,
+        height: 24,
+        display: "block",
+        pointerEvents: "none",
+        userSelect: "none",
+      }}
+    />
+  );
+}
+
+function HomeIndicator() {
+  return (
+    <div
+      className="absolute left-0 bottom-0 pointer-events-none"
+      style={{ width: 393, height: 34 }}
+    >
+      <div
+        className="absolute left-1/2"
+        style={{
+          bottom: 8,
+          width: 134,
+          height: 5,
+          borderRadius: 100,
+          background: "#111111",
+          transform: "translateX(-50%)",
+        }}
+      />
     </div>
   );
 }
@@ -728,11 +1445,13 @@ function PressableImageButton({
   label,
   width,
   height,
+  onClick,
 }: {
   src: string;
   label: string;
   width: number;
   height: number;
+  onClick?: () => void;
 }) {
   const [pressed, setPressed] = useState(false);
 
@@ -744,6 +1463,7 @@ function PressableImageButton({
       onPointerUp={() => setPressed(false)}
       onPointerLeave={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
+      onClick={onClick}
       style={{
         width,
         height,
