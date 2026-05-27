@@ -1,0 +1,14 @@
+---
+description: Use user-provided image assets directly without modification
+alwaysApply: true
+---
+
+# User-Provided Image Assets
+
+When the user provides an image asset and asks to use or replace it:
+
+- Copy the original image file into the project asset folder.
+- Reference that copied file directly from code.
+- Do not edit, crop, resize, compress, recolor, mask, trace, redraw, convert, upscale, or otherwise process the image.
+- Do not recreate the image with SVG/CSS/canvas or generated assets unless the user explicitly asks for generation or editing.
+- If the requested layout needs a different size, adjust only the rendered element/container sizing in code; keep the source image file unchanged.

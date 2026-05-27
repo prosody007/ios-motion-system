@@ -84,21 +84,21 @@ const TUTOR_CAROUSEL_CARDS: TutorCarouselCard[] = [
   },
   {
     id: "photosynthesis",
-    question: "How does sunlight become plant energy?",
-    tagText: "Biology",
-    tagBg: "#EAF4F9",
-    tagColor: "#0B99BC",
+    question: "Why do seasons change throughout the year?",
+    tagText: "Earth Science",
+    tagBg: "#EAF7F0",
+    tagColor: "#1E8E5A",
   },
 ];
 
-const TAB_ITEMS = [
-  { id: "scan", label: "Scan", Icon: TabScanIcon, active: false },
-  { id: "lecture", label: "Lecture Notes", Icon: TabLectureIcon, active: false },
-  { id: "study", label: "Study", Icon: TabStudyIcon, active: true },
-  { id: "me", label: "Me", Icon: TabMeIcon, active: false },
-];
+type TutorTabId = "scan" | "tutor" | "study" | "me";
 
-const SPEED_OPTIONS = ["0.50X", "0.75X", "1.00X", "1.25X", "1.50X"] as const;
+const TAB_ITEMS: { id: TutorTabId; label: string }[] = [
+  { id: "scan", label: "Scan" },
+  { id: "tutor", label: "Tutor" },
+  { id: "study", label: "Study" },
+  { id: "me", label: "Me" },
+];
 
 const HISTORY_SECTIONS: HistorySection[] = [
   {
@@ -176,11 +176,35 @@ const HISTORY_SECTIONS: HistorySection[] = [
   },
 ];
 
+const LOADING_STEPS = [
+  "Analyzing the question thoroughly",
+  "Working on a clear explanation",
+  "Drawing on the whiteboard",
+];
+
+const SPEED_OPTIONS = ["0.50X", "0.75X", "1.00X", "1.25X", "1.50X"] as const;
+
+const ANSWER_PREVIEW_PLACEHOLDER =
+  "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.";
+
+const EXPLANATION_MODULES = [
+  { kind: "question" },
+  { kind: "overview" },
+  { kind: "formula" },
+  { kind: "diagram" },
+  { kind: "text-image" },
+  { kind: "recap" },
+] as const;
+
 export function TutorPreview() {
   const [activeIndex, setActiveIndex] = useState(1); // 中央卡（rollercoaster）选中
-  const [activeTab, setActiveTab] = useState(2); // Study tab
+  const [activeTab, setActiveTab] = useState<TutorTabId>("tutor");
   const [historyVisible, setHistoryVisible] = useState(false);
   const [historyClosing, setHistoryClosing] = useState(false);
+  const [loadingVisible, setLoadingVisible] = useState(false);
+  const [loadingClosing, setLoadingClosing] = useState(false);
+  const [loadingCloseMode, setLoadingCloseMode] = useState<"back" | "complete">("back");
+  const [previewVisible, setPreviewVisible] = useState(false);
 
   const openHistory = () => {
     setHistoryClosing(false);
@@ -189,6 +213,32 @@ export function TutorPreview() {
 
   const closeHistory = () => {
     setHistoryClosing(true);
+  };
+
+  const openLoading = () => {
+    setPreviewVisible(false);
+    setLoadingClosing(false);
+    setLoadingCloseMode("back");
+    setLoadingVisible(true);
+  };
+
+  const closeLoading = () => {
+    setLoadingCloseMode("back");
+    setLoadingClosing(true);
+    window.setTimeout(() => {
+      setLoadingVisible(false);
+      setLoadingClosing(false);
+    }, 490);
+  };
+
+  const completeLoading = () => {
+    setPreviewVisible(true);
+    setLoadingCloseMode("complete");
+    setLoadingClosing(true);
+    window.setTimeout(() => {
+      setLoadingVisible(false);
+      setLoadingClosing(false);
+    }, 420);
   };
 
   return (
@@ -217,8 +267,181 @@ export function TutorPreview() {
             }
           }
 
+          @keyframes tutor-loading-complete-exit {
+            from {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+            to {
+              opacity: 0;
+              transform: translateY(10px) scale(0.992);
+            }
+          }
+
+          @keyframes tutor-preview-header-enter {
+            from {
+              opacity: 0;
+              transform: translateY(-24px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes tutor-preview-bottom-enter {
+            from {
+              opacity: 0;
+              transform: translateY(34px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes tutor-bottom-orb-center {
+            0%, 100% {
+              transform: translate3d(36px, -20px, 0);
+            }
+            24% {
+              transform: translate3d(73px, -100px, 0);
+            }
+            53% {
+              transform: translate3d(0px, -48px, 0);
+            }
+            77% {
+              transform: translate3d(52px, 0px, 0);
+            }
+          }
+
+          @keyframes tutor-bottom-orb-right {
+            0%, 100% {
+              transform: translate3d(153px, 0px, 0);
+            }
+            29% {
+              transform: translate3d(0px, -84px, 0);
+            }
+            61% {
+              transform: translate3d(120px, -24px, 0);
+            }
+            86% {
+              transform: translate3d(36px, -100px, 0);
+            }
+          }
+
+          @keyframes tutor-bottom-orb-left {
+            0%, 100% {
+              transform: translate3d(0px, -40px, 0);
+            }
+            22% {
+              transform: translate3d(265px, -100px, 0);
+            }
+            56% {
+              transform: translate3d(110px, 0px, 0);
+            }
+            81% {
+              transform: translate3d(210px, -72px, 0);
+            }
+          }
+
+          @keyframes tutor-bottom-orb-mint {
+            0%, 100% {
+              transform: translate3d(233px, -100px, 0);
+            }
+            27% {
+              transform: translate3d(0px, -20px, 0);
+            }
+            59% {
+              transform: translate3d(180px, 0px, 0);
+            }
+            88% {
+              transform: translate3d(78px, -64px, 0);
+            }
+          }
+
+          @keyframes tutor-voice-bar-size {
+            0%, 100% {
+              transform: scaleY(0.22);
+            }
+            50% {
+              transform: scaleY(1);
+            }
+          }
+
+          @keyframes tutor-loading-star-spin {
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
+          }
+
+          @keyframes tutor-loading-text-shine {
+            0% {
+              background-position: 150% center;
+            }
+            100% {
+              background-position: -50% center;
+            }
+          }
+
+          @keyframes tutor-loading-border-grow {
+            0% {
+              stroke-dashoffset: 100;
+            }
+            20% {
+              stroke-dashoffset: 80;
+            }
+            26% {
+              stroke-dashoffset: 80;
+            }
+            34% {
+              stroke-dashoffset: 64;
+            }
+            39% {
+              stroke-dashoffset: 64;
+            }
+            47% {
+              stroke-dashoffset: 50;
+            }
+            50% {
+              stroke-dashoffset: 50;
+            }
+            100% {
+              stroke-dashoffset: 2;
+            }
+          }
+
+          @keyframes tutor-typewriter-preview-fade {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 0.22;
+            }
+          }
+
+          @keyframes tutor-speed-menu-pop {
+            0% {
+              opacity: 0;
+              transform: scale(0.9);
+            }
+            80% {
+              opacity: 1;
+              transform: scale(1.01);
+            }
+            100% {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
           @media (prefers-reduced-motion: reduce) {
-            .tutor-history-page {
+            .tutor-history-page,
+            .tutor-loading-page,
+            .tutor-preview-enter {
               animation: none !important;
             }
           }
@@ -230,38 +453,7 @@ export function TutorPreview() {
           background: "#F6F8FA",
         }}
       >
-        {/* 顶部背景光斑 — Figma node 2042:18327
-            由 393×200 蓝色矩形 blur(300) + 80×80 绿色椭圆 blur(200) 叠加生成 */}
-        <div
-          aria-hidden="true"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{
-            width: 393,
-            height: 200,
-            background: "rgba(38, 92, 255, 0.7)",
-            filter: "blur(300px)",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: "50%",
-            background: "#6EFF7F",
-            filter: "blur(200px)",
-          }}
-        />
-
-        {/* 白色蒙层 — Figma node 1743:24108：白色 44% 不透明，叠在光斑上 */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "rgba(255, 255, 255, 0.44)",
-          }}
-        />
+        <TutorAmbientGlow />
 
         {/* 顶部 Title 区 — Figma node 2004:17288：状态栏 + Tutor 工具栏 */}
         <TutorTitleHeader onOpenHistory={openHistory} />
@@ -279,19 +471,7 @@ export function TutorPreview() {
             overflow: "visible",
           }}
         >
-          {/* 新 Hero 区 — Figma node 2004:17323，@3x PNG 原图直接渲染 */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/figma/tutor/tutor-teacher-hero.png"
-            alt=""
-            draggable={false}
-            className="pointer-events-none select-none"
-            style={{
-              width: 393,
-              height: "auto",
-              display: "block",
-            }}
-          />
+          <TutorHero />
 
           {/* 推荐卡片 carousel — 6 张卡组成无限圆环轮播 */}
           <TutorRingCarousel
@@ -301,16 +481,11 @@ export function TutorPreview() {
         </div>
 
         {/* 底部 CTA */}
-        <BottomCTA />
+        <BottomCTA onSubmitVoice={openLoading} />
 
-        {/* 底部导航栏 — Figma node 2004:17484，@3x PNG 原图直接渲染 */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/figma/tutor/tutor-bottom-nav.png"
-          alt=""
-          draggable={false}
-          className="absolute left-0 bottom-0 pointer-events-none select-none"
-          style={{ width: 393, height: "auto" }}
+        <TutorBottomNav
+          activeTab={activeTab}
+          onChange={setActiveTab}
         />
       </div>
       {historyVisible ? (
@@ -319,8 +494,8 @@ export function TutorPreview() {
           style={{
             zIndex: 80,
             animation: historyClosing
-              ? "tutor-history-exit 350ms cubic-bezier(0.32, 0.72, 0, 1) both"
-              : "tutor-history-enter 350ms cubic-bezier(0.32, 0.72, 0, 1) both",
+              ? "tutor-history-exit 490ms cubic-bezier(0.32, 0.72, 0, 1) both"
+              : "tutor-history-enter 490ms cubic-bezier(0.32, 0.72, 0, 1) both",
             willChange: "transform, opacity",
           }}
           onAnimationEnd={() => {
@@ -332,6 +507,28 @@ export function TutorPreview() {
           <TutorHistoryScreen onBack={closeHistory} />
         </div>
       ) : null}
+      {loadingVisible ? (
+        <div
+          className="absolute inset-0 tutor-loading-page"
+          style={{
+            zIndex: 100,
+            animation: loadingClosing
+              ? loadingCloseMode === "back"
+                ? "tutor-history-exit 490ms cubic-bezier(0.32, 0.72, 0, 1) both"
+                : "tutor-loading-complete-exit 420ms cubic-bezier(0.16, 1, 0.3, 1) both"
+              : "tutor-history-enter 490ms cubic-bezier(0.32, 0.72, 0, 1) both",
+            willChange: "transform, opacity",
+          }}
+        >
+          <TutorLoadingScreen
+            onBack={closeLoading}
+            onComplete={completeLoading}
+          />
+        </div>
+      ) : null}
+      {previewVisible ? (
+        <TutorAnswerPreviewScreen onBack={() => setPreviewVisible(false)} />
+      ) : null}
     </DemoCanvas>
   );
 }
@@ -339,6 +536,238 @@ export function TutorPreview() {
 /* -------------------------------------------------------------------------- */
 /*  Sub-components                                                             */
 /* -------------------------------------------------------------------------- */
+
+function TutorAmbientGlow() {
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute left-0 top-0 pointer-events-none"
+      style={{
+        width: 393,
+        height: 200,
+        isolation: "isolate",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: 393,
+          height: 200,
+          background: "rgba(38, 92, 255, 0.7)",
+          opacity: 0.44,
+          filter: "blur(112px)",
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: 80,
+          height: 80,
+          borderRadius: "50%",
+          background: "#6EFF7F",
+          filter: "blur(70px)",
+          zIndex: 1,
+        }}
+      />
+    </div>
+  );
+}
+
+function TutorBottomAmbientGlow({ bottom = -119 }: { bottom?: number }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute left-0 pointer-events-none"
+      style={{
+        width: 393,
+        height: 260,
+        isolation: "isolate",
+        bottom,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          width: 393,
+          height: 100,
+          left: 0,
+          bottom: 0,
+          background: "#265CFF",
+          opacity: 0.44,
+          filter: "blur(80px)",
+        }}
+      />
+      <BottomAmbientOrb
+        width={240}
+        height={240}
+        color="#4CC0FF"
+        blur={80}
+        duration={4875}
+        initialX={72}
+        initialY={20}
+        minX={-39}
+        maxX={433}
+      />
+      <BottomAmbientOrb
+        width={201.6}
+        height={201.6}
+        color="#6E7AFF"
+        blur={90}
+        duration={4063}
+        initialX={310}
+        initialY={80}
+        minX={-39}
+        maxX={433}
+      />
+      <BottomAmbientOrb
+        width={150}
+        height={150}
+        color="#83FF91"
+        blur={100}
+        duration={1885}
+        initialX={24}
+        initialY={64}
+        minX={-39}
+        maxX={433}
+      />
+      <BottomAmbientOrb
+        width={134.4}
+        height={134.4}
+        color="#83FFE2"
+        blur={80}
+        duration={2275}
+        initialX={236}
+        initialY={30}
+        minX={-39}
+        maxX={433}
+      />
+      <BottomAmbientOrb
+        width={130}
+        height={130}
+        color="#BB4CFF"
+        blur={100}
+        duration={2600}
+        initialX={330}
+        initialY={52}
+        minX={-39}
+        maxX={433}
+      />
+    </div>
+  );
+}
+
+function BottomAmbientOrb({
+  width,
+  height,
+  color,
+  blur,
+  duration,
+  initialX,
+  initialY,
+  minX,
+  maxX,
+}: {
+  width: number;
+  height: number;
+  color: string;
+  blur: number;
+  duration: number;
+  initialX: number;
+  initialY: number;
+  minX: number;
+  maxX: number;
+}) {
+  const [position, setPosition] = useState({ x: initialX, y: initialY });
+
+  useEffect(() => {
+    const nextPosition = () => {
+      setPosition({
+        x: minX + Math.random() * (maxX - minX),
+        y: Math.random() * 100,
+      });
+    };
+
+    const timeout = window.setTimeout(nextPosition, 120);
+    const interval = window.setInterval(nextPosition, duration);
+
+    return () => {
+      window.clearTimeout(timeout);
+      window.clearInterval(interval);
+    };
+  }, [duration, maxX, minX]);
+
+  return (
+    <div
+      className="tutor-bottom-orb"
+      style={{
+        position: "absolute",
+        width,
+        height,
+        left: 0,
+        bottom: 0,
+        borderRadius: "50%",
+        background: color,
+        filter: `blur(${blur}px)`,
+        transform: `translate3d(${position.x - width / 2}px, -${position.y}px, 0)`,
+        transition: `transform ${duration}ms linear`,
+        willChange: "transform",
+      }}
+    />
+  );
+}
+
+function TutorHero() {
+  return (
+    <div
+      className="pointer-events-none select-none"
+      style={{
+        width: 393,
+        paddingLeft: 40,
+        paddingRight: 40,
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 8,
+      }}
+    >
+      <div
+        style={{ width: 393, flexShrink: 0 }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/tutor-teacher-hero.png"
+          alt=""
+          draggable={false}
+          style={{
+            width: 393,
+            height: "auto",
+            display: "block",
+          }}
+        />
+      </div>
+      <p
+        style={{
+          margin: 0,
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          fontWeight: 700,
+          fontSize: 24,
+          lineHeight: "24px",
+          color: "#111111",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Your tutor for any subject
+      </p>
+    </div>
+  );
+}
 
 function TutorRingCarousel({
   activeIndex,
@@ -380,7 +809,7 @@ function TutorRingCarousel({
     const id = window.setInterval(() => {
       setTransitionEnabled(true);
       setTrackIndex((prev) => prev + 1);
-    }, 3000);
+    }, 2500);
     return () => window.clearInterval(id);
   }, [dragging]);
 
@@ -455,7 +884,7 @@ function TutorRingCarousel({
         style={{
           transform: `translate(calc(-${CARD_W / 2}px - ${trackIndex * CARD_STEP}px + ${dragOffset}px), 0px)`,
           transition: transitionEnabled
-            ? "transform 1.008s cubic-bezier(0.32, 0.72, 0, 1)"
+            ? "transform 1.512s cubic-bezier(0.32, 0.72, 0, 1)"
             : "none",
         }}
         onTransitionEnd={(event) => {
@@ -496,7 +925,7 @@ function TutorRingCarousel({
                 opacity: 1,
                 transformOrigin: "center center",
                 transition: transitionEnabled
-                  ? "transform 1.008s cubic-bezier(0.32, 0.72, 0, 1)"
+                  ? "transform 1.512s cubic-bezier(0.32, 0.72, 0, 1)"
                   : "none",
                 willChange: "transform",
               }}
@@ -537,7 +966,7 @@ function TutorCarouselCardView({ card }: { card: TutorCarouselCard }) {
           minHeight: 0,
         }}
       >
-        <CardSignalIcon />
+        <SubjectIcon subject={card.tagText} color={card.tagColor} />
         <p
           style={{
             margin: 0,
@@ -603,25 +1032,135 @@ function TutorCarouselCardView({ card }: { card: TutorCarouselCard }) {
   );
 }
 
-function CardSignalIcon() {
+function SubjectIcon({ subject, color }: { subject: string; color: string }) {
+  const iconProps = {
+    width: 40,
+    height: 40,
+    viewBox: "0 0 120 120",
+    fill: "none",
+    preserveAspectRatio: "xMidYMid meet",
+    "aria-hidden": true,
+  } as const;
+  const strokeProps = {
+    stroke: color,
+    strokeWidth: 10,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  } as const;
+
+  if (subject === "Biology") {
+    return (
+      <svg {...iconProps}>
+        <path
+          d="M25 76C25 45 53 22 91 25C95 63 72 94 33 95"
+          {...strokeProps}
+        />
+        <path
+          d="M34 91C47 72 65 53 88 29"
+          {...strokeProps}
+        />
+      </svg>
+    );
+  }
+
+  if (subject === "Algebra") {
+    return (
+      <svg {...iconProps}>
+        <path
+          d="M26 36L56 84M56 36L26 84"
+          {...strokeProps}
+        />
+        <path
+          d="M73 47H98M85.5 34.5V59.5"
+          {...strokeProps}
+        />
+        <path
+          d="M73 82H98"
+          {...strokeProps}
+        />
+      </svg>
+    );
+  }
+
+  if (subject === "Chemistry") {
+    return (
+      <svg {...iconProps}>
+        <path
+          d="M43 22H77M52 22V50L28 88C24 96 30 103 39 103H81C90 103 96 96 92 88L68 50V22"
+          {...strokeProps}
+        />
+        <path
+          d="M39 80H81"
+          {...strokeProps}
+        />
+      </svg>
+    );
+  }
+
+  if (subject === "Physics") {
+    return (
+      <svg {...iconProps}>
+        <circle cx="60" cy="60" r="10" fill={color} />
+        <ellipse
+          cx="60"
+          cy="60"
+          rx="45"
+          ry="18"
+          stroke={color}
+          strokeWidth="8"
+        />
+        <ellipse
+          cx="60"
+          cy="60"
+          rx="45"
+          ry="18"
+          stroke={color}
+          strokeWidth="8"
+          transform="rotate(60 60 60)"
+        />
+        <ellipse
+          cx="60"
+          cy="60"
+          rx="45"
+          ry="18"
+          stroke={color}
+          strokeWidth="8"
+          transform="rotate(120 60 60)"
+        />
+      </svg>
+    );
+  }
+
+  if (subject === "Math") {
+    return (
+      <svg {...iconProps}>
+        <path
+          d="M28 38H92"
+          {...strokeProps}
+        />
+        <path
+          d="M46 38C46 60 42 80 33 96"
+          {...strokeProps}
+        />
+        <path
+          d="M74 38C74 60 78 80 87 96"
+          {...strokeProps}
+        />
+        <path
+          d="M37 76H83"
+          {...strokeProps}
+        />
+      </svg>
+    );
+  }
+
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden>
+    <svg {...iconProps}>
+      <circle cx="60" cy="60" r="43" stroke={color} strokeWidth="10" />
       <path
-        d="M20 28.4V20"
-        stroke="#007AFF"
-        strokeWidth="3.33"
-        strokeLinecap="round"
-      />
-      <path
-        d="M13.4 24.8a9.33 9.33 0 0 1 13.2 0"
-        stroke="#007AFF"
-        strokeWidth="3.33"
-        strokeLinecap="round"
-      />
-      <path
-        d="M8.4 19.8a16.4 16.4 0 0 1 23.2 0"
-        stroke="#007AFF"
-        strokeWidth="3.33"
+        d="M17 60H103M60 17C47 30 40 45 40 60C40 75 47 90 60 103M60 17C73 30 80 45 80 60C80 75 73 90 60 103"
+        stroke={color}
+        strokeWidth="8"
         strokeLinecap="round"
       />
     </svg>
@@ -643,11 +1182,6 @@ function SmallChevronRight() {
 }
 
 function TutorTitleHeader({ onOpenHistory }: { onOpenHistory: () => void }) {
-  const [selectedSpeed, setSelectedSpeed] =
-    useState<(typeof SPEED_OPTIONS)[number]>("1.00X");
-  const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
-  const [speedButtonPressed, setSpeedButtonPressed] = useState(false);
-
   return (
     <div
       className="absolute left-0 right-0 top-0"
@@ -696,7 +1230,7 @@ function TutorTitleHeader({ onOpenHistory }: { onOpenHistory: () => void }) {
           </span>
         </div>
 
-        {/* 右侧 1.00X + history icon */}
+        {/* 右侧 history icon */}
         <div
           className="flex items-center justify-end"
           style={{
@@ -705,46 +1239,6 @@ function TutorTitleHeader({ onOpenHistory }: { onOpenHistory: () => void }) {
             gap: 8,
           }}
         >
-          <button
-            type="button"
-            aria-label="Select playback speed"
-            aria-expanded={speedMenuOpen}
-            className="flex items-center justify-center"
-            onPointerDown={() => setSpeedButtonPressed(true)}
-            onPointerUp={() => setSpeedButtonPressed(false)}
-            onPointerLeave={() => setSpeedButtonPressed(false)}
-            onPointerCancel={() => setSpeedButtonPressed(false)}
-            onClick={() => setSpeedMenuOpen((open) => !open)}
-            style={{
-              padding: "8px 10px",
-              borderRadius: 100,
-              background: speedButtonPressed
-                ? "rgba(0, 0, 0, 0.12)"
-                : "rgba(0, 0, 0, 0.06)",
-              boxSizing: "border-box",
-              height: 28,
-              border: "none",
-              cursor: "pointer",
-              transform: speedButtonPressed ? "scale(0.94)" : "scale(1)",
-              transformOrigin: "center center",
-              transition:
-                "transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1), background 120ms ease",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            <span
-              style={{
-                fontFamily:
-                  "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
-                fontWeight: 600,
-                fontSize: 12,
-                lineHeight: "12px",
-                color: "#111111",
-              }}
-            >
-              {selectedSpeed}
-            </span>
-          </button>
           <PressableImageButton
             src="/figma/tutor/tutor-history-icon.png"
             label="History"
@@ -752,6 +1246,355 @@ function TutorTitleHeader({ onOpenHistory }: { onOpenHistory: () => void }) {
             height={32}
             onClick={onOpenHistory}
           />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TutorHistoryScreen({ onBack }: { onBack: () => void }) {
+  return (
+    <div
+      className="absolute inset-0 select-none overflow-hidden"
+      style={{ background: "#F6F8FA" }}
+    >
+      <TutorHistoryHeader onBack={onBack} />
+      <div
+        className="absolute left-0 right-0"
+        style={{
+          top: 92,
+          bottom: 0,
+          overflowY: "auto",
+          paddingBottom: 54,
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+        }}
+      >
+        {HISTORY_SECTIONS.map((section) => (
+          <HistorySectionView key={section.label} section={section} />
+        ))}
+      </div>
+      <HomeIndicator />
+    </div>
+  );
+}
+
+function TutorLoadingScreen({
+  onBack,
+  onComplete,
+}: {
+  onBack: () => void;
+  onComplete: () => void;
+}) {
+  const [activeStep, setActiveStep] = useState(0);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    const timers = [
+      window.setTimeout(() => setActiveStep(1), 4000),
+      window.setTimeout(() => setActiveStep(2), 8000),
+      window.setTimeout(() => onCompleteRef.current(), 13200),
+    ];
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, []);
+
+  return (
+    <div
+      className="absolute inset-0 select-none overflow-hidden"
+      style={{
+        zIndex: 90,
+        background: "#F6F8FA",
+      }}
+    >
+      <TutorLoadingHeader onBack={onBack} />
+      <div
+        className="absolute left-0"
+        style={{
+          top: 124,
+          width: 393,
+          padding: "40px 24px",
+          boxSizing: "border-box",
+        }}
+      >
+        <LoadingAvatar />
+        <div
+          style={{
+            marginTop: 40,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            width: "100%",
+          }}
+        >
+          {LOADING_STEPS.map((step, index) => (
+            <div key={step}>
+              <LoadingStep title={step} active={activeStep === index} />
+              {index < LOADING_STEPS.length - 1 ? <LoadingConnector /> : null}
+            </div>
+          ))}
+        </div>
+      </div>
+      <LoadingQuestionCard top={531} />
+      <HomeIndicator />
+    </div>
+  );
+}
+
+function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
+  const [paused, setPaused] = useState(false);
+  const [voiceInputActive, setVoiceInputActive] = useState(false);
+
+  return (
+    <div
+      className="absolute inset-0 select-none overflow-hidden"
+      style={{ zIndex: 95, background: "#FFFFFF" }}
+    >
+      <TutorAnswerPreviewHeader onBack={onBack} />
+      <ExplanationContentStream paused={paused || voiceInputActive} />
+      <div
+        className="tutor-preview-enter"
+        style={{
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+          width: 393,
+          height: 256,
+          animation:
+            "tutor-preview-bottom-enter 620ms cubic-bezier(0.16, 1, 0.3, 1) 130ms both",
+          willChange: "transform, opacity",
+          zIndex: 10,
+        }}
+      >
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            width: 393,
+            height: 80,
+            left: 0,
+            bottom: 176,
+          background:
+            "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%)",
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: 0,
+            bottom: 0,
+            width: 393,
+            height: 176,
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              width: 393,
+              height: 100,
+              left: 0,
+              bottom: 0,
+              background: "rgba(38, 92, 255, 0.8)",
+              opacity: 0.44,
+              filter: "blur(80px)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              width: 80,
+              height: 80,
+              left: "calc(50% - 40px - 0.5px)",
+              bottom: -33,
+              borderRadius: "50%",
+              background: "#6E90FF",
+              filter: "blur(45px)",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            bottom: 100,
+            width: 393,
+            height: 76,
+            padding: "8px 24px 24px",
+            boxSizing: "border-box",
+            opacity: voiceInputActive ? 0 : 1,
+            transform: voiceInputActive ? "translateY(10px)" : "translateY(0)",
+            transition:
+              "opacity 220ms cubic-bezier(0.4, 0, 0.2, 1), transform 220ms cubic-bezier(0.4, 0, 0.2, 1)",
+            pointerEvents: voiceInputActive ? "none" : "auto",
+            zIndex: 2,
+          }}
+        >
+          <TypewriterTwoLineText text={ANSWER_PREVIEW_PLACEHOLDER} paused={paused} />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 176,
+            opacity: voiceInputActive ? 1 : 0,
+            transform: voiceInputActive ? "translateY(0)" : "translateY(24px)",
+            transition:
+              "opacity 240ms cubic-bezier(0.4, 0, 0.2, 1), transform 240ms cubic-bezier(0.4, 0, 0.2, 1)",
+            transitionDelay: "0ms",
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        >
+          <TutorBottomAmbientGlow bottom={0} />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 100,
+            opacity: voiceInputActive ? 0 : 1,
+            transform: voiceInputActive ? "translateY(24px)" : "translateY(0)",
+            transition:
+              "opacity 240ms cubic-bezier(0.4, 0, 0.2, 1), transform 240ms cubic-bezier(0.4, 0, 0.2, 1)",
+            transitionDelay: voiceInputActive ? "0ms" : "220ms",
+            pointerEvents: voiceInputActive ? "none" : "auto",
+            zIndex: 2,
+          }}
+        >
+          <TutorAnswerInputBar
+            paused={paused}
+            onTogglePause={() => setPaused((value) => !value)}
+            onVoiceInput={() => setVoiceInputActive(true)}
+          />
+        </div>
+        <VoiceInputBar
+          active={voiceInputActive}
+          onCancel={() => setVoiceInputActive(false)}
+          onSubmit={() => setVoiceInputActive(false)}
+          topOffset={156}
+        />
+      </div>
+      <HomeIndicator />
+    </div>
+  );
+}
+
+function TutorAnswerPreviewHeader({ onBack }: { onBack: () => void }) {
+  const [selectedSpeed, setSelectedSpeed] =
+    useState<(typeof SPEED_OPTIONS)[number]>("1.00X");
+  const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
+  const [speedButtonPressed, setSpeedButtonPressed] = useState(false);
+
+  return (
+    <div
+      className="absolute left-0 top-0 tutor-preview-enter"
+      style={{
+        width: 393,
+        height: 92,
+        background: "#FFFFFF",
+        zIndex: 5,
+        animation:
+          "tutor-preview-header-enter 620ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        willChange: "transform, opacity",
+      }}
+    >
+      <StatusBar />
+      <div
+        style={{
+          position: "absolute",
+          left: 16,
+          right: 16,
+          top: 56,
+          height: 32,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <button
+            type="button"
+            aria-label="Back"
+            onClick={onBack}
+            style={{
+              width: 32,
+              height: 32,
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            <LoadingBackArrowIcon />
+          </button>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <TutorAvatar />
+          <span
+            style={{
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "16px",
+              color: "#111111",
+              whiteSpace: "nowrap",
+            }}
+          >
+            AI Tutor
+          </span>
+        </div>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", justifyContent: "flex-end" }}>
+          <button
+            type="button"
+            aria-label="Select playback speed"
+            aria-expanded={speedMenuOpen}
+            onPointerDown={() => setSpeedButtonPressed(true)}
+            onPointerUp={() => setSpeedButtonPressed(false)}
+            onPointerLeave={() => setSpeedButtonPressed(false)}
+            onPointerCancel={() => setSpeedButtonPressed(false)}
+            onClick={() => setSpeedMenuOpen((open) => !open)}
+            style={{
+              height: 24,
+              padding: "6px 10px",
+              border: "none",
+              borderRadius: 100,
+              background: speedButtonPressed ? "#DDE0E4" : "#EDEEF3",
+              boxSizing: "border-box",
+              cursor: "pointer",
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 600,
+              fontSize: 12,
+              lineHeight: "12px",
+              color: "#111111",
+              transform: speedButtonPressed ? "scale(0.94)" : "scale(1)",
+              transformOrigin: "center center",
+              transition:
+                "transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1), background 120ms ease",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            {selectedSpeed}
+          </button>
         </div>
       </div>
       {speedMenuOpen ? (
@@ -795,120 +1638,841 @@ function SpeedSelectionMenu({
   onSelect: (speed: (typeof SPEED_OPTIONS)[number]) => void;
 }) {
   return (
-    <>
-      <style>
-        {`
-          @keyframes tutor-speed-menu-pop {
-            0% {
-              opacity: 0;
-              transform: scale(0.9);
-            }
-            80% {
-              opacity: 1;
-              transform: scale(1.01);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            .tutor-speed-menu-pop {
-              animation: none !important;
-            }
-          }
-        `}
-      </style>
+    <div
+      className="absolute flex flex-col items-center"
+      style={{
+        left: 261,
+        top: 90,
+        zIndex: 40,
+        transformOrigin: "top center",
+        animation:
+          "tutor-speed-menu-pop 240ms cubic-bezier(0.16, 1, 0.3, 1) both",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/tutor/speed-menu/arrow.svg"
+        alt=""
+        draggable={false}
+        style={{ width: 37, height: 6, display: "block", flexShrink: 0 }}
+      />
       <div
-        className="absolute flex flex-col items-center tutor-speed-menu-pop"
         style={{
-          left: 261,
-          top: 90,
-          zIndex: 40,
-          transformOrigin: "top center",
-          animation:
-            "tutor-speed-menu-pop 240ms cubic-bezier(0.16, 1, 0.3, 1) both",
+          width: 120,
+          padding: "16px 12px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "center",
+          gap: 24,
+          borderRadius: 12,
+          background: "#FFFFFF",
+          boxShadow: "0px 0px 60px rgba(0, 0, 0, 0.16)",
+          boxSizing: "border-box",
         }}
       >
-        <svg
-          width="24"
-          height="6"
-          viewBox="0 0 24 6"
-          fill="none"
-          aria-hidden="true"
-          style={{ display: "block", flexShrink: 0 }}
-        >
-          <path d="M0 6L12 0L24 6H0Z" fill="#FFFFFF" />
-        </svg>
-        <div
-          className="flex flex-col items-start justify-center"
-          style={{
-            width: 100,
-            padding: 12,
-            gap: 24,
-            borderRadius: 12,
-            background: "#FFFFFF",
-            boxShadow: "0px 40px 28px rgba(0, 0, 0, 0.16)",
-            boxSizing: "border-box",
-          }}
-        >
-          {SPEED_OPTIONS.map((speed) => {
-            const selected = speed === selectedSpeed;
-            return (
-              <button
-                key={speed}
-                type="button"
-                onClick={() => onSelect(speed)}
+        {SPEED_OPTIONS.map((speed) => {
+          const selected = speed === selectedSpeed;
+          return (
+            <button
+              key={speed}
+              type="button"
+              onClick={() => onSelect(speed)}
+              style={{
+                width: "100%",
+                padding: 0,
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                textAlign: "left",
+                fontFamily:
+                  "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                fontWeight: 500,
+                fontSize: 14,
+                lineHeight: "14px",
+                color: selected ? "#007AFF" : "#111111",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              <span>{speed}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/figma/tutor/speed-menu/checkmark.svg"
+                alt=""
+                draggable={false}
                 style={{
-                  width: "100%",
-                  padding: 0,
-                  border: "none",
-                  background: "transparent",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  fontFamily:
-                    "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
-                  fontWeight: 500,
-                  fontSize: 12,
-                  lineHeight: "12px",
-                  color: selected ? "#007AFF" : "#111111",
-                  WebkitTapHighlightColor: "transparent",
+                  width: 12,
+                  height: 12,
+                  display: "block",
+                  opacity: selected ? 1 : 0,
                 }}
-              >
-                {speed}
-              </button>
-            );
-          })}
-        </div>
+              />
+            </button>
+          );
+        })}
       </div>
-    </>
+    </div>
   );
 }
 
-function TutorHistoryScreen({ onBack }: { onBack: () => void }) {
+function ExplanationContentStream({ paused }: { paused: boolean }) {
+  const [visibleCount, setVisibleCount] = useState(1);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (paused) return;
+    if (visibleCount >= EXPLANATION_MODULES.length) return;
+
+    const delays = [0, 3300, 4100, 3600, 4700, 3900];
+    const timer = window.setTimeout(() => {
+      setVisibleCount((count) => Math.min(count + 1, EXPLANATION_MODULES.length));
+    }, delays[visibleCount] ?? 4000);
+
+    return () => window.clearTimeout(timer);
+  }, [paused, visibleCount]);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    viewport.scrollTo({
+      top: viewport.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [visibleCount]);
+
   return (
     <div
-      className="absolute inset-0 select-none overflow-hidden"
-      style={{ background: "#F6F8FA" }}
+      ref={viewportRef}
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 92,
+        width: 393,
+        bottom: 176,
+        overflowY: "auto",
+        overflowX: "hidden",
+        zIndex: 0,
+        WebkitOverflowScrolling: "touch",
+        overscrollBehavior: "contain",
+        scrollbarWidth: "none",
+      }}
     >
-      <TutorHistoryHeader onBack={onBack} />
       <div
-        className="absolute left-0 right-0"
         style={{
-          top: 92,
-          bottom: 0,
-          overflowY: "auto",
-          paddingBottom: 54,
-          WebkitOverflowScrolling: "touch",
-          scrollbarWidth: "none",
+          width: 393,
+          padding: "16px 24px 24px",
+          boxSizing: "border-box",
+          display: "flex",
+          flexDirection: "column",
+          gap: 24,
         }}
       >
-        {HISTORY_SECTIONS.map((section) => (
-          <HistorySectionView key={section.label} section={section} />
+        {EXPLANATION_MODULES.slice(0, visibleCount).map((module, index) => (
+          <div
+            key={`${module.kind}-${index}`}
+            style={{
+              animation:
+                "tutor-preview-bottom-enter 520ms cubic-bezier(0.16, 1, 0.3, 1) both",
+            }}
+          >
+            <ExplanationModule kind={module.kind} />
+          </div>
         ))}
       </div>
-      <HomeIndicator />
+    </div>
+  );
+}
+
+function ExplanationModule({
+  kind,
+}: {
+  kind: (typeof EXPLANATION_MODULES)[number]["kind"];
+}) {
+  if (kind === "question") {
+    return (
+      <div
+        style={{
+          width: "100%",
+          padding: 16,
+          borderRadius: 20,
+          border: "1px solid #E6E8EA",
+          background: "#FFFFFF",
+          boxSizing: "border-box",
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+        }}
+      >
+        <p style={explanationTitleStyle}>Your question</p>
+        <p style={explanationBodyStyle}>
+          Solve for all real values of <strong style={{ fontFamily: "serif", fontSize: 22 }}>x</strong>
+        </p>
+        <p style={{ ...explanationBodyStyle, fontFamily: "serif" }}>
+          √(x + 7) + √(2x − 1) = 8
+        </p>
+      </div>
+    );
+  }
+
+  if (kind === "overview") {
+    return (
+      <section style={sectionStyle}>
+        <p style={explanationTitleStyle}>Overview</p>
+        <div style={{ ...cardStyle, background: "#F2F6FF" }}>
+          <ul style={{ ...explanationBodyStyle, margin: 0, paddingLeft: 24 }}>
+            <li style={{ marginBottom: 4 }}>Identify the domain for both radicals.</li>
+            <li style={{ marginBottom: 4 }}>Isolate one radical before squaring.</li>
+            <li>Check the final solution in the original equation.</li>
+          </ul>
+        </div>
+      </section>
+    );
+  }
+
+  if (kind === "formula") {
+    return (
+      <section style={sectionStyle}>
+        <p style={explanationTitleStyle}>Step 1</p>
+        <div style={cardStyle}>
+          <p style={{ ...explanationBodyStyle, margin: 0, fontFamily: "serif" }}>
+            √(2x − 1) = 8 − √(x + 7)
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (kind === "diagram") {
+    return (
+      <section style={sectionStyle}>
+        <p style={explanationTitleStyle}>Key idea</p>
+        <div style={cardStyle}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/figma/tutor/explanation/diagram.png"
+            alt=""
+            draggable={false}
+            style={{ width: "100%", display: "block", borderRadius: 16 }}
+          />
+        </div>
+      </section>
+    );
+  }
+
+  if (kind === "text-image") {
+    return (
+      <section style={sectionStyle}>
+        <p style={explanationTitleStyle}>Check</p>
+        <p style={{ ...explanationBodyStyle, margin: 0 }}>
+          Squaring can introduce extraneous answers, so substitute candidates back into the original expression.
+        </p>
+        <div style={cardStyle}>
+          <div style={{ border: "1px solid #E6E8EA", borderRadius: 16, overflow: "hidden" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/tutor/explanation/graph.png"
+              alt=""
+              draggable={false}
+              style={{ width: "100%", display: "block" }}
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <div style={{ ...cardStyle, background: "#F2F6FF", gap: 16 }}>
+      <p style={{ ...explanationTitleStyle, color: "#007AFF" }}>RECAP</p>
+      <p style={{ ...explanationBodyStyle, margin: 0 }}>
+        The solution depends on isolating radicals carefully and verifying the result in the original equation.
+      </p>
+    </div>
+  );
+}
+
+const explanationTitleStyle: CSSProperties = {
+  margin: 0,
+  fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+  fontWeight: 700,
+  fontSize: 16,
+  lineHeight: "22.4px",
+  color: "#111111",
+};
+
+const explanationBodyStyle: CSSProperties = {
+  margin: 0,
+  fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+  fontWeight: 400,
+  fontSize: 16,
+  lineHeight: "24px",
+  color: "#111111",
+};
+
+const sectionStyle: CSSProperties = {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+};
+
+const cardStyle: CSSProperties = {
+  width: "100%",
+  padding: 16,
+  borderRadius: 20,
+  background: "#F5F7F9",
+  boxSizing: "border-box",
+};
+
+function TutorAnswerInputBar({
+  paused,
+  onTogglePause,
+  onVoiceInput,
+}: {
+  paused: boolean;
+  onTogglePause: () => void;
+  onVoiceInput: () => void;
+}) {
+  return (
+    <div
+      style={{
+        height: 90,
+        padding: "8px 24px 24px",
+        boxSizing: "border-box",
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+      }}
+    >
+      <AnswerImageButton
+        src={paused ? "/figma/tutor/answer-play-button.png" : "/figma/tutor/answer-pause-button.png"}
+        label={paused ? "Resume explanation" : "Pause explanation"}
+        width={58}
+        height={58}
+        onClick={onTogglePause}
+      />
+      <AnswerImageButton
+        src="/figma/tutor/answer-mic-button.png"
+        label="Voice input"
+        width="flex"
+        height={58}
+        onClick={onVoiceInput}
+      />
+      <AnswerImageButton
+        src="/figma/tutor/answer-keyboard-button.png"
+        label="Keyboard"
+        width={58}
+        height={58}
+      />
+    </div>
+  );
+}
+
+function AnswerImageButton({
+  src,
+  label,
+  width,
+  height,
+  onClick,
+}: {
+  src: string;
+  label: string;
+  width: number | "flex";
+  height: number;
+  onClick?: () => void;
+}) {
+  const [pressed, setPressed] = useState(false);
+  const numericWidth = width === "flex" ? undefined : width;
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerLeave={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
+      style={{
+        width: numericWidth,
+        height,
+        flex: width === "flex" ? 1 : undefined,
+        flexShrink: width === "flex" ? undefined : 0,
+        padding: 0,
+        border: "none",
+        background: "transparent",
+        cursor: "pointer",
+        transform: pressed ? "scale(0.95)" : "scale(1)",
+        transition: "transform 0.1s ease-in-out",
+        transformOrigin: "center center",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        style={{
+          width: width === "flex" ? "100%" : width,
+          height,
+          display: "block",
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      />
+    </button>
+  );
+}
+
+function TypewriterTwoLineText({ text, paused }: { text: string; paused: boolean }) {
+  const words = text.split(" ");
+  const [visibleWordCount, setVisibleWordCount] = useState(1);
+  const [offsetY, setOffsetY] = useState(0);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLParagraphElement | null>(null);
+  const visibleText = words.slice(0, visibleWordCount).join(" ");
+  const previewWord = words[visibleWordCount];
+
+  useEffect(() => {
+    setVisibleWordCount(1);
+  }, [text]);
+
+  useEffect(() => {
+    if (paused) return;
+    if (visibleWordCount >= words.length) return;
+    const word = words[visibleWordCount] || "";
+    const pausePoints = new Set([
+      Math.floor(words.length * 0.25),
+      Math.floor(words.length * 0.5),
+      Math.floor(words.length * 0.75),
+    ]);
+    const delay =
+      (72 + Math.min(word.length, 10) * 8) * 1.95 +
+      (pausePoints.has(visibleWordCount) ? 420 : 0);
+    const timer = window.setTimeout(() => {
+      setVisibleWordCount((count) => Math.min(count + 1, words.length));
+    }, delay);
+    return () => window.clearTimeout(timer);
+  }, [paused, visibleWordCount, words]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!container || !content) return;
+
+    const nextOffset = Math.max(0, content.scrollHeight - container.clientHeight);
+    setOffsetY(nextOffset);
+  }, [visibleText]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        width: "100%",
+        height: 44.8,
+        overflow: "hidden",
+      }}
+    >
+      <p
+        ref={contentRef}
+        style={{
+          margin: 0,
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          fontWeight: 400,
+          fontSize: 16,
+          lineHeight: "22.4px",
+          color: "#595C60",
+          wordBreak: "break-word",
+          transform: `translateY(-${offsetY}px)`,
+          transition: "transform 420ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      >
+        {visibleText}
+        {previewWord ? (
+          <span
+            key={`${visibleWordCount}-${previewWord}`}
+            style={{
+              opacity: 0,
+              animation: "tutor-typewriter-preview-fade 220ms linear forwards",
+            }}
+          >
+            {` ${previewWord}`}
+          </span>
+        ) : null}
+      </p>
+    </div>
+  );
+}
+
+function PauseIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="6" y="4" width="3" height="16" rx="1.5" fill="#111111" />
+      <rect x="15" y="4" width="3" height="16" rx="1.5" fill="#111111" />
+    </svg>
+  );
+}
+
+function MicSmallIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 14.5C14.2 14.5 16 12.7 16 10.5V6.5C16 4.3 14.2 2.5 12 2.5C9.8 2.5 8 4.3 8 6.5V10.5C8 12.7 9.8 14.5 12 14.5Z"
+        fill="#007AFF"
+      />
+      <path
+        d="M5.5 10.5C5.5 14.1 8.4 17 12 17M12 17C15.6 17 18.5 14.1 18.5 10.5M12 17V21"
+        stroke="#007AFF"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function KeyboardMiniIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="6" width="18" height="12" rx="3" stroke="#111111" strokeWidth="2" />
+      <path
+        d="M7 10H7.01M11 10H11.01M15 10H15.01M17 14H7"
+        stroke="#111111"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function TutorLoadingHeader({ onBack }: { onBack: () => void }) {
+  return (
+    <div
+      className="absolute left-0 top-0"
+      style={{ width: 393, height: 92, zIndex: 5 }}
+    >
+      <StatusBar />
+      <div
+        style={{
+          position: "absolute",
+          left: 16,
+          top: 56,
+          width: 32,
+          height: 32,
+        }}
+      >
+        <button
+          type="button"
+          aria-label="Back"
+          onClick={onBack}
+          style={{
+            width: 32,
+            height: 32,
+            padding: 0,
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          <LoadingBackArrowIcon />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function LoadingBackArrowIcon() {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M22.0713 16.1997L10.0713 16.1997"
+        stroke="#111111"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M14.1211 11.1211L8.99979 16.2424L14.1211 21.3637"
+        stroke="#111111"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function LoadingAvatar() {
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: 64,
+        height: 64,
+        borderRadius: 1000,
+        overflow: "hidden",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/tutor/loading/avatar.png"
+        alt=""
+        draggable={false}
+        style={{
+          position: "absolute",
+          width: 140.8,
+          height: 93.867,
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -28%)",
+          objectFit: "cover",
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      />
+    </div>
+  );
+}
+
+function LoadingStep({
+  title,
+  active = false,
+}: {
+  title: string;
+  active?: boolean;
+}) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 24 }}>
+      <div
+        style={{
+          width: 24,
+          height: 24,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition:
+            "opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+          opacity: active ? 1 : 0.65,
+          transform: active ? "translateY(0)" : "translateY(1px)",
+        }}
+      >
+        {active ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/figma/tutor/loading/thinking-active.svg"
+            alt=""
+            draggable={false}
+            style={{
+              width: 24,
+              height: 24,
+              display: "block",
+              animation: "tutor-loading-star-spin 2.2s linear infinite",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: "50%",
+              background: "#595C60",
+            }}
+          />
+        )}
+      </div>
+      <span
+        style={{
+          position: "relative",
+          display: "inline-block",
+          transform: active ? "translateY(0)" : "translateY(1px)",
+          transition:
+            "transform 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      >
+        <span
+          style={{
+            fontFamily:
+              "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+            fontWeight: active ? 700 : 400,
+            fontSize: active ? 18 : 14,
+            lineHeight: active ? "24px" : "20px",
+            color: active ? "#000000" : "#595C60",
+          opacity: active ? 1 : 0.78,
+            whiteSpace: "nowrap",
+            transition:
+              "opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), color 800ms cubic-bezier(0.16, 1, 0.3, 1), font-size 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        >
+          {title}
+        </span>
+        {active ? (
+          <span
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              inset: 0,
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 700,
+              fontSize: 18,
+              lineHeight: "24px",
+              whiteSpace: "nowrap",
+              backgroundImage:
+                "linear-gradient(90deg, rgba(255, 255, 255, 0) calc(50% - 50px), rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) calc(50% + 50px))",
+              backgroundSize: "calc(100% + 200px) auto",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              animation: "tutor-loading-text-shine 2.8s linear infinite",
+              pointerEvents: "none",
+            }}
+          >
+            {title}
+          </span>
+        ) : null}
+      </span>
+    </div>
+  );
+}
+
+function LoadingConnector() {
+  return (
+    <div
+      style={{
+        height: 32,
+        paddingLeft: 11.5,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          width: 1,
+          height: 32,
+          borderRadius: 100,
+          background: "#E6E8EA",
+        }}
+      />
+    </div>
+  );
+}
+
+function LoadingQuestionCard({ top }: { top: number }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 60,
+        top,
+        width: 273,
+        height: 160,
+        borderRadius: 16,
+        background: "rgba(255, 255, 255, 0.01)",
+        boxShadow: "0px 32px 64px rgba(26, 38, 54, 0.12)",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: 16,
+          overflow: "hidden",
+          clipPath: "inset(0 round 16px)",
+          transform: "translateZ(0)",
+          background: "#FFFFFF",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/loading/question-image.png"
+          alt=""
+          draggable={false}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            borderRadius: 16,
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: 16,
+            background: "rgba(0, 0, 0, 0.16)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/loading/question-image.png"
+          alt=""
+          draggable={false}
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: 203,
+            height: "100%",
+            transform: "translate(-50%, -50%)",
+            objectFit: "contain",
+            borderRadius: 16,
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: 273,
+          height: 160,
+          pointerEvents: "none",
+        }}
+      >
+        <svg width="273" height="160" viewBox="0 0 273 160" fill="none">
+          <rect
+            x="3"
+            y="3"
+            width="267"
+            height="154"
+            rx="13"
+            stroke="#FFFFFF"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            pathLength="100"
+            style={{
+              strokeDasharray: 100,
+              strokeDashoffset: 100,
+              animation:
+                "tutor-loading-border-grow 12s linear forwards",
+            }}
+          />
+        </svg>
+      </div>
     </div>
   );
 }
@@ -1242,7 +2806,7 @@ function TutorAvatar() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/figma/tutor/tutor-history-avatar.png"
+      src="/figma/tutor/tutor-header-avatar.png"
       alt=""
       aria-hidden="true"
       draggable={false}
@@ -1281,7 +2845,7 @@ function HomeIndicator() {
   return (
     <div
       className="absolute left-0 bottom-0 pointer-events-none"
-      style={{ width: 393, height: 34 }}
+      style={{ width: 393, height: 34, zIndex: 999 }}
     >
       <div
         className="absolute left-1/2"
@@ -1298,37 +2862,161 @@ function HomeIndicator() {
   );
 }
 
-function StatusBar() {
+function TutorBottomNav({
+  activeTab,
+  onChange,
+}: {
+  activeTab: TutorTabId;
+  onChange: (tab: TutorTabId) => void;
+}) {
+  const [tappedTab, setTappedTab] = useState<TutorTabId | null>(null);
+
+  const handleTabClick = (tab: TutorTabId) => {
+    onChange(tab);
+    setTappedTab(tab);
+    window.setTimeout(() => setTappedTab(null), 140);
+  };
+
   return (
     <div
-      className="absolute left-0 right-0 flex items-center"
+      className="absolute left-0 bottom-0"
       style={{
-        top: 0,
-        height: 44,
-        paddingLeft: 21,
-        paddingRight: 14.34,
-        paddingTop: 15,
-        justifyContent: "space-between",
+        width: 393,
+        height: 90,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          height: 56,
+          paddingLeft: 16,
+          paddingRight: 16,
+          boxSizing: "border-box",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {TAB_ITEMS.map((item) => (
+          <TutorBottomNavItem
+            key={item.id}
+            item={item}
+            active={activeTab === item.id}
+            tapped={tappedTab === item.id}
+            onClick={() => handleTabClick(item.id)}
+          />
+        ))}
+      </div>
+      <HomeIndicator />
+    </div>
+  );
+}
+
+function TutorBottomNavItem({
+  item,
+  active,
+  tapped,
+  onClick,
+}: {
+  item: { id: TutorTabId; label: string };
+  active: boolean;
+  tapped: boolean;
+  onClick: () => void;
+}) {
+  const color = active ? "#007AFF" : "rgba(20, 30, 43, 0.3)";
+  const iconSrc = `/figma/global/tabbar/${item.id}-${active ? "active" : "inactive"}.svg`;
+
+  return (
+    <button
+      type="button"
+      aria-label={item.label}
+      aria-pressed={active}
+      onClick={onClick}
+      style={{
+        position: "relative",
+        width: "25%",
+        height: 56,
+        padding: 0,
+        border: "none",
+        background: "transparent",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 2,
+        paddingTop: 12,
         boxSizing: "border-box",
+        WebkitTapHighlightColor: "transparent",
       }}
     >
       <span
+        className="inline-flex items-center justify-center"
         style={{
-          fontFamily:
-            "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-          fontSize: 17,
-          fontWeight: 590,
-          color: "#111111",
-          fontVariationSettings: "'wdth' 100",
+          width: 28,
+          height: 28,
+          transform: tapped ? "scale(0.88)" : "scale(1)",
+          transition: tapped
+            ? "transform 0.07s ease-in"
+            : "transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1)",
         }}
       >
-        9:41
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={iconSrc}
+          alt=""
+          draggable={false}
+          style={{
+            width: 24,
+            height: 24,
+            display: "block",
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        />
       </span>
-      <div className="flex items-center" style={{ gap: 6 }}>
-        <SignalIcon />
-        <WifiIcon />
-        <BatteryIcon />
-      </div>
+      <span
+        style={{
+          width: 56,
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          fontWeight: active && item.id === "tutor" ? 600 : 500,
+          fontSize: 10,
+          lineHeight: "normal",
+          color,
+          textAlign: "center",
+        }}
+      >
+        {item.label}
+      </span>
+    </button>
+  );
+}
+
+function StatusBar() {
+  return (
+    <div
+      className="absolute left-0 right-0"
+      style={{
+        top: 0,
+        height: 44,
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/figma/global/status-bar.png"
+        alt=""
+        draggable={false}
+        style={{
+          width: 393,
+          height: "auto",
+          display: "block",
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      />
     </div>
   );
 }
@@ -1401,7 +3089,13 @@ function BatteryIcon() {
   );
 }
 
-function BottomCTA() {
+function BottomCTA({ onSubmitVoice }: { onSubmitVoice: () => void }) {
+  const [voiceInputActive, setVoiceInputActive] = useState(false);
+  const submitVoice = () => {
+    setVoiceInputActive(false);
+    onSubmitVoice();
+  };
+
   return (
     <div
       className="absolute"
@@ -1412,30 +3106,218 @@ function BottomCTA() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: 16,
-        paddingLeft: 24,
-        paddingRight: 24,
+        height: 58,
       }}
     >
-      {/* 三个按钮均为 Figma @3x PNG 原图直接渲染，不做二次处理 */}
-      <PressableImageButton
-        src="/figma/tutor/tutor-btn-keyboard.png"
-        label="Keyboard"
-        width={58}
-        height={58}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          height: 260,
+          opacity: voiceInputActive ? 1 : 0,
+          transform: voiceInputActive ? "translateY(0)" : "translateY(24px)",
+          transition:
+            "opacity 240ms cubic-bezier(0.4, 0, 0.2, 1), transform 240ms cubic-bezier(0.4, 0, 0.2, 1)",
+          transitionDelay: "0ms",
+          pointerEvents: "none",
+        }}
+      >
+        <TutorBottomAmbientGlow />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 16,
+          paddingLeft: 24,
+          paddingRight: 24,
+          opacity: voiceInputActive ? 0 : 1,
+          transform: voiceInputActive ? "translateY(24px)" : "translateY(0)",
+          transition:
+            "opacity 240ms cubic-bezier(0.4, 0, 0.2, 1), transform 240ms cubic-bezier(0.4, 0, 0.2, 1)",
+          transitionDelay: voiceInputActive ? "0ms" : "220ms",
+          pointerEvents: voiceInputActive ? "none" : "auto",
+        }}
+      >
+        {/* 三个按钮均为项目原图直接渲染，不做二次处理 */}
+        <PressableImageButton
+          src="/figma/tutor/tutor-btn-keyboard.png"
+          label="Keyboard"
+          width={58}
+          height={58}
+        />
+        <PressableImageButton
+          src="/figma/tutor/tutor-btn-snap.png"
+          label="Snap a photo"
+          width={197}
+          height={58}
+        />
+        <PressableImageButton
+          src="/figma/tutor/tutor-btn-mic.png"
+          label="Microphone"
+          width={58}
+          height={58}
+          onClick={() => setVoiceInputActive(true)}
+          pressScale={1}
+        />
+      </div>
+      <VoiceInputBar
+        active={voiceInputActive}
+        onCancel={() => setVoiceInputActive(false)}
+        onSubmit={submitVoice}
       />
-      <PressableImageButton
-        src="/figma/tutor/tutor-btn-snap.png"
-        label="Snap a photo"
-        width={197}
-        height={58}
-      />
-      <PressableImageButton
-        src="/figma/tutor/tutor-btn-mic.png"
-        label="Microphone"
-        width={58}
-        height={58}
-      />
+    </div>
+  );
+}
+
+function VoiceInputBar({
+  active,
+  onCancel,
+  onSubmit,
+  topOffset = 0,
+}: {
+  active: boolean;
+  onCancel: () => void;
+  onSubmit: () => void;
+  topOffset?: number;
+}) {
+  return (
+    <div
+      aria-hidden={!active}
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: topOffset,
+        height: 58,
+        opacity: active ? 1 : 0,
+        transform: active ? "translateY(0)" : "translateY(24px)",
+        transition:
+          "opacity 240ms cubic-bezier(0.4, 0, 0.2, 1), transform 240ms cubic-bezier(0.4, 0, 0.2, 1)",
+        transitionDelay: active ? "220ms" : "0ms",
+        pointerEvents: active ? "auto" : "none",
+      }}
+    >
+      <button
+        type="button"
+        aria-label="Cancel voice input"
+        onClick={onCancel}
+        style={{
+          position: "absolute",
+          left: 24,
+          top: 0,
+          width: 58,
+          height: 58,
+          padding: 0,
+          border: "none",
+          borderRadius: "50%",
+          background: "#F1F3F6",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          WebkitTapHighlightColor: "transparent",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/voice-close.png"
+          alt=""
+          draggable={false}
+          style={{
+            width: 58,
+            height: 58,
+            display: "block",
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        />
+      </button>
+      <VoiceWaveform />
+      <button
+        type="button"
+        aria-label="Submit voice input"
+        onClick={onSubmit}
+        style={{
+          position: "absolute",
+          left: 311,
+          top: 0,
+          width: 58,
+          height: 58,
+          padding: 0,
+          border: "none",
+          borderRadius: "50%",
+          background: "#F1F3F6",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          WebkitTapHighlightColor: "transparent",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/figma/tutor/voice-submit.png"
+          alt=""
+          draggable={false}
+          style={{
+            width: 58,
+            height: 58,
+            display: "block",
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        />
+      </button>
+    </div>
+  );
+}
+
+function VoiceWaveform() {
+  const bars = Array.from({ length: 40 }, (_, index) => index);
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 94,
+        top: 19,
+        width: 205,
+        height: 20,
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+      }}
+    >
+      {bars.map((index) => {
+        const duration = 760 + (index % 7) * 80;
+        const delay = -((index * 97) % 920);
+        const initialScale = [0.52, 0.22, 0.84, 0.32, 0.64, 1, 0.42][
+          index % 7
+        ];
+
+        return (
+        <div
+          key={index}
+          style={{
+            width: 3,
+            height: 19.2,
+            borderRadius: 100,
+            background: "#FFFFFF",
+            flexShrink: 0,
+            transform: `scaleY(${initialScale})`,
+            transformOrigin: "center center",
+            animation: `tutor-voice-bar-size ${duration}ms ease-in-out ${delay}ms infinite`,
+          }}
+        />
+        );
+      })}
     </div>
   );
 }
@@ -1446,12 +3328,14 @@ function PressableImageButton({
   width,
   height,
   onClick,
+  pressScale = 0.95,
 }: {
   src: string;
   label: string;
   width: number;
   height: number;
   onClick?: () => void;
+  pressScale?: number;
 }) {
   const [pressed, setPressed] = useState(false);
 
@@ -1472,7 +3356,7 @@ function PressableImageButton({
         background: "transparent",
         cursor: "pointer",
         flexShrink: 0,
-        transform: pressed ? "scale(0.95)" : "scale(1)",
+        transform: pressed ? `scale(${pressScale})` : "scale(1)",
         transition: "transform 0.1s ease-in-out",
         transformOrigin: "center center",
         WebkitTapHighlightColor: "transparent",
