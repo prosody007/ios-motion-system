@@ -1274,7 +1274,6 @@ function TutorHistoryScreen({ onBack }: { onBack: () => void }) {
           <HistorySectionView key={section.label} section={section} />
         ))}
       </div>
-      <HomeIndicator />
     </div>
   );
 }
@@ -1939,34 +1938,66 @@ function TutorAnswerInputBar({
   return (
     <div
       style={{
-        height: 90,
-        padding: "8px 24px 24px",
+        height: 100,
+        padding: "0 24px",
         boxSizing: "border-box",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        gap: 12,
       }}
     >
-      <AnswerImageButton
-        src={paused ? "/figma/tutor/answer-play-button.png" : "/figma/tutor/answer-pause-button.png"}
-        label={paused ? "Resume explanation" : "Pause explanation"}
-        width={58}
-        height={58}
-        onClick={onTogglePause}
-      />
-      <AnswerImageButton
-        src="/figma/tutor/answer-mic-button.png"
-        label="Voice input"
-        width="flex"
-        height={58}
-        onClick={onVoiceInput}
-      />
-      <AnswerImageButton
-        src="/figma/tutor/answer-keyboard-button.png"
-        label="Keyboard"
-        width={58}
-        height={58}
-      />
+      <div
+        style={{
+          width: "100%",
+          height: 58,
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+        }}
+      >
+        <AnswerImageButton
+          src={paused ? "/figma/tutor/answer-play-button.png" : "/figma/tutor/answer-pause-button.png"}
+          label={paused ? "Resume explanation" : "Pause explanation"}
+          width={58}
+          height={58}
+          onClick={onTogglePause}
+        />
+        <AnswerImageButton
+          src="/figma/tutor/answer-mic-button.png"
+          label="Voice input"
+          width="flex"
+          height={58}
+          onClick={onVoiceInput}
+        />
+        <AnswerImageButton
+          src="/figma/tutor/answer-keyboard-button.png"
+          label="Keyboard"
+          width={58}
+          height={58}
+        />
+      </div>
+      <div style={{ height: 8, flexShrink: 0 }} />
+      <div
+        style={{
+          position: "relative",
+          width: 393,
+          height: 34,
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: 8,
+            width: 134,
+            height: 5,
+            borderRadius: 100,
+            background: "#111111",
+            transform: "translateX(-50%)",
+          }}
+        />
+      </div>
     </div>
   );
 }
