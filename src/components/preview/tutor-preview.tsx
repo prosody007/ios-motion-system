@@ -196,6 +196,39 @@ const EXPLANATION_MODULES = [
   { kind: "recap" },
 ] as const;
 
+const TUTOR_PRELOAD_ASSETS = [
+  "/figma/global/status-bar.png",
+  "/figma/global/tabbar/scan-active.svg",
+  "/figma/global/tabbar/scan-inactive.svg",
+  "/figma/global/tabbar/tutor-active.svg",
+  "/figma/global/tabbar/tutor-inactive.svg",
+  "/figma/global/tabbar/study-active.svg",
+  "/figma/global/tabbar/study-inactive.svg",
+  "/figma/global/tabbar/me-active.svg",
+  "/figma/global/tabbar/me-inactive.svg",
+  "/figma/tutor/tutor-teacher-hero.png",
+  "/figma/tutor/tutor-history-icon.png",
+  "/figma/tutor/tutor-header-avatar.png",
+  "/figma/tutor/tutor-history-back.png",
+  "/figma/tutor/tutor-btn-keyboard.png",
+  "/figma/tutor/tutor-btn-snap.png",
+  "/figma/tutor/tutor-btn-mic.png",
+  "/figma/tutor/voice-close.png",
+  "/figma/tutor/voice-submit.png",
+  "/figma/tutor/answer-pause-button.png",
+  "/figma/tutor/answer-play-button.png",
+  "/figma/tutor/answer-mic-button.png",
+  "/figma/tutor/answer-keyboard-button.png",
+  "/figma/tutor/loading/avatar.png",
+  "/figma/tutor/loading/thinking-active.svg",
+  "/figma/tutor/loading/thinking-inactive.svg",
+  "/figma/tutor/loading/question-image.png",
+  "/figma/tutor/explanation/diagram.png",
+  "/figma/tutor/explanation/graph.png",
+  "/figma/tutor/speed-menu/arrow.svg",
+  "/figma/tutor/speed-menu/checkmark.svg",
+];
+
 export function TutorPreview() {
   const [activeIndex, setActiveIndex] = useState(1); // 中央卡（rollercoaster）选中
   const [activeTab, setActiveTab] = useState<TutorTabId>("tutor");
@@ -205,6 +238,21 @@ export function TutorPreview() {
   const [loadingClosing, setLoadingClosing] = useState(false);
   const [loadingCloseMode, setLoadingCloseMode] = useState<"back" | "complete">("back");
   const [previewVisible, setPreviewVisible] = useState(false);
+
+  useEffect(() => {
+    const preloadedImages = TUTOR_PRELOAD_ASSETS.map((src) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+      return image;
+    });
+
+    return () => {
+      preloadedImages.forEach((image) => {
+        image.src = "";
+      });
+    };
+  }, []);
 
   const openHistory = () => {
     setHistoryClosing(false);
@@ -298,6 +346,45 @@ export function TutorPreview() {
               opacity: 1;
               transform: translateY(0);
             }
+          }
+
+          @keyframes tutor-rating-sheet-enter {
+            from {
+              opacity: 0;
+              transform: translateY(100%);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes tutor-rating-backdrop-enter {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes tutor-rating-sheet-exit {
+            from {
+              opacity: 1;
+              transform: translateY(0);
+            }
+            to {
+              opacity: 0;
+              transform: translateY(100%);
+            }
+          }
+
+          .tutor-rating-textarea {
+            scrollbar-width: none;
+          }
+
+          .tutor-rating-textarea::-webkit-scrollbar {
+            display: none;
           }
 
           @keyframes tutor-bottom-orb-center {
@@ -441,7 +528,8 @@ export function TutorPreview() {
           @media (prefers-reduced-motion: reduce) {
             .tutor-history-page,
             .tutor-loading-page,
-            .tutor-preview-enter {
+            .tutor-preview-enter,
+            .tutor-rating-sheet {
               animation: none !important;
             }
           }
@@ -477,6 +565,7 @@ export function TutorPreview() {
           <TutorRingCarousel
             activeIndex={activeIndex}
             setActiveIndex={setActiveIndex}
+            autoPlay={!historyVisible && !loadingVisible && !previewVisible}
           />
         </div>
 
@@ -772,9 +861,11 @@ function TutorHero() {
 function TutorRingCarousel({
   activeIndex,
   setActiveIndex,
+  autoPlay,
 }: {
   activeIndex: number;
   setActiveIndex: Dispatch<SetStateAction<number>>;
+  autoPlay: boolean;
 }) {
   const pointerStartX = useRef<number | null>(null);
   const dragDeltaX = useRef(0);
@@ -805,13 +896,14 @@ function TutorRingCarousel({
   }, [logicalIndex, setActiveIndex]);
 
   useEffect(() => {
+    if (!autoPlay) return;
     if (dragging) return;
     const id = window.setInterval(() => {
       setTransitionEnabled(true);
       setTrackIndex((prev) => prev + 1);
     }, 2500);
     return () => window.clearInterval(id);
-  }, [dragging]);
+  }, [autoPlay, dragging]);
 
   const setByDirection = (direction: -1 | 1) => {
     setTransitionEnabled(true);
@@ -1349,13 +1441,14 @@ function TutorLoadingScreen({
 function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
   const [paused, setPaused] = useState(false);
   const [voiceInputActive, setVoiceInputActive] = useState(false);
+  const [ratingSheetVisible, setRatingSheetVisible] = useState(false);
 
   return (
     <div
       className="absolute inset-0 select-none overflow-hidden"
       style={{ zIndex: 95, background: "#FFFFFF" }}
     >
-      <TutorAnswerPreviewHeader onBack={onBack} />
+      <TutorAnswerPreviewHeader onBack={() => setRatingSheetVisible(true)} />
       <ExplanationContentStream paused={paused || voiceInputActive} />
       <div
         className="tutor-preview-enter"
@@ -1454,10 +1547,10 @@ function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
               "opacity 240ms cubic-bezier(0.4, 0, 0.2, 1), transform 240ms cubic-bezier(0.4, 0, 0.2, 1)",
             transitionDelay: "0ms",
             pointerEvents: "none",
-            zIndex: 2,
+            zIndex: 1,
           }}
         >
-          <TutorBottomAmbientGlow bottom={0} />
+          <TutorBottomAmbientGlow />
         </div>
         <div
           style={{
@@ -1486,9 +1579,392 @@ function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
           onCancel={() => setVoiceInputActive(false)}
           onSubmit={() => setVoiceInputActive(false)}
           topOffset={156}
+          zIndex={4}
         />
       </div>
       <HomeIndicator />
+      {ratingSheetVisible ? (
+        <RatingBottomSheet
+          onClose={() => setRatingSheetVisible(false)}
+          onSubmit={onBack}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function RatingBottomSheet({
+  onClose,
+  onSubmit,
+}: {
+  onClose: () => void;
+  onSubmit: () => void;
+}) {
+  const [rating, setRating] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const [tappedStar, setTappedStar] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState("");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [closing, setClosing] = useState(false);
+  const ratingLabels = [
+    "",
+    "“Very unsatisfied”",
+    "Unsatisfied",
+    "“Okay”",
+    "“Satisfied”",
+    "“Very satisfied”",
+  ];
+  const showTags = rating > 0 && rating < 5;
+  const canSubmit = feedback.trim().length > 0 || (showTags && selectedTag !== null);
+  const tagAreaHeight = expanded && showTags ? 184 : 0;
+  const sheetHeight = expanded ? 392 + tagAreaHeight : 244;
+  const ratingTags = [
+    "Hard to follow",
+    "Wrong explanation",
+    "Messy whiteboard",
+    "Misunderstands me",
+    "Slow response",
+    "Got stuck",
+    "Graph errors",
+    "Too fast",
+  ];
+
+  const selectRating = (value: number) => {
+    setRating(value);
+    setSelectedTag(null);
+    setExpanded(true);
+    setTappedStar(value);
+    window.setTimeout(() => setTappedStar(null), 180);
+  };
+
+  const closeWithTransition = (callback: () => void) => {
+    if (closing) return;
+    setClosing(true);
+    window.setTimeout(callback, 320);
+  };
+
+  return (
+    <div
+      className="absolute inset-0"
+      style={{ zIndex: 120 }}
+    >
+      <button
+        type="button"
+        aria-label="Rating backdrop"
+        style={{
+          position: "absolute",
+          inset: 0,
+          border: "none",
+          padding: 0,
+          background: "rgba(17, 17, 17, 0.5)",
+          cursor: "default",
+          animation: "tutor-rating-backdrop-enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both",
+          opacity: closing ? 0 : 1,
+          transition: "opacity 320ms cubic-bezier(0.4, 0, 0.2, 1)",
+          WebkitTapHighlightColor: "transparent",
+        }}
+      />
+      <div
+        className="tutor-rating-sheet"
+        style={{
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+          width: 393,
+          height: sheetHeight,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          background: "#FFFFFF",
+          overflow: "hidden",
+          animation:
+            closing
+              ? "tutor-rating-sheet-exit 320ms cubic-bezier(0.4, 0, 0.2, 1) both"
+              : "tutor-rating-sheet-enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both",
+          transition:
+            "height 520ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      >
+        <div style={{ width: 393, height: 32, position: "relative" }}>
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: 12,
+              width: 32,
+              height: 4,
+              borderRadius: 2,
+              background: "#C4C6C9",
+              transform: "translateX(-50%)",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 20px 8px",
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 600,
+              fontSize: 20,
+              lineHeight: "30px",
+              color: "#111111",
+            }}
+          >
+            How was this session?
+          </p>
+          <button
+            type="button"
+            aria-label="Close rating"
+            onClick={() => closeWithTransition(onClose)}
+            style={{
+              width: 28,
+              height: 28,
+              padding: 0,
+              border: "none",
+              borderRadius: 15,
+              background: "rgba(120, 120, 128, 0.12)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/figma/tutor/rating/close.svg"
+              alt=""
+              draggable={false}
+              style={{ width: 10, height: 10, display: "block" }}
+            />
+          </button>
+        </div>
+        <div
+          style={{
+            minHeight: expanded ? 56 : 80,
+            padding: expanded ? "8px 20px 0" : "0 24px",
+            boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: expanded ? "flex-start" : "center",
+            justifyContent: "center",
+            gap: expanded ? 8 : 16,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: expanded ? "flex-start" : "center",
+              gap: expanded ? 12 : 16,
+              width: "100%",
+            }}
+          >
+            {[1, 2, 3, 4, 5].map((value) => {
+              const selected = value <= rating;
+              const tapped = tappedStar === value;
+              const size = expanded ? 32 : 40;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  aria-label={`${value} star rating`}
+                  onClick={() => selectRating(value)}
+                  style={{
+                    width: size,
+                    height: size,
+                    padding: 0,
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    transform: tapped ? "scale(1.22)" : "scale(1)",
+                    transition:
+                      "width 520ms cubic-bezier(0.16, 1, 0.3, 1), height 520ms cubic-bezier(0.16, 1, 0.3, 1), transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={selected ? "/figma/tutor/rating/star-active.svg" : "/figma/tutor/rating/star-inactive.svg"}
+                    alt=""
+                    draggable={false}
+                    style={{ width: size, height: size, display: "block" }}
+                  />
+                </button>
+              );
+            })}
+          </div>
+          <p
+            style={{
+              margin: 0,
+              fontFamily:
+                "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontStyle: "italic",
+              fontWeight: 500,
+              fontSize: 14,
+              lineHeight: "14px",
+              color: "#989B9E",
+              opacity: expanded ? 1 : 0,
+              transform: expanded ? "translateY(0)" : "translateY(-4px)",
+              transition:
+                "opacity 360ms cubic-bezier(0.16, 1, 0.3, 1), transform 360ms cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+          >
+            {ratingLabels[rating]}
+          </p>
+        </div>
+        <div
+          style={{
+            height: tagAreaHeight,
+            padding: showTags ? "8px 20px" : "0 20px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            transition:
+              "height 520ms cubic-bezier(0.16, 1, 0.3, 1), padding 520ms cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 8,
+              opacity: showTags ? 1 : 0,
+              transform: showTags ? "translateY(0)" : "translateY(-8px)",
+              transition:
+                "opacity 320ms cubic-bezier(0.4, 0, 0.2, 1), transform 320ms cubic-bezier(0.4, 0, 0.2, 1)",
+              pointerEvents: showTags ? "auto" : "none",
+            }}
+          >
+            {ratingTags.map((tag) => {
+              const selected = selectedTag === tag;
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setSelectedTag(tag)}
+                  style={{
+                    height: 36,
+                    padding: 8,
+                    borderRadius: 12,
+                    border: selected ? "1px solid #007AFF" : "1px solid #E6E8EA",
+                    background: selected ? "#ECF5FF" : "#FFFFFF",
+                    color: selected ? "#007AFF" : "#111111",
+                    fontFamily:
+                      "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                    fontWeight: 400,
+                    fontSize: 14,
+                    lineHeight: "19.6px",
+                    cursor: "pointer",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div
+          style={{
+            height: expanded ? 172 : 0,
+            padding: expanded ? "16px 20px" : "0 20px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            transition:
+              "height 520ms cubic-bezier(0.16, 1, 0.3, 1), padding 520ms cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              height: 140,
+              borderRadius: 16,
+              background: "#F3F4F9",
+              padding: "12px 16px 32px",
+              boxSizing: "border-box",
+              opacity: expanded ? 1 : 0,
+              transition: "opacity 360ms ease",
+            }}
+          >
+            <textarea
+              className="tutor-rating-textarea"
+              value={feedback}
+              maxLength={500}
+              placeholder="Tell us what you liked!"
+              onChange={(event) => setFeedback(event.target.value)}
+              style={{
+                width: "100%",
+                height: "100%",
+                padding: 0,
+                border: "none",
+                outline: "none",
+                resize: "none",
+                background: "transparent",
+                fontFamily:
+                  "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                fontWeight: 400,
+                fontSize: 16,
+                lineHeight: "24px",
+                color: "#111111",
+                caretColor: "#007AFF",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                right: 8,
+                bottom: 8,
+                display: "flex",
+                fontFamily:
+                  "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+                fontWeight: 400,
+                fontSize: 12,
+                lineHeight: "16.8px",
+                letterSpacing: -0.6,
+              }}
+            >
+              <span style={{ color: "#007AFF" }}>{feedback.length}</span>
+              <span style={{ color: "#C4C6C9" }}>/500</span>
+            </div>
+          </div>
+        </div>
+        <div style={{ padding: "8px 20px 0", background: "#FFFFFF" }}>
+          <button
+            type="button"
+            disabled={!canSubmit}
+            onClick={() => {
+              if (!canSubmit) return;
+              closeWithTransition(onSubmit);
+            }}
+            style={{
+              width: "100%",
+              height: 52,
+              border: "none",
+              borderRadius: 100,
+              background: canSubmit ? "#007AFF" : "#EEEEEE",
+              color: canSubmit ? "#FFFFFF" : "#C4C6C9",
+              cursor: canSubmit ? "pointer" : "default",
+              fontFamily:
+                "Poppins, Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "24px",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            Submit
+          </button>
+        </div>
+        <div style={{ height: 34 }} />
+      </div>
     </div>
   );
 }
@@ -1762,7 +2238,7 @@ function ExplanationContentStream({ paused }: { paused: boolean }) {
       <div
         style={{
           width: 393,
-          padding: "16px 24px 24px",
+          padding: "16px 24px 80px",
           boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
@@ -1984,20 +2460,7 @@ function TutorAnswerInputBar({
           height: 34,
           flexShrink: 0,
         }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            left: "50%",
-            bottom: 8,
-            width: 134,
-            height: 5,
-            borderRadius: 100,
-            background: "#111111",
-            transform: "translateX(-50%)",
-          }}
-        />
-      </div>
+      />
     </div>
   );
 }
@@ -2547,7 +3010,7 @@ function TutorHistoryHeader({ onBack }: { onBack: () => void }) {
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            <BackArrowIcon />
+            <LoadingBackArrowIcon />
           </button>
         </div>
         <div
@@ -2877,19 +3340,7 @@ function HomeIndicator() {
     <div
       className="absolute left-0 bottom-0 pointer-events-none"
       style={{ width: 393, height: 34, zIndex: 999 }}
-    >
-      <div
-        className="absolute left-1/2"
-        style={{
-          bottom: 8,
-          width: 134,
-          height: 5,
-          borderRadius: 100,
-          background: "#111111",
-          transform: "translateX(-50%)",
-        }}
-      />
-    </div>
+    />
   );
 }
 
@@ -3211,11 +3662,13 @@ function VoiceInputBar({
   onCancel,
   onSubmit,
   topOffset = 0,
+  zIndex,
 }: {
   active: boolean;
   onCancel: () => void;
   onSubmit: () => void;
   topOffset?: number;
+  zIndex?: number;
 }) {
   return (
     <div
@@ -3232,6 +3685,7 @@ function VoiceInputBar({
           "opacity 240ms cubic-bezier(0.4, 0, 0.2, 1), transform 240ms cubic-bezier(0.4, 0, 0.2, 1)",
         transitionDelay: active ? "220ms" : "0ms",
         pointerEvents: active ? "auto" : "none",
+        zIndex,
       }}
     >
       <button
