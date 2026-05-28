@@ -238,6 +238,7 @@ export function TutorPreview() {
   const [loadingClosing, setLoadingClosing] = useState(false);
   const [loadingCloseMode, setLoadingCloseMode] = useState<"back" | "complete">("back");
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewClosing, setPreviewClosing] = useState(false);
 
   useEffect(() => {
     const preloadedImages = TUTOR_PRELOAD_ASSETS.map((src) => {
@@ -265,6 +266,7 @@ export function TutorPreview() {
 
   const openLoading = () => {
     setPreviewVisible(false);
+    setPreviewClosing(false);
     setLoadingClosing(false);
     setLoadingCloseMode("back");
     setLoadingVisible(true);
@@ -287,6 +289,14 @@ export function TutorPreview() {
       setLoadingVisible(false);
       setLoadingClosing(false);
     }, 420);
+  };
+
+  const closePreview = () => {
+    setPreviewClosing(true);
+    window.setTimeout(() => {
+      setPreviewVisible(false);
+      setPreviewClosing(false);
+    }, 490);
   };
 
   return (
@@ -525,9 +535,19 @@ export function TutorPreview() {
             }
           }
 
+          @keyframes tutor-continue-border-countdown {
+            from {
+              stroke-dashoffset: 100;
+            }
+            to {
+              stroke-dashoffset: 0;
+            }
+          }
+
           @media (prefers-reduced-motion: reduce) {
             .tutor-history-page,
             .tutor-loading-page,
+            .tutor-preview-page,
             .tutor-preview-enter,
             .tutor-rating-sheet {
               animation: none !important;
@@ -616,7 +636,18 @@ export function TutorPreview() {
         </div>
       ) : null}
       {previewVisible ? (
-        <TutorAnswerPreviewScreen onBack={() => setPreviewVisible(false)} />
+        <div
+          className="absolute inset-0 tutor-preview-page"
+          style={{
+            zIndex: 95,
+            animation: previewClosing
+              ? "tutor-history-exit 490ms cubic-bezier(0.32, 0.72, 0, 1) both"
+              : undefined,
+            willChange: previewClosing ? "transform, opacity" : undefined,
+          }}
+        >
+          <TutorAnswerPreviewScreen onBack={closePreview} />
+        </div>
       ) : null}
     </DemoCanvas>
   );
@@ -1442,6 +1473,19 @@ function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
   const [paused, setPaused] = useState(false);
   const [voiceInputActive, setVoiceInputActive] = useState(false);
   const [ratingSheetVisible, setRatingSheetVisible] = useState(false);
+  const [continuePaused, setContinuePaused] = useState(false);
+  const [continuePauseUsed, setContinuePauseUsed] = useState(false);
+
+  const resumeFromContinuePause = () => {
+    setContinuePauseUsed(true);
+    setContinuePaused(false);
+  };
+
+  useEffect(() => {
+    if (!continuePaused) return;
+    const timer = window.setTimeout(resumeFromContinuePause, 5000);
+    return () => window.clearTimeout(timer);
+  }, [continuePaused]);
 
   return (
     <div
@@ -1449,7 +1493,11 @@ function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
       style={{ zIndex: 95, background: "#FFFFFF" }}
     >
       <TutorAnswerPreviewHeader onBack={() => setRatingSheetVisible(true)} />
-      <ExplanationContentStream paused={paused || voiceInputActive} />
+      <ExplanationContentStream
+        paused={paused || voiceInputActive || continuePaused}
+        autoPauseEnabled={!continuePauseUsed}
+        onAutoPause={() => setContinuePaused(true)}
+      />
       <div
         className="tutor-preview-enter"
         style={{
@@ -1532,7 +1580,10 @@ function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
             zIndex: 2,
           }}
         >
-          <TypewriterTwoLineText text={ANSWER_PREVIEW_PLACEHOLDER} paused={paused} />
+          <TypewriterTwoLineText
+            text={ANSWER_PREVIEW_PLACEHOLDER}
+            paused={paused || voiceInputActive || continuePaused}
+          />
         </div>
         <div
           style={{
@@ -1581,6 +1632,9 @@ function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
           topOffset={156}
           zIndex={4}
         />
+        {continuePaused ? (
+          <ContinueExplanationButton onContinue={resumeFromContinuePause} />
+        ) : null}
       </div>
       <HomeIndicator />
       {ratingSheetVisible ? (
@@ -1640,7 +1694,7 @@ function RatingBottomSheet({
   const closeWithTransition = (callback: () => void) => {
     if (closing) return;
     setClosing(true);
-    window.setTimeout(callback, 320);
+    window.setTimeout(callback, 380);
   };
 
   return (
@@ -1722,7 +1776,7 @@ function RatingBottomSheet({
           <button
             type="button"
             aria-label="Close rating"
-            onClick={() => closeWithTransition(onClose)}
+            onClick={() => closeWithTransition(rating === 0 ? onSubmit : onClose)}
             style={{
               width: 28,
               height: 28,
@@ -1823,7 +1877,7 @@ function RatingBottomSheet({
         <div
           style={{
             height: tagAreaHeight,
-            padding: showTags ? "8px 20px" : "0 20px",
+            padding: showTags ? "8px 20px 0" : "0 20px",
             boxSizing: "border-box",
             overflow: "hidden",
             transition:
@@ -1835,6 +1889,9 @@ function RatingBottomSheet({
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               gap: 8,
+              paddingTop: 8,
+              paddingBottom: 0,
+              boxSizing: "border-box",
               opacity: showTags ? 1 : 0,
               transform: showTags ? "translateY(0)" : "translateY(-8px)",
               transition:
@@ -1874,7 +1931,7 @@ function RatingBottomSheet({
         <div
           style={{
             height: expanded ? 172 : 0,
-            padding: expanded ? "16px 20px" : "0 20px",
+            padding: expanded ? "0 20px 16px" : "0 20px",
             boxSizing: "border-box",
             overflow: "hidden",
             transition:
@@ -2193,13 +2250,25 @@ function SpeedSelectionMenu({
   );
 }
 
-function ExplanationContentStream({ paused }: { paused: boolean }) {
+function ExplanationContentStream({
+  paused,
+  autoPauseEnabled,
+  onAutoPause,
+}: {
+  paused: boolean;
+  autoPauseEnabled: boolean;
+  onAutoPause: () => void;
+}) {
   const [visibleCount, setVisibleCount] = useState(1);
   const viewportRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (paused) return;
     if (visibleCount >= EXPLANATION_MODULES.length) return;
+    if (visibleCount === 2 && autoPauseEnabled) {
+      onAutoPause();
+      return;
+    }
 
     const delays = [0, 3300, 4100, 3600, 4700, 3900];
     const timer = window.setTimeout(() => {
@@ -2207,7 +2276,7 @@ function ExplanationContentStream({ paused }: { paused: boolean }) {
     }, delays[visibleCount] ?? 4000);
 
     return () => window.clearTimeout(timer);
-  }, [paused, visibleCount]);
+  }, [autoPauseEnabled, onAutoPause, paused, visibleCount]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -2401,6 +2470,76 @@ const cardStyle: CSSProperties = {
   background: "#F5F7F9",
   boxSizing: "border-box",
 };
+
+function ContinueExplanationButton({ onContinue }: { onContinue: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onContinue}
+      style={{
+        position: "absolute",
+        right: 16,
+        top: 10,
+        height: 42,
+        padding: "12px 16px",
+        border: "1px solid #FFFFFF",
+        borderRadius: 100,
+        background: "#FBFCFF",
+        boxShadow: "0px 12px 12px rgba(0, 0, 0, 0.08)",
+        cursor: "pointer",
+        zIndex: 5,
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      <span
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
+          fontWeight: 500,
+          fontSize: 16,
+          lineHeight: "16px",
+          color: "#000000",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Continue
+      </span>
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 102 42"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "visible",
+          pointerEvents: "none",
+        }}
+      >
+        <rect
+          x="1"
+          y="1"
+          width="100"
+          height="40"
+          rx="20"
+          fill="none"
+          stroke="#00C7BE"
+          strokeWidth="2"
+          pathLength="100"
+          strokeDasharray="100"
+          strokeDashoffset="100"
+          style={{
+            animation:
+              "tutor-continue-border-countdown 5s linear forwards",
+          }}
+        />
+      </svg>
+    </button>
+  );
+}
 
 function TutorAnswerInputBar({
   paused,
