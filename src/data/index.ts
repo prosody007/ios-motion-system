@@ -9,6 +9,7 @@ import { navigationSection } from "./navigation";
 import { toggleSection } from "./toggle";
 import { loadingSection } from "./loading";
 import { homeSection } from "./home";
+import { onboardingSection } from "./onboarding";
 import { tutorSection } from "./tutor";
 import { exampleFlashCardStackSection } from "./example-card-stack";
 import { exampleFlashCardFlipSwipeSection } from "./example-card-flip-swipe";
@@ -62,6 +63,7 @@ export const sectionMap: Record<string, SectionData> = {
   toggle: toggleSection,
   loading: loadingSection,
   home: homeSection,
+  onboarding: onboardingSection,
   tutor: tutorSection,
   "example-card-stack": exampleFlashCardStackSection,
   "example-card-flip-swipe": exampleFlashCardFlipSwipeSection,

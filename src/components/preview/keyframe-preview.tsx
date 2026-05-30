@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function KeyframePreview() {
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const [key, setKey] = useState(0);
 
   const play = () => {
@@ -11,8 +11,6 @@ export function KeyframePreview() {
     setKey((k) => k + 1);
     requestAnimationFrame(() => setPlaying(true));
   };
-
-  useEffect(() => { setPlaying(true); }, []);
 
   return (
     <div className="flex flex-col items-center gap-4 select-none" key={key}>

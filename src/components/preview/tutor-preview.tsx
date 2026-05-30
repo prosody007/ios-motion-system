@@ -1483,7 +1483,7 @@ function TutorAnswerPreviewScreen({ onBack }: { onBack: () => void }) {
 
   useEffect(() => {
     if (!continuePaused) return;
-    const timer = window.setTimeout(resumeFromContinuePause, 5000);
+    const timer = window.setTimeout(resumeFromContinuePause, 20000);
     return () => window.clearTimeout(timer);
   }, [continuePaused]);
 
@@ -1670,7 +1670,7 @@ function RatingBottomSheet({
   ];
   const showTags = rating > 0 && rating < 5;
   const canSubmit = feedback.trim().length > 0 || (showTags && selectedTag !== null);
-  const tagAreaHeight = expanded && showTags ? 184 : 0;
+  const tagAreaHeight = expanded && showTags ? 200 : 0;
   const sheetHeight = expanded ? 392 + tagAreaHeight : 244;
   const ratingTags = [
     "Hard to follow",
@@ -1776,7 +1776,7 @@ function RatingBottomSheet({
           <button
             type="button"
             aria-label="Close rating"
-            onClick={() => closeWithTransition(rating === 0 ? onSubmit : onClose)}
+            onClick={() => closeWithTransition(onSubmit)}
             style={{
               width: 28,
               height: 28,
@@ -1890,7 +1890,7 @@ function RatingBottomSheet({
               gridTemplateColumns: "1fr 1fr",
               gap: 8,
               paddingTop: 8,
-              paddingBottom: 0,
+              paddingBottom: 16,
               boxSizing: "border-box",
               opacity: showTags ? 1 : 0,
               transform: showTags ? "translateY(0)" : "translateY(-8px)",
@@ -1931,7 +1931,7 @@ function RatingBottomSheet({
         <div
           style={{
             height: expanded ? 172 : 0,
-            padding: expanded ? "0 20px 16px" : "0 20px",
+            padding: expanded ? "16px 20px" : "0 20px",
             boxSizing: "border-box",
             overflow: "hidden",
             transition:
@@ -2479,12 +2479,15 @@ function ContinueExplanationButton({ onContinue }: { onContinue: () => void }) {
       style={{
         position: "absolute",
         right: 16,
-        top: 10,
+        top: 90,
         height: 42,
         padding: "12px 16px",
         border: "1px solid #FFFFFF",
         borderRadius: 100,
         background: "#FBFCFF",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         boxShadow: "0px 12px 12px rgba(0, 0, 0, 0.08)",
         cursor: "pointer",
         zIndex: 5,
@@ -2509,7 +2512,7 @@ function ContinueExplanationButton({ onContinue }: { onContinue: () => void }) {
       <svg
         width="100%"
         height="100%"
-        viewBox="0 0 102 42"
+        viewBox="-2 -2 104 46"
         preserveAspectRatio="none"
         aria-hidden="true"
         style={{
@@ -2520,22 +2523,37 @@ function ContinueExplanationButton({ onContinue }: { onContinue: () => void }) {
         }}
       >
         <rect
-          x="1"
-          y="1"
-          width="100"
-          height="40"
-          rx="20"
+          x="-2.5"
+          y="-2.5"
+          width="105"
+          height="47"
+          rx="23.5"
           fill="none"
-          stroke="#00C7BE"
+          stroke="url(#continue-border-gradient)"
           strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
           pathLength="100"
           strokeDasharray="100"
           strokeDashoffset="100"
           style={{
             animation:
-              "tutor-continue-border-countdown 5s linear forwards",
+              "tutor-continue-border-countdown 20s linear forwards",
           }}
         />
+        <defs>
+          <linearGradient
+            id="continue-border-gradient"
+            x1="0"
+            y1="0"
+            x2="100"
+            y2="42"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stopColor="#007AFF" />
+            <stop offset="50%" stopColor="#4DFE82" />
+            <stop offset="100%" stopColor="#007AFF" />
+          </linearGradient>
+        </defs>
       </svg>
     </button>
   );
@@ -2671,7 +2689,8 @@ function TypewriterTwoLineText({ text, paused }: { text: string; paused: boolean
   const previewWord = words[visibleWordCount];
 
   useEffect(() => {
-    setVisibleWordCount(1);
+    const rafId = window.requestAnimationFrame(() => setVisibleWordCount(1));
+    return () => window.cancelAnimationFrame(rafId);
   }, [text]);
 
   useEffect(() => {
@@ -3299,7 +3318,7 @@ function HistoryCardContent({ item }: { item: HistoryItem }) {
           2016-2017: {item.body}
         </p>
         <p style={{ margin: 0, fontSize: 6, lineHeight: "7.5px" }}>
-          "{item.title}" Use evidence from the passage to explain your answer.
+          &quot;{item.title}&quot; Use evidence from the passage to explain your answer.
         </p>
       </div>
     );

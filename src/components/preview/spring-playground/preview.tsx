@@ -37,7 +37,8 @@ export function SpringPlaygroundPreview() {
   useEffect(() => {
     if (playToken !== lastTokenRef.current) {
       lastTokenRef.current = playToken;
-      setOn((v) => !v);
+      const rafId = window.requestAnimationFrame(() => setOn((v) => !v));
+      return () => window.cancelAnimationFrame(rafId);
     }
   }, [playToken]);
 

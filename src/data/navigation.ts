@@ -68,7 +68,7 @@ export const docsNavGroups: DocsNavGroup[] = [
   },
   {
     label: "实例",
-    slugs: ["home", "tutor", "example-card-stack", "example-card-flip-swipe"],
+    slugs: ["home", "onboarding", "tutor", "example-card-stack", "example-card-flip-swipe"],
   },
 ];
 
@@ -108,6 +108,7 @@ export const docsNavMetaMap: Record<string, DocsNavMeta> = {
   "custom-transitions": { primary: "Custom Transitions", secondary: "" },
   "hero-transition": { primary: "Hero Transition", secondary: "" },
   home: { primary: "Home", secondary: "" },
+  onboarding: { primary: "Onboarding", secondary: "" },
   tutor: { primary: "Tutor", secondary: "" },
   "example-card-stack": { primary: "Flash Card Stack", secondary: "" },
   "example-card-flip-swipe": {

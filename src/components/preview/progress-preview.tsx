@@ -7,9 +7,16 @@ export function ProgressBarPreview() {
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
-    if (!running) return;
-    if (value >= 100) { setRunning(false); return; }
-    const timer = setTimeout(() => setValue((v) => Math.min(100, v + 8 + Math.random() * 12)), 200);
+    if (!running || value >= 100) return;
+    const timer = setTimeout(() => {
+      setValue((v) => {
+        const next = Math.min(100, v + 8 + Math.random() * 12);
+        if (next >= 100) {
+          window.setTimeout(() => setRunning(false), 0);
+        }
+        return next;
+      });
+    }, 200);
     return () => clearTimeout(timer);
   }, [running, value]);
 
@@ -44,9 +51,16 @@ export function ProgressRingPreview() {
   const circumference = 2 * Math.PI * 36;
 
   useEffect(() => {
-    if (!running) return;
-    if (progress >= 1) { setRunning(false); return; }
-    const timer = setTimeout(() => setProgress((p) => Math.min(1, p + 0.05 + Math.random() * 0.08)), 150);
+    if (!running || progress >= 1) return;
+    const timer = setTimeout(() => {
+      setProgress((p) => {
+        const next = Math.min(1, p + 0.05 + Math.random() * 0.08);
+        if (next >= 1) {
+          window.setTimeout(() => setRunning(false), 0);
+        }
+        return next;
+      });
+    }, 150);
     return () => clearTimeout(timer);
   }, [running, progress]);
 

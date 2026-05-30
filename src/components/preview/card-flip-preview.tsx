@@ -1348,7 +1348,8 @@ export function FlashCardTransitionPreview() {
       settlementTimerRef.current = null;
     }
     if (showSettlement) {
-      setShowSettlement(false);
+      const hideTimer = window.setTimeout(() => setShowSettlement(false), 0);
+      return () => window.clearTimeout(hideTimer);
     }
   }, [isSettlementStage, showSettlement]);
 
@@ -1590,7 +1591,7 @@ export function FlashCardTransitionPreview() {
                 const slot = FLASH_STACK_SLOTS[stackIndex];
                 const isTop = stackIndex === 0 && phase === null;
 
-                let transformValue = `translate(${slot.tx}px, ${slot.ty}px) rotate(0deg) scale(${slot.scale})`;
+                const transformValue = `translate(${slot.tx}px, ${slot.ty}px) rotate(0deg) scale(${slot.scale})`;
                 let transition = `transform ${FLASH_STACK_DURATION}ms ${FLASH_STACK_FOLLOW_EASE}`;
                 let zIndex = slot.zIndex;
                 let animation: string | undefined;

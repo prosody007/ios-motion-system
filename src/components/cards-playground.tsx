@@ -177,8 +177,11 @@ export function CardsPlayground({ section }: { section: CardsSection }) {
     activeCard.controlsId === "ios-spring-playground";
 
   useEffect(() => {
-    setActiveIndex(0);
-    setIndicator((prev) => ({ ...prev, ready: false }));
+    const rafId = window.requestAnimationFrame(() => {
+      setActiveIndex(0);
+      setIndicator((prev) => ({ ...prev, ready: false }));
+    });
+    return () => window.cancelAnimationFrame(rafId);
   }, [section.title]);
 
   useLayoutEffect(() => {
@@ -343,16 +346,26 @@ function AutoScaledPhoneFrame({ children }: { children: ReactNode }) {
   // 切换状态机：idle -> out -> (hold) -> snap (无过渡，瞬移到下方) -> idle (向上飞回)
   useEffect(() => {
     if (globalDevice === displayDevice) return;
-    setPhase("out");
-    const t1 = window.setTimeout(() => {
-      setPhase("snap");
-      setDisplayDevice(globalDevice);
-      // 双 RAF 等 snap 那一帧渲染完成，再切回 idle 触发"由下向上"的 transition
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setPhase("idle"));
-      });
-    }, DEVICE_SWITCH_OUT_MS);
-    return () => window.clearTimeout(t1);
+    let t1 = 0;
+    let idleRaf1 = 0;
+    let idleRaf2 = 0;
+    const outRaf = window.requestAnimationFrame(() => {
+      setPhase("out");
+      t1 = window.setTimeout(() => {
+        setPhase("snap");
+        setDisplayDevice(globalDevice);
+        // 双 RAF 等 snap 那一帧渲染完成，再切回 idle 触发"由下向上"的 transition
+        idleRaf1 = requestAnimationFrame(() => {
+          idleRaf2 = requestAnimationFrame(() => setPhase("idle"));
+        });
+      }, DEVICE_SWITCH_OUT_MS);
+    });
+    return () => {
+      window.cancelAnimationFrame(outRaf);
+      window.clearTimeout(t1);
+      window.cancelAnimationFrame(idleRaf1);
+      window.cancelAnimationFrame(idleRaf2);
+    };
   }, [globalDevice, displayDevice]);
 
   const preset = DEVICE_PRESETS[displayDevice];

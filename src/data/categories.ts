@@ -56,6 +56,7 @@ export const categories: Category[] = [
 
   // 实例
   { slug: "home", title: "Home", icon: "🏠", description: "相机首页背景实例（按 Figma 设计稿）" },
+  { slug: "onboarding", title: "Onboarding", icon: "▣", description: "白板导师 Onboarding 欢迎页（按 Figma 设计稿）" },
 
   // 高级动效
   { slug: "counter", title: "Counter", icon: "#", description: "数字过渡与计数变化效果" },

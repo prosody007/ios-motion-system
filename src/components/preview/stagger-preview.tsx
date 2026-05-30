@@ -21,7 +21,9 @@ export function StaggerPreview() {
   useEffect(() => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
-    setVisibleCount(0);
+
+    const resetTimer = setTimeout(() => setVisibleCount(0), 0);
+    timersRef.current.push(resetTimer);
 
     rows.forEach((_, i) => {
       const t = setTimeout(() => {

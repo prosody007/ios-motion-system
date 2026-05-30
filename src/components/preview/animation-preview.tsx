@@ -49,6 +49,7 @@ import {
   NotificationBannerTitleTextPreview,
   NotificationBannerTitleTextButtonPreview,
 } from "./notification-banner-preview";
+import { OnboardingPreview } from "./onboarding-preview";
 
 import { SuccessCheckPreview, ErrorShakePreview } from "./success-error-preview";
 import { ToastPreview, SnackbarPreview } from "./toast-preview";
@@ -84,6 +85,7 @@ const previewMap: Record<string, React.ComponentType> = {
   "ios-loading-recording-bars": LoadingRecordingBarsPreview,
   "ios-home": HomePreview,
   "ios-tutor": TutorPreview,
+  "ios-onboarding": OnboardingPreview,
   "ios-page-nav-transition": ZoomTransitionPreview,
   "ios-page-matched-geometry": MatchedGeometryPreview,
   "ios-page-fullscreen": FullScreenCoverPreview,
