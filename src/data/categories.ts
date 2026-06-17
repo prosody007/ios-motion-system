@@ -1,14 +1,7 @@
 import type { Category } from "@/types/motion";
 
 export const categories: Category[] = [
-  // 接入
-  { slug: "skills", title: "Skills", icon: "⌘", description: "把动效库接入 Cursor / Claude Code / Codex 的 Agent Skill" },
-
   // 基础
-  { slug: "tokens", title: "Duration & Curve", icon: "⏱", description: "标准时长、曲线与参数基线" },
-  { slug: "spring-curves", title: "Spring & Timing", icon: "📈", description: "Spring 与 timing 曲线参考" },
-
-  // 组件微交互
   { slug: "button", title: "Button", icon: "👆", description: "按钮按压反馈与点击状态" },
   { slug: "toggle", title: "Toggle / Switch", icon: "🔘", description: "开关控件的切换动画" },
   { slug: "checkbox", title: "Checkbox", icon: "☑", description: "勾选、单选与选择状态反馈" },
@@ -17,16 +10,6 @@ export const categories: Category[] = [
   { slug: "textfield", title: "Text Field", icon: "✏", description: "输入焦点、占位与校验反馈" },
   { slug: "tabbar", title: "Tab Bar", icon: "▥", description: "标签栏切换与角标反馈" },
   { slug: "pull-refresh", title: "Pull to Refresh", icon: "↻", description: "下拉刷新与回弹过程" },
-
-  // 弹性动画
-  { slug: "spring-animations", title: "Spring Animations", icon: "🧲", description: "Spring 参数、预设与运动反馈" },
-
-  // 列表 & 内容
-  { slug: "reorder", title: "Reorder", icon: "↕", description: "列表重排与拖拽占位反馈" },
-  { slug: "stagger", title: "Stagger", icon: "▸▸", description: "列表与内容的分段入场" },
-  { slug: "expandable", title: "Expandable", icon: "⤵", description: "内容展开、折叠与共享元素过渡" },
-  { slug: "card-flip", title: "Card", icon: "🃏", description: "卡片展开、翻转与堆叠切换" },
-  { slug: "carousel", title: "Carousel", icon: "⎔", description: "分页轮播与聚焦切换效果" },
 
   // 加载 & 状态
   { slug: "loading", title: "Loading", icon: "⏳", description: "加载中指示与等待反馈" },

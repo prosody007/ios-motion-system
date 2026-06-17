@@ -10,10 +10,8 @@ export type DocsNavMeta = {
 };
 
 export const docsNavGroups: DocsNavGroup[] = [
-  { label: "接入", slugs: ["skills"] },
-  { label: "基础", slugs: ["tokens", "spring-curves"] },
   {
-    label: "组件微交互",
+    label: "基础",
     slugs: [
       "button",
       "toggle",
@@ -24,11 +22,6 @@ export const docsNavGroups: DocsNavGroup[] = [
       "tabbar",
       "pull-refresh",
     ],
-  },
-  { label: "弹性动画", slugs: ["spring-animations"] },
-  {
-    label: "列表 & 内容",
-    slugs: ["reorder", "stagger", "expandable", "card-flip", "carousel"],
   },
   {
     label: "加载 & 状态",

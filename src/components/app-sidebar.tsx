@@ -12,22 +12,6 @@ export function AppSidebar() {
     <aside className="sticky top-16 hidden h-[calc(100svh-4rem)] w-[304px] shrink-0 border-r border-[rgba(5,5,5,0.06)] bg-white lg:block">
       <div className="docs-sidebar-scrollbar h-full overflow-y-auto px-4 py-4">
         <nav className="space-y-6">
-          <div className="space-y-0.5 px-1">
-            <Link
-              href="/"
-              className={`block rounded-md px-3 py-1.5 text-[14px] font-medium leading-7 transition-colors ${
-                pathname === "/"
-                  ? "bg-[rgba(22,119,255,0.08)] text-[#1677FF]"
-                  : "text-[rgba(0,0,0,0.88)] hover:bg-[rgba(0,0,0,0.02)]"
-              }`}
-            >
-              组件总览
-            </Link>
-            <div className="px-3 py-1.5 text-[14px] font-medium leading-7 text-[rgba(0,0,0,0.88)]">
-              更新日志
-            </div>
-          </div>
-
           {docsNavGroups.map((group, index) => (
             <section
               key={group.label}
