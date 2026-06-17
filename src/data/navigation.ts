@@ -25,24 +25,43 @@ export const docsNavGroups: DocsNavGroup[] = [
   },
   {
     label: "加载 & 状态",
-    slugs: [],
+    slugs: ["loading", "skeleton", "progress", "success-error", "toast"],
   },
   {
     label: "弹层 & 浮层",
-    slugs: [],
+    slugs: [
+      "sheet",
+      "alert",
+      "action-sheet",
+      "tooltip",
+      "dropdown",
+      "notification-banner",
+    ],
   },
-  { label: "手势", slugs: [] },
+  { label: "手势", slugs: ["swipe-dismiss", "swipe-cards"] },
   {
     label: "转场",
-    slugs: [],
+    slugs: [
+      "navigation",
+      "page-transitions",
+      "custom-transitions",
+      "hero-transition",
+    ],
   },
   {
     label: "高级动效",
-    slugs: [],
+    slugs: [
+      "counter",
+      "scroll-driven",
+      "keyframe",
+      "phase",
+      "lottie",
+      "border-glow",
+    ],
   },
   {
     label: "实例",
-    slugs: [],
+    slugs: ["home", "onboarding", "tutor", "example-card-stack", "example-card-flip-swipe"],
   },
 ];
 
