@@ -59,7 +59,7 @@
   --font-geist-mono:
     "SFMono-Regular", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo,
     Consolas, monospace;
-  --background: oklch(1 0 0);
+  --background: #f3f4f9;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -133,9 +133,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    background: #f3f4f9;
   }
   html {
     @apply font-sans;
+    background: #f3f4f9;
     scrollbar-gutter: stable;
   }
 }

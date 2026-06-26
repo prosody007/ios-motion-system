@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { docsNavGroups, getDocsNavMeta } from "@/data/navigation";
 
@@ -9,17 +10,40 @@ export function AppSidebar() {
   const activeSlug = pathname === "/" ? "" : pathname.replace("/", "");
 
   return (
-    <aside className="sticky top-16 hidden h-[calc(100svh-4rem)] w-[304px] shrink-0 border-r border-[rgba(5,5,5,0.06)] bg-white lg:block">
-      <div className="docs-sidebar-scrollbar h-full overflow-y-auto px-4 py-4">
-        <nav className="space-y-6">
-          {docsNavGroups.map((group, index) => (
+    <aside className="hidden h-[100svh] w-[304px] shrink-0 flex-col bg-[#f3f4f9] lg:flex">
+      <div className="shrink-0 px-4 pt-10">
+        <Link href="/" className="flex min-w-0 items-center gap-3 px-3">
+          <Image
+            src="/brand/logo-mark.png"
+            alt="Motion System logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 shrink-0"
+          />
+          <div className="min-w-0">
+            <div className="truncate text-[15px] font-medium leading-6 text-[rgba(0,0,0,0.88)]">
+              Motion System
+            </div>
+            <div className="truncate text-[12px] leading-4 text-[rgba(0,0,0,0.45)]">
+              iOS 交互动效规范
+            </div>
+          </div>
+        </Link>
+      </div>
+      <div
+        className="docs-sidebar-scrollbar mt-6 min-h-0 flex-1 overflow-y-auto px-4"
+        style={{
+          WebkitOverflowScrolling: "touch",
+          overscrollBehavior: "contain",
+          scrollbarGutter: "stable",
+          willChange: "scroll-position",
+        }}
+      >
+        <nav className="space-y-12">
+          {docsNavGroups.map((group) => (
             <section
               key={group.label}
-              className={`px-1 ${
-                index === 0
-                  ? ""
-                  : "border-t border-[rgba(5,5,5,0.06)] pt-5"
-              }`}
+              className="px-1"
             >
               <div className="px-3">
                 <div className="text-[14px] font-medium leading-7 text-[rgba(0,0,0,0.88)]">

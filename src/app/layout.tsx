@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DeviceProvider } from "@/components/device-context";
 
@@ -17,18 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="h-full">
+    <html lang="zh-CN" className="h-full" suppressHydrationWarning>
       <body className="h-[100svh] overflow-hidden antialiased">
         <DeviceProvider>
           <TooltipProvider>
-            <SiteHeader />
-            <div className="flex h-[calc(100svh-4rem)] w-full mt-16">
+            <div className="flex h-[100svh] w-full">
               <AppSidebar />
-              <main className="flex min-w-0 flex-1 justify-center overflow-hidden">
-                <div className="flex h-full w-full max-w-[1280px] min-h-0 flex-col px-10 pb-8 pt-10">
-                  <div className="min-h-0 flex-1">{children}</div>
-                  <SiteFooter />
-                </div>
+              <main className="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-[#f3f4f9] px-10 pb-8 pt-10">
+                <div className="min-h-0 flex-1">{children}</div>
               </main>
             </div>
           </TooltipProvider>
