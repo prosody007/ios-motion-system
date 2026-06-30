@@ -21,7 +21,7 @@ export default function RootLayout({
           <TooltipProvider>
             <div className="flex h-[100svh] w-full">
               <AppSidebar />
-              <main className="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-[#f3f4f9] px-10 pb-8 pt-10">
+              <main className="flex h-full min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-visible bg-[#f3f4f9] px-10 pb-8 pt-10">
                 <div className="min-h-0 flex-1">{children}</div>
               </main>
             </div>
