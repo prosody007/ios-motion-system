@@ -79,6 +79,71 @@ CSS:
   background: #2A57F8;
 }`;
 
+const backgroundBlurPrompt = `Create a reusable Background Blur image effect in my existing UI.
+
+Hard constraints:
+- Do not change my surrounding layout, container size, data model, image source, or business logic.
+- Do not install dependencies.
+- Keep the same image for both the background layer and the foreground layer.
+- Only add the layering, blur mask, and object-fit rules needed for this effect.
+- The effect must adapt to my target container size. Do not hardcode this demo's width or height.
+
+Visual spec:
+- The outer container keeps my existing size and radius, with overflow hidden.
+- Bottom layer: the same image fills the full container with object-fit: cover.
+- Middle layer: a translucent overlay with backdrop-filter blur.
+- Top layer: the same image is centered above the blur mask and remains sharp.
+- The foreground crop should be configurable with --foreground-width. Default: 50%.
+- If my design is portrait-like, keep height: 100% and set width via --foreground-width.
+- If my design is landscape-like, you may instead use width: 100% and height via a similar variable.
+
+Copy-ready implementation:
+CSS:
+.background-blur-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  --foreground-width: 50%;
+  --blur-radius: 12px;
+  --overlay-color: rgba(0,0,0,.1);
+}
+
+.background-blur-card__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.background-blur-card__mask {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-color);
+  backdrop-filter: blur(var(--blur-radius));
+  -webkit-backdrop-filter: blur(var(--blur-radius));
+}
+
+.background-blur-card__foreground {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: var(--foreground-width);
+  max-width: none;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+HTML/JSX:
+<div className="background-blur-card">
+  <img className="background-blur-card__backdrop" src={imageSrc} alt="" />
+  <div className="background-blur-card__mask" />
+  <img className="background-blur-card__foreground" src={imageSrc} alt="" />
+</div>`;
+
 function CopyCodeTooltipButton({ prompt }: { prompt: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -176,6 +241,32 @@ function FlipCardPreview() {
   );
 }
 
+function BackgroundBlurPreview() {
+  const imageSrc = "/demo-assets/background-blur-figma.png";
+
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-[24px]">
+      <Image
+        src={imageSrc}
+        alt=""
+        fill
+        sizes="420px"
+        className="object-cover"
+        priority={false}
+      />
+      <div className="absolute inset-0 bg-black/10 backdrop-blur-[12px]" />
+      <Image
+        src={imageSrc}
+        alt=""
+        width={512}
+        height={512}
+        className="absolute left-1/2 top-1/2 h-full w-[50.2%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
+        priority={false}
+      />
+    </div>
+  );
+}
+
 export function CardDemoGrid() {
   return (
     <div className="grid w-full grid-cols-3 gap-6 pb-24">
@@ -195,6 +286,9 @@ export function CardDemoGrid() {
       `}</style>
       <DemoCard title="Flip" prompt={flipCardPrompt}>
         <FlipCardPreview />
+      </DemoCard>
+      <DemoCard title="Background Blur" prompt={backgroundBlurPrompt}>
+        <BackgroundBlurPreview />
       </DemoCard>
     </div>
   );
