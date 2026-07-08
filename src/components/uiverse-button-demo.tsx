@@ -246,9 +246,14 @@ const borderGlowButtonPrompt = `Create this border-glow effect on my existing pi
 Rules:
 - Do not change my button layout, click logic, label, disabled state, or accessibility attributes.
 - Do not install dependencies.
+- Use the oversized rotating-gradient technique: a large conic-gradient rotates behind a clipped pill border, while an inner blocker covers the center.
 - Keep the button body empty for this demo. In a real button, place content above the visual layers.
 
 CSS:
+@keyframes border-glow-spin {
+  to { transform: rotate(1turn); }
+}
+
 .border-glow-button {
   position: relative;
   width: 240px;
@@ -259,64 +264,72 @@ CSS:
   cursor: pointer;
   background: transparent;
   isolation: isolate;
-}
-
-.border-glow-button__svg {
-  position: absolute;
-  inset: 0;
   overflow: visible;
+}
+
+.border-glow-button__shadow,
+.border-glow-button__border {
+  position: absolute;
+  border-radius: inherit;
+  overflow: hidden;
   pointer-events: none;
-  z-index: 0;
-}
-
-.border-glow-button__path {
-  fill: none;
-  stroke-linecap: round;
-}
-
-.border-glow-button__path--blur {
-  filter: blur(6px);
-  opacity: 0.7;
 }
 
 .border-glow-button__shadow {
+  inset: -16px;
+  z-index: 0;
   opacity: 0.105;
   filter: blur(16px);
 }
 
-.border-glow-button__blocker {
-  fill: #EAEBEF;
+.border-glow-button__border {
+  inset: 0;
+  z-index: 1;
 }
 
+.border-glow-button__shadow::before,
+.border-glow-button__border::before {
+  content: "";
+  position: absolute;
+  left: -50%;
+  top: -180%;
+  width: 200%;
+  height: 500%;
+  background: conic-gradient(
+    #FFD60A,
+    #FF9F0A,
+    #FF375F,
+    #BF5AF2,
+    #0A84FF,
+    #FFD60A
+  );
+  animation: border-glow-spin 3.75s linear infinite;
+}
+
+.border-glow-button__blocker,
 .border-glow-button__inner {
   position: absolute;
   inset: 3px;
-  z-index: 2;
   border-radius: inherit;
+  pointer-events: none;
+}
+
+.border-glow-button__blocker {
+  z-index: 2;
+  background: #EAEBEF;
+}
+
+.border-glow-button__inner {
+  z-index: 3;
   border: 0;
   background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
-  pointer-events: none;
 }
 
 HTML/JSX:
 <button className="border-glow-button" type="button" aria-label="Record voice">
-  <svg className="border-glow-button__svg" viewBox="0 0 240 58" aria-hidden="true">
-    <defs>
-      <linearGradient id="borderGlowGradient" x1="0" y1="0" x2="240" y2="58" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#FFD60A" />
-        <stop offset="0.2" stopColor="#FF9F0A" />
-        <stop offset="0.4" stopColor="#FF375F" />
-        <stop offset="0.6" stopColor="#BF5AF2" />
-        <stop offset="0.8" stopColor="#0A84FF" />
-        <stop offset="1" stopColor="#FFD60A" />
-        <animateTransform attributeName="gradientTransform" type="rotate" from="0 120 29" to="360 120 29" dur="3.75s" repeatCount="indefinite" />
-      </linearGradient>
-    </defs>
-    <rect className="border-glow-button__shadow" x="-16" y="-16" width="272" height="90" rx="45" fill="url(#borderGlowGradient)" />
-    <rect className="border-glow-button__blocker" x="3" y="3" width="234" height="52" rx="26" />
-    <rect className="border-glow-button__path border-glow-button__path--blur" x="1" y="1" width="238" height="56" rx="28" pathLength="1" stroke="url(#borderGlowGradient)" strokeWidth="3" />
-    <rect className="border-glow-button__path" x="1" y="1" width="238" height="56" rx="28" pathLength="1" stroke="url(#borderGlowGradient)" strokeWidth="3" />
-  </svg>
+  <span className="border-glow-button__shadow" aria-hidden="true" />
+  <span className="border-glow-button__border" aria-hidden="true" />
+  <span className="border-glow-button__blocker" aria-hidden="true" />
   <span className="border-glow-button__inner" aria-hidden="true" />
 </button>`;
 
@@ -970,6 +983,10 @@ function BorderGlowButton() {
   return (
     <div className="flex h-full w-full items-center justify-center rounded-[24px] bg-[#EAEBEF]">
       <style>{`
+        @keyframes border-glow-spin {
+          to { transform: rotate(1turn); }
+        }
+
         .border-glow-button {
           position: relative;
           width: 240px;
@@ -983,106 +1000,71 @@ function BorderGlowButton() {
           cursor: pointer;
           background: transparent;
           isolation: isolate;
-        }
-
-        .border-glow-button__svg {
-          position: absolute;
-          inset: 0;
           overflow: visible;
+        }
+
+        .border-glow-button__shadow,
+        .border-glow-button__border {
+          position: absolute;
+          border-radius: inherit;
+          overflow: hidden;
           pointer-events: none;
-          z-index: 0;
-        }
-
-        .border-glow-button__path {
-          fill: none;
-          stroke-linecap: round;
-        }
-
-        .border-glow-button__path--blur {
-          filter: blur(6px);
-          opacity: 0.7;
-        }
-
-        .border-glow-button__blocker {
-          fill: #EAEBEF;
         }
 
         .border-glow-button__shadow {
+          inset: -16px;
+          z-index: 0;
           opacity: 0.105;
           filter: blur(16px);
         }
 
+        .border-glow-button__border {
+          inset: 0;
+          z-index: 1;
+        }
+
+        .border-glow-button__shadow::before,
+        .border-glow-button__border::before {
+          content: "";
+          position: absolute;
+          left: -50%;
+          top: -180%;
+          width: 200%;
+          height: 500%;
+          background: conic-gradient(
+            #FFD60A,
+            #FF9F0A,
+            #FF375F,
+            #BF5AF2,
+            #0A84FF,
+            #FFD60A
+          );
+          animation: border-glow-spin 3.75s linear infinite;
+        }
+
+        .border-glow-button__blocker,
         .border-glow-button__inner {
           position: absolute;
           inset: 3px;
-          z-index: 2;
           border-radius: inherit;
-          border: 0;
-          background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
           pointer-events: none;
         }
 
+        .border-glow-button__blocker {
+          z-index: 2;
+          background: #EAEBEF;
+        }
+
+        .border-glow-button__inner {
+          z-index: 3;
+          border: 0;
+          background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+        }
       `}</style>
       <button className="border-glow-button" type="button" aria-label="Record voice">
-        <svg className="border-glow-button__svg" viewBox="0 0 240 58" aria-hidden="true">
-          <defs>
-            <linearGradient id="borderGlowGradient" x1="0" y1="0" x2="240" y2="58" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#FFD60A" />
-              <stop offset="0.2" stopColor="#FF9F0A" />
-              <stop offset="0.4" stopColor="#FF375F" />
-              <stop offset="0.6" stopColor="#BF5AF2" />
-              <stop offset="0.8" stopColor="#0A84FF" />
-              <stop offset="1" stopColor="#FFD60A" />
-              <animateTransform
-                attributeName="gradientTransform"
-                type="rotate"
-                from="0 120 29"
-                to="360 120 29"
-                dur="3.75s"
-                repeatCount="indefinite"
-              />
-            </linearGradient>
-          </defs>
-          <rect
-            className="border-glow-button__shadow"
-            x="-16"
-            y="-16"
-            width="272"
-            height="90"
-            rx="45"
-            fill="url(#borderGlowGradient)"
-          />
-          <rect
-            className="border-glow-button__blocker"
-            x="3"
-            y="3"
-            width="234"
-            height="52"
-            rx="26"
-          />
-          <rect
-            className="border-glow-button__path border-glow-button__path--blur"
-            x="1"
-            y="1"
-            width="238"
-            height="56"
-            rx="28"
-            pathLength="1"
-            stroke="url(#borderGlowGradient)"
-            strokeWidth="3"
-          />
-          <rect
-            className="border-glow-button__path"
-            x="1"
-            y="1"
-            width="238"
-            height="56"
-            rx="28"
-            pathLength="1"
-            stroke="url(#borderGlowGradient)"
-            strokeWidth="3"
-          />
-        </svg>
+        <span className="border-glow-button__shadow" aria-hidden="true" />
+        <span className="border-glow-button__border" aria-hidden="true" />
+        <span className="border-glow-button__blocker" aria-hidden="true" />
         <span className="border-glow-button__inner" aria-hidden="true" />
       </button>
     </div>
