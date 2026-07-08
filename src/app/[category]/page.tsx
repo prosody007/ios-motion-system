@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
+import { CardDemoGrid } from "@/components/card-demo-grid";
 import { categories } from "@/data/categories";
+import { LoadingDemoGrid } from "@/components/loading-demo-grid";
 import { UiverseButtonDemo } from "@/components/uiverse-button-demo";
 
 export function generateStaticParams() {
@@ -20,5 +22,13 @@ export default async function CategoryPage({
     return <UiverseButtonDemo />;
   }
 
-  return <div />;
+  if (category === "card") {
+    return <CardDemoGrid />;
+  }
+
+  if (category === "loading") {
+    return <LoadingDemoGrid />;
+  }
+
+  notFound();
 }

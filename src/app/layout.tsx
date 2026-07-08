@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppSidebar } from "@/components/app-sidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { DeviceProvider } from "@/components/device-context";
 
 export const metadata: Metadata = {
   title: "Motion System — iOS 交互动效规范",
@@ -17,16 +15,19 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full" suppressHydrationWarning>
       <body className="h-[100svh] overflow-hidden antialiased">
-        <DeviceProvider>
-          <TooltipProvider>
-            <div className="flex h-[100svh] w-full">
-              <AppSidebar />
-              <main className="flex h-full min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-visible bg-[#f3f4f9] px-10 pb-8 pt-10">
-                <div className="min-h-0 flex-1">{children}</div>
-              </main>
-            </div>
-          </TooltipProvider>
-        </DeviceProvider>
+        <div className="flex h-[100svh] w-full">
+          <AppSidebar />
+          <main
+            className="docs-sidebar-scrollbar flex h-full min-w-0 flex-1 flex-col overflow-y-auto bg-[#f3f4f9] px-10 pb-8 pt-10"
+            style={{
+              WebkitOverflowScrolling: "touch",
+              overscrollBehavior: "contain",
+              scrollbarGutter: "stable",
+            }}
+          >
+            <div className="min-h-0 flex-1">{children}</div>
+          </main>
+        </div>
       </body>
     </html>
   );

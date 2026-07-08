@@ -1,270 +1,450 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const PERCENT_RING_RADIUS = 82;
+const PERCENT_RING_CIRCUMFERENCE = 2 * Math.PI * PERCENT_RING_RADIUS;
 
 export function LoadingPreview() {
   return (
-    <div className="w-8 h-8 border-[3px] border-neutral-200 border-t-neutral-700 rounded-full animate-spin" />
+    <svg
+      className="h-10 w-10 animate-spin"
+      viewBox="0 0 40 40"
+      aria-hidden="true"
+    >
+      <circle
+        cx="20"
+        cy="20"
+        r="16"
+        fill="none"
+        stroke="rgba(23,23,23,0.10)"
+        strokeWidth="5"
+      />
+      <circle
+        cx="20"
+        cy="20"
+        r="16"
+        fill="none"
+        stroke="rgba(23,23,23,0.82)"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeDasharray="30 100"
+      />
+    </svg>
   );
 }
 
-export function LoadingGrowPreview() {
-  const rawId = useId();
-  const id = rawId.replace(/:/g, "");
-  const growName = `loading-grow-${id}`;
-  const [runId, setRunId] = useState(0);
-  const [completed, setCompleted] = useState(false);
+function ShinyText({
+  text,
+  color = "#000000",
+  shineColor = "rgba(255,255,255,0.8)",
+  speed = 1.15,
+  delay = 0.5,
+  spread = 90,
+  direction = "left",
+  disabled = false,
+}: {
+  text: string;
+  color?: string;
+  shineColor?: string;
+  speed?: number;
+  delay?: number;
+  spread?: number;
+  direction?: "left" | "right";
+  disabled?: boolean;
+}) {
+  const textRef = useRef<HTMLSpanElement>(null);
+  const elapsedRef = useRef(0);
+  const lastTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setCompleted(true);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [runId]);
+    let frameId = 0;
+    const animationDuration = speed * 1000;
+    const delayDuration = delay * 1000;
+    const cycleDuration = animationDuration + delayDuration;
+    const directionSign = direction === "left" ? 1 : -1;
+
+    const update = (time: number) => {
+      if (disabled) {
+        lastTimeRef.current = null;
+        frameId = window.requestAnimationFrame(update);
+        return;
+      }
+
+      if (lastTimeRef.current === null) {
+        lastTimeRef.current = time;
+        frameId = window.requestAnimationFrame(update);
+        return;
+      }
+
+      const deltaTime = time - lastTimeRef.current;
+      lastTimeRef.current = time;
+      elapsedRef.current += deltaTime;
+
+      const cycleTime = elapsedRef.current % cycleDuration;
+      const progress =
+        cycleTime < animationDuration
+          ? (cycleTime / animationDuration) * 100
+          : 100;
+      const resolvedProgress =
+        directionSign === 1 ? progress : 100 - progress;
+
+      if (textRef.current) {
+        textRef.current.style.backgroundPosition = `${150 - resolvedProgress * 2}% center, 0 0`;
+      }
+
+      frameId = window.requestAnimationFrame(update);
+    };
+
+    elapsedRef.current = 0;
+    lastTimeRef.current = null;
+    frameId = window.requestAnimationFrame(update);
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [delay, direction, disabled, speed]);
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center">
-      <style>{`
-        @keyframes ${growName} {
-          0% {
-            stroke-dasharray: 0 69.12;
-            stroke-dashoffset: 0;
-          }
-          100% {
-            stroke-dasharray: 69.12 0;
-            stroke-dashoffset: 0;
-          }
-        }
-      `}</style>
-      <svg key={runId} width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
-        <circle
-          cx="16"
-          cy="16"
-          r="11"
-          fill="none"
-          stroke="rgba(23,23,23,0.10)"
-          strokeWidth="3"
-        />
-        <circle
-          cx="16"
-          cy="16"
-          r="11"
-          fill="none"
-          stroke="rgba(23,23,23,0.82)"
-          strokeWidth="3"
-          strokeLinecap="round"
-          transform="rotate(-90 16 16)"
-          style={{
-            animation: `${growName} 3s cubic-bezier(0.32, 0.72, 0, 1) forwards`,
-          }}
-        />
-      </svg>
-      {completed && (
-        <button
-          type="button"
-          className="rounded-full border-none px-3 py-1 text-[11px] font-medium cursor-pointer"
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "calc(50% + 56px)",
-            transform: "translateX(-50%)",
-            background: "rgba(0,122,255,0.10)",
-            color: "#007AFF",
-          }}
-          onClick={() => {
-            setCompleted(false);
-            setRunId((value) => value + 1);
-          }}
-        >
-          Reset
-        </button>
-      )}
+    <span
+      ref={textRef}
+      className="inline-block select-none text-[16px] font-semibold tracking-[-0.02em]"
+      style={{
+        backgroundImage: `linear-gradient(${spread}deg, rgba(255,255,255,0) 25%, ${shineColor} 50%, rgba(255,255,255,0) 75%), linear-gradient(0deg, ${color}, ${color})`,
+        backgroundBlendMode: "plus-lighter, normal",
+        backgroundSize: "200% auto, 100% 100%",
+        backgroundPosition: "150% center, 0 0",
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+      }}
+    >
+      {text}
+    </span>
+  );
+}
+
+export function ShinyTextPreview() {
+  return (
+    <div className="flex h-full w-full items-center justify-center">
+      <ShinyText
+        text="Shiny Text Effect"
+        speed={1.15}
+        delay={0.5}
+        spread={90}
+        direction="left"
+      />
     </div>
   );
 }
 
-const RECORDING_BAR_CONFIG = [
-  { x: 2, y: 9, width: 2, height: 6, minScale: 0.45, delay: -0.42 },
-  { x: 6.5, y: 6, width: 2, height: 12, minScale: 0.5, delay: -0.28 },
-  { x: 11, y: 2.5, width: 2, height: 19, minScale: 0.55, delay: -0.14 },
-  { x: 15.5, y: 6, width: 2, height: 12, minScale: 0.5, delay: 0 },
-  { x: 20, y: 9, width: 2, height: 6, minScale: 0.45, delay: 0.14 },
+export function ShinyTextDarkPreview() {
+  return (
+    <div className="flex h-full w-full items-center justify-center">
+      <ShinyText
+        text="Shiny Text Effect"
+        speed={1.15}
+        delay={0.5}
+        spread={90}
+        direction="left"
+        color="rgba(255,255,255,0.7)"
+        shineColor="rgba(255,255,255,0.88)"
+      />
+    </div>
+  );
+}
+
+export function LoadingGrowPreview() {
+  const [runId, setRunId] = useState(0);
+  const [completed, setCompleted] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setCompleted(true), 3000);
+    return () => window.clearTimeout(timer);
+  }, [runId]);
+
+  const reset = () => {
+    setCompleted(false);
+    setRunId((value) => value + 1);
+  };
+
+  return (
+    <div className="relative flex h-full w-full items-center justify-center">
+      <style>{`
+        @keyframes loading-grow-ring {
+          0% { stroke-dasharray: 0 113.1; stroke-dashoffset: 0; }
+          100% { stroke-dasharray: 113.1 0; stroke-dashoffset: 0; }
+        }
+      `}</style>
+      <svg key={runId} width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+        <circle
+          cx="20"
+          cy="20"
+          r="17.5"
+          fill="none"
+          stroke="rgba(23,23,23,0.10)"
+          strokeWidth="5"
+        />
+        <circle
+          cx="20"
+          cy="20"
+          r="17.5"
+          fill="none"
+          stroke="rgba(23,23,23,0.82)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          transform="rotate(-90 20 20)"
+          style={{
+            animation:
+              "loading-grow-ring 3s cubic-bezier(0.32, 0.72, 0, 1) forwards",
+          }}
+        />
+      </svg>
+      {completed ? (
+        <button
+          type="button"
+          className="absolute left-1/2 top-[calc(50%+48px)] -translate-x-1/2 cursor-pointer rounded-full border-0 bg-[rgba(0,122,255,0.10)] px-3 py-1 text-[11px] font-medium text-[#007AFF]"
+          onClick={reset}
+        >
+          Reset
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+export function LoadingProgressPreview() {
+  const [runId, setRunId] = useState(0);
+  const [completed, setCompleted] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setCompleted(true), 3000);
+    return () => window.clearTimeout(timer);
+  }, [runId]);
+
+  const reset = () => {
+    setCompleted(false);
+    setRunId((value) => value + 1);
+  };
+
+  return (
+    <div className="relative flex h-full w-full items-center justify-center">
+      <style>{`
+        @keyframes loading-progress-fill {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
+      `}</style>
+      <div className="h-[5px] w-1/2 overflow-hidden rounded-full bg-[rgba(23,23,23,0.10)]">
+        <div
+          key={runId}
+          className="h-full w-full origin-left rounded-full bg-[rgba(23,23,23,0.82)]"
+          style={{
+            transform: "scaleX(0)",
+            animation:
+              "loading-progress-fill 3s cubic-bezier(0.23, 1, 0.32, 1) forwards",
+          }}
+        />
+      </div>
+      {completed ? (
+        <button
+          type="button"
+          className="absolute left-1/2 top-[calc(50%+32px)] -translate-x-1/2 cursor-pointer rounded-full border-0 bg-[rgba(0,122,255,0.10)] px-3 py-1 text-[11px] font-medium text-[#007AFF]"
+          onClick={reset}
+        >
+          Reset
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+export function LoadingPercentRingPreview() {
+  const [runId, setRunId] = useState(0);
+  const [displayPercent, setDisplayPercent] = useState(0);
+  const [completed, setCompleted] = useState(false);
+  const progressRef = useRef<SVGCircleElement>(null);
+
+  useEffect(() => {
+    let frameId = 0;
+    const duration = 3000;
+    const targetPercent = 100;
+    let startTime: number | null = null;
+    let lastRoundedPercent = -1;
+
+    if (progressRef.current) {
+      progressRef.current.style.strokeDasharray = `${PERCENT_RING_CIRCUMFERENCE}`;
+      progressRef.current.style.strokeDashoffset = `${PERCENT_RING_CIRCUMFERENCE}`;
+    }
+
+    const easeOut = (value: number) => 1 - Math.pow(1 - value, 3);
+
+    const update = (time: number) => {
+      if (startTime === null) {
+        startTime = time;
+      }
+
+      const elapsed = Math.min(time - startTime, duration);
+      const progress = easeOut(elapsed / duration);
+      const currentPercent = targetPercent * progress;
+
+      if (progressRef.current) {
+        progressRef.current.style.strokeDashoffset = `${PERCENT_RING_CIRCUMFERENCE * (1 - currentPercent / 100)}`;
+      }
+
+      const roundedPercent = Math.round(currentPercent);
+      if (roundedPercent !== lastRoundedPercent) {
+        lastRoundedPercent = roundedPercent;
+        setDisplayPercent(roundedPercent);
+      }
+
+      if (elapsed < duration) {
+        frameId = window.requestAnimationFrame(update);
+        return;
+      }
+
+      setCompleted(true);
+    };
+
+    frameId = window.requestAnimationFrame(update);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [runId]);
+
+  const reset = () => {
+    setCompleted(false);
+    setDisplayPercent(0);
+    setRunId((value) => value + 1);
+  };
+
+  return (
+    <div className="relative flex h-full w-full items-center justify-center">
+      <div className="relative h-[180px] w-[180px]">
+        <svg
+          className="h-full w-full -rotate-90"
+          viewBox="0 0 180 180"
+          aria-hidden="true"
+        >
+          <circle
+            cx="90"
+            cy="90"
+            r="82"
+            fill="none"
+            stroke="rgba(23,23,23,0.10)"
+            strokeWidth="12"
+          />
+          <circle
+            ref={progressRef}
+            cx="90"
+            cy="90"
+            r="82"
+            fill="none"
+            stroke="rgba(23,23,23,0.82)"
+            strokeWidth="12"
+            strokeLinecap="round"
+            style={{
+              strokeDasharray: PERCENT_RING_CIRCUMFERENCE,
+              strokeDashoffset: PERCENT_RING_CIRCUMFERENCE,
+            }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="min-w-[76px] text-center text-[32px] font-semibold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)] tabular-nums">
+            {displayPercent}%
+          </span>
+        </div>
+      </div>
+      {completed ? (
+        <button
+          type="button"
+          className="absolute left-1/2 top-[calc(50%+118px)] -translate-x-1/2 cursor-pointer rounded-full border-0 bg-[rgba(0,122,255,0.10)] px-3 py-1 text-[11px] font-medium text-[#007AFF]"
+          onClick={reset}
+        >
+          Reset
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+const RECORDING_BARS = [
+  { height: 14, delay: "-0.42s", minScale: 0.45 },
+  { height: 24, delay: "-0.28s", minScale: 0.5 },
+  { height: 38, delay: "-0.14s", minScale: 0.55 },
+  { height: 24, delay: "0s", minScale: 0.5 },
+  { height: 14, delay: "0.14s", minScale: 0.45 },
 ];
 
 export function LoadingRecordingBarsPreview() {
-  const rawId = useId();
-  const id = rawId.replace(/:/g, "");
-  const waveName = `loading-recording-wave-${id}`;
-  const [isRunning, setIsRunning] = useState(false);
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const elapsedBeforeRunRef = useRef(0);
-  const runStartRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (!isRunning) return;
-
-    runStartRef.current = performance.now();
-
-    const timer = window.setInterval(() => {
-      if (runStartRef.current === null) return;
-      const current =
-        elapsedBeforeRunRef.current + (performance.now() - runStartRef.current);
-      setElapsedMs(current);
-    }, 33);
-
-    return () => {
-      window.clearInterval(timer);
-      if (runStartRef.current !== null) {
-        elapsedBeforeRunRef.current += performance.now() - runStartRef.current;
-        runStartRef.current = null;
-        setElapsedMs(elapsedBeforeRunRef.current);
-      }
-    };
-  }, [isRunning]);
-
-  const totalSeconds = Math.floor(elapsedMs / 1000);
-  const hours = Math.floor(totalSeconds / 3600) % 100;
-  const minutes = Math.floor(totalSeconds / 60) % 60;
-  const seconds = totalSeconds % 60;
-  const timeText = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-    2,
-    "0",
-  )}:${String(seconds).padStart(2, "0")}`;
-  const timeChars = timeText.split("");
-
   return (
     <div className="flex h-full w-full items-center justify-center">
       <style>{`
-        @keyframes ${waveName} {
+        @keyframes recording-bars-wave {
           0%, 100% {
-            transform: scale(1, var(--rec-min-scale));
+            transform: scaleY(var(--min-scale));
             opacity: 0.72;
           }
           50% {
-            transform: scale(1, 1);
+            transform: scaleY(1);
             opacity: 1;
           }
         }
       `}</style>
-      <div
-        style={{
-          width: 176,
-          height: 56,
-          borderRadius: 28,
-          background: "#FFFFFF",
-          boxShadow: "0px 10px 40px 0px rgba(38, 81, 149, 0.16)",
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 12,
-          padding: "0 16px",
-        }}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          aria-hidden="true"
-          focusable="false"
-          style={{ flex: "0 0 24px" }}
-        >
-          {RECORDING_BAR_CONFIG.map((bar, index) => {
-            const rectStyle: CSSProperties &
-              Record<string, string | number | undefined> = {
-              fill: "#007AFF",
-              transformBox: "fill-box",
+      <div className="flex h-14 items-center justify-center gap-[6px] rounded-full bg-white px-6 shadow-[0_10px_40px_rgba(38,81,149,0.16)]">
+        {RECORDING_BARS.map((bar, index) => (
+          <span
+            key={index}
+            className="w-[4px] rounded-full bg-[#007AFF]"
+            style={{
+              height: bar.height,
               transformOrigin: "center center",
-              animationName: isRunning ? waveName : "none",
-              animationDuration: isRunning ? "1.0s" : "0s",
-              animationTimingFunction: isRunning ? "ease-in-out" : "linear",
-              animationIterationCount: isRunning ? "infinite" : 1,
-              animationDelay: isRunning ? `${bar.delay}s` : "0s",
-              transform: isRunning ? undefined : `scale(1, ${bar.minScale})`,
-              opacity: isRunning ? undefined : 0.72,
-              "--rec-min-scale": bar.minScale,
-            };
-
-            return (
-              <rect
-                key={index}
-                x={bar.x}
-                y={bar.y}
-                width={bar.width}
-                height={bar.height}
-                rx={1}
-                style={rectStyle}
-              />
-            );
-          })}
-        </svg>
-
-        <span
-          style={{
-            fontFamily:
-              "Poppins, -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
-            fontStyle: "normal",
-            fontWeight: 500,
-            fontSize: 16,
-            lineHeight: "24px",
-            color: "#111111",
-            width: 72,
-            flex: "0 0 72px",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            letterSpacing: 0,
-          }}
-        >
-          {timeChars.map((char, index) => (
-            <span
-              key={`${char}-${index}`}
-              style={{
-                width: char === ":" ? 6 : 10,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flex: "0 0 auto",
-              }}
-            >
-              {char}
-            </span>
-          ))}
-        </span>
-
-        <button
-          type="button"
-          onClick={() => setIsRunning((prev) => !prev)}
-          aria-label={isRunning ? "Pause recording" : "Start recording"}
-          style={{
-            width: 24,
-            height: 24,
-            border: "none",
-            background: "transparent",
-            padding: 0,
-            margin: 0,
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            flex: "0 0 24px",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={
-              isRunning
-                ? "/figma/recording-icon/record-pause.svg"
-                : "/figma/recording-icon/record-play.svg"
-            }
-            alt=""
-            width={24}
-            height={24}
-            draggable={false}
-            style={{ display: "block", userSelect: "none", pointerEvents: "none" }}
+              animation:
+                "recording-bars-wave 1s ease-in-out infinite",
+              animationDelay: bar.delay,
+              "--min-scale": bar.minScale,
+            } as React.CSSProperties}
           />
-        </button>
+        ))}
       </div>
+    </div>
+  );
+}
+
+export function SkeletonPreview({ dark = false }: { dark?: boolean }) {
+  return (
+    <div
+      className="h-full w-full"
+      style={
+        {
+          "--skeleton-gradient-from": dark
+            ? "rgba(255,255,255,0.08)"
+            : "rgba(0,0,0,0)",
+          "--skeleton-gradient-to": dark
+            ? "rgba(255,255,255,0.16)"
+            : "rgba(0,0,0,0.08)",
+        } as React.CSSProperties
+      }
+    >
+      <style>{`
+        @keyframes skeleton-shimmer {
+          0% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0 50%;
+          }
+        }
+
+        .skeleton-shimmer {
+          overflow: hidden;
+          background: linear-gradient(
+            90deg,
+            var(--skeleton-gradient-from) 25%,
+            var(--skeleton-gradient-to) 37%,
+            var(--skeleton-gradient-from) 63%
+          );
+          background-size: 400% 100%;
+          animation: skeleton-shimmer 1.4s ease infinite;
+        }
+      `}</style>
+      <div className="skeleton-shimmer h-full w-full rounded-[24px]" />
     </div>
   );
 }

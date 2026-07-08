@@ -27,154 +27,298 @@ const sparkleClasses = [
   "sparkle-8",
 ];
 
-const uiverseButtonPrompt = `Apply this button motion style to my existing button without changing its product intent or surrounding layout.
+const uiverseButtonPrompt = `Apply this blue light-field motion to the user's existing button.
 
-Motion/style requirements:
-- Keep my button's existing width, height, border radius, padding, layout, typography, text, click handler, accessibility labels, and disabled/loading logic unchanged.
-- Do not change the button size or corner radius unless my original button has no explicit values.
-- Apply a blue animated light-field visual style based on #007AFF to the existing button surface.
-- Add an inner clipped wrapper for the animated light field.
-- Inside the wrapper, add multiple blurred color blobs that move continuously with CSS keyframes.
-- Use only blue/cyan tones:
-  - main outer color: #007AFF
-  - inner highlight: #3395FF
-  - electric blue: #0A5CFF
-  - cyan glow: #18C8FF
-  - teal glow: rgba(78, 255, 233, 0.68)
-  - bright cyan: rgba(0, 198, 255, 0.72)
-- Add subtle white sparkle particles distributed across the full button width. They should drift slowly and twinkle independently from the blurred blobs.
-- Add an inset highlight/shadow layer:
-  inset 0 3px 12px rgba(142, 202, 255, 0.92),
-  inset 0 -3px 4px rgba(0, 78, 210, 0.5)
-- Do not use hover-only motion. This is for mobile. Keep the animation running by default.
-- On press/tap, add a quick scale press feedback: scale(0.96), then return to normal.
-- Keep the implementation self-contained. Do not introduce animation libraries.
-
-Implementation shape:
-- Wrap the button label in a relative layer above the animated blobs and sparkles.
-- Clip the animated layers inside the rounded button.
-- Avoid outer drop shadow on the button itself.`;
-
-const pressButtonPrompt = `Apply this pressed button interaction to my existing button without changing its product intent or surrounding layout.
-
-Motion/style requirements:
-- Keep my button's existing width, height, border radius, padding, layout, typography, text, click handler, accessibility labels, and disabled/loading logic unchanged.
-- Preserve the button's original text and state logic.
-- Add a tactile mobile press effect using a two-layer button structure:
-  - a darker base layer behind the button
-  - a top button layer in the main color
-- The top layer should sit slightly above the base layer by default, leaving a small darker edge visible at the bottom.
-- On press/tap, move the top layer downward by the base offset so the button looks physically pressed.
-- Use a quick transition around 120ms with a soft ease-out curve.
-- Do not use hover-only motion. This is for mobile.
+Hard constraints:
+- Do not change the existing button width, height, border radius, padding, layout, typography, label, icon, click handler, accessibility attributes, disabled state, or loading state.
+- Do not replace the product component. Add only the visual/motion layers needed for the effect.
 - Do not introduce animation libraries.
+- Keep my original classes/styles. Treat the CSS below as additive animation CSS.
 
-Implementation shape:
-- Use a wrapper as the base/depth layer.
-- Put the real clickable button layer inside it.
-- Keep the original size and corner radius unless the original button has no explicit values.`;
+Effect:
+- Keep the button running by default; do not rely on hover-only motion.
+- Clip animated layers inside the button's existing rounded shape.
+- Add multiple blurred blue/cyan blobs moving continuously behind the label.
+- Add subtle white sparkle particles distributed across the full button width. Sparkle drift and sparkle twinkle should use independent durations/delays so they do not blink in sync.
+- Add inset highlights only, not an outer drop shadow.
+- On press/tap, scale the button to 0.96 and return to normal.
 
-const transitionButtonPrompt = `Apply this transition button interaction to my existing button without changing its product intent or surrounding layout.
+Use these colors:
+- main: #007AFF
+- inner highlight: #3395FF
+- electric blue: #0A5CFF
+- cyan: #18C8FF
+- teal glow: rgba(78, 255, 233, 0.68)
+- bright cyan: rgba(0, 198, 255, 0.72)
+- inset shadow: inset 0 3px 12px rgba(142,202,255,.92), inset 0 -3px 4px rgba(0,78,210,.5)
 
-Motion/style requirements:
-- Keep my button's existing width, height, border radius, padding, layout, typography, text, click handler, accessibility labels, and disabled/loading logic unchanged.
-- Preserve the button's original text and state logic.
-- Create a two-layer text transition inside the button:
-  - the default layer is visible first
-  - a second layer slides in from the bottom
-  - the default layer slides upward and out
-- Use transform-based transitions only; do not animate layout properties.
-- Use a soft cubic-bezier curve: cubic-bezier(0.23, 1, 0.32, 1).
-- Duration should be around 500ms.
-- On press/tap, add a quick scale feedback around scale(0.95).
-- Keep the implementation self-contained. Do not introduce animation libraries.
+Copy-ready core implementation:
+CSS:
+.button { position: relative; overflow: hidden; transform-origin: center; transition: transform 120ms cubic-bezier(.2,.8,.2,1); }
+.button:active { transform: scale(.96); }
+.button::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 3px 12px rgba(142,202,255,.92), inset 0 -3px 4px rgba(0,78,210,.5); pointer-events: none; z-index: 2; }
+.motion-layer { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; z-index: 0; }
+.button-label { position: relative; z-index: 3; }
+.blob { position: absolute; width: var(--blob-size, clamp(28px, 38%, 40px)); aspect-ratio: 1; border-radius: 999px; filter: blur(var(--blur, 8px)); background: var(--color); animation: blob-move var(--duration, 7s) linear infinite; }
+.sparkle { position: absolute; width: var(--size, 3px); height: var(--size, 3px); opacity: var(--opacity,.55); animation: sparkle-drift var(--drift, 15s) ease-in-out infinite, sparkle-twinkle var(--twinkle, 3.3s) ease-in-out infinite; }
+@keyframes sparkle-twinkle { 0%,100% { transform: scale(.75); opacity: .38; } 45% { transform: scale(1.18); opacity: 1; } 70% { transform: scale(.92); opacity: .58; } }
 
-Implementation shape:
-- The button should be position: relative and overflow: hidden.
-- Use two absolutely positioned layers that each fill the button.
-- Move the incoming layer from translateY(100%) to translateY(0).
-- Move the outgoing layer from translateY(0) to translateY(-100%).`;
+HTML/JSX shape:
+<button className="button existing-classes">
+  <span className="motion-layer" aria-hidden="true">/* blobs + sparkles */</span>
+  <span className="button-label">Existing label</span>
+</button>`;
 
-const textTransitionButtonPrompt = `Apply this text transition interaction to my existing button without changing its product intent or surrounding layout.
+const pressButtonPrompt = `Apply this tactile depth press interaction to the user's existing button.
 
-Motion/style requirements:
-- Keep my button's existing width, height, border radius, padding, layout, typography, text, click handler, accessibility labels, and disabled/loading logic unchanged.
-- Preserve the button's original text and state logic.
-- Split the button text into individual characters.
-- Render two identical text layers:
-  - the default text layer starts visible
-  - the second text layer starts above the visible area
-- On hover/focus/active state, move the default characters downward and out one by one.
-- At the same time, move the second text characters down into place one by one.
-- Use a staggered transition per character. Start around 200ms and increase each following character by about 100ms.
-- Use transform-only motion; do not animate layout properties.
-- Keep the implementation self-contained. Do not introduce animation libraries.
+Hard constraints:
+- Do not change the existing button width, height, border radius, padding, typography, label, click handler, accessibility attributes, disabled state, or loading state.
+- Preserve the button's visual style except for adding a depth layer and press motion.
+- Do not introduce animation libraries.
+- Keep my original classes/styles. Treat the CSS below as additive interaction CSS.
 
-Implementation shape:
-- The button should be position: relative and overflow: hidden.
-- Each text layer should be flex and clipped.
-- Each character should be its own inline element so the stagger can be applied with nth-child or inline transitionDelay.`;
+Effect:
+- Add a darker base/depth layer behind the button.
+- The top layer sits above the base by --press-depth, default 5px, leaving a visible bottom edge.
+- On press/tap, the top layer translates downward by the same depth and the depth shadow/base visually collapses.
+- Use a short 100-120ms transition.
 
-const iconShiftButtonPrompt = `Apply this icon displacement interaction to my existing button without changing its product intent or surrounding layout.
+Copy-ready core implementation:
+CSS:
+.depth-button { --press-depth: 5px; position: relative; border: 0; border-radius: inherit; box-shadow: 0 var(--press-depth) 0 0 var(--depth-color, #0060C8); transition: transform 100ms linear, box-shadow 100ms linear; }
+.depth-button:active { transform: translateY(var(--press-depth)); box-shadow: 0 0 0 0 var(--depth-color, #0060C8); }
 
-Motion/style requirements:
-- Keep my button's existing width, height, border radius, padding, layout, typography, text, click handler, accessibility labels, and disabled/loading logic unchanged.
-- Preserve the button's original text, icon, and state logic.
-- If the button has an icon, move the icon to the right on hover/focus/active state.
-- The icon should keep an angled paper-plane posture by default.
-- On hover/focus/active state, move the icon to the center of the button using percentage-based positioning, then rotate it again and scale it up slightly.
-- The text should translate to the right and visually move out of the way.
-- In the default state, keep the icon and label close together like an inline flex group, with only a small gap around 0.3em.
-- On hover/focus/active state, move the icon to the visual center of the button and move the text out of the way.
-- Add a small vertical floating motion to the icon wrapper while the active state is held.
-- Use transform-only motion; do not animate layout properties.
-- Use around 300ms ease-in-out for the icon and text transforms.
-- On press/tap, add a quick scale feedback around scale(0.95).
-- Keep the implementation self-contained. Do not introduce animation libraries.
+HTML/JSX shape:
+<button className="depth-button existing-classes" style={{ '--depth-color': '#0060C8' }}>
+  Existing label
+</button>`;
 
-Implementation shape:
-- Wrap the icon in a small inline container.
-- Animate the icon wrapper with a subtle alternating vertical keyframe.
-- Animate the icon itself with translateX + rotate + scale.
-- Animate the label with translateX.`;
+const transitionButtonPrompt = `Apply this two-panel button transition to the user's existing button.
 
-const pressFillButtonPrompt = `Apply this press-fill interaction to my existing button without changing its product intent or surrounding layout.
+Hard constraints:
+- Do not change the existing button width, height, border radius, padding, typography, label meaning, click handler, accessibility attributes, disabled state, or loading state.
+- Keep the component self-contained and do not introduce animation libraries.
+- Keep my original classes/styles. Treat the CSS below as additive transition CSS.
 
-Motion/style requirements:
-- Keep my button's existing width, height, border radius, padding, layout, typography, text, click handler, accessibility labels, and disabled/loading logic unchanged.
-- Preserve the button's original text and state logic.
-- Add an inner fill layer that starts at width 0 from the left edge.
-- On press/tap active state, animate the fill layer to width 100%.
-- Change the text color during the fill state so it remains readable.
-- Use a transition around 1000ms.
-- Use transform or width animation only on the internal fill layer; do not animate surrounding layout.
-- On press/tap, add a subtle scale feedback around scale(0.97).
-- Keep the implementation self-contained. Do not introduce animation libraries.
+Effect:
+- The button has two full-size internal layers.
+- Default layer is visible first.
+- Incoming layer starts below the button.
+- On hover/focus/active state, default layer moves up and out; incoming layer moves up into place.
+- Use transform only. Do not animate layout properties.
+- Duration: 500ms.
+- Curve: cubic-bezier(0.23, 1, 0.32, 1).
+- Add press feedback: scale(0.95).
 
-Implementation shape:
-- The button should be position: relative and overflow: hidden.
-- The fill layer should be absolutely positioned behind the label.
-- The label should stay above the fill layer with a higher z-index.`;
+Copy-ready core implementation:
+CSS:
+.transition-button { position: relative; overflow: hidden; border-radius: inherit; }
+.transition-button:active { transform: scale(.95); }
+.transition-button .layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: transform 500ms cubic-bezier(.23,1,.32,1); }
+.transition-button .layer-a { transform: translateY(0); }
+.transition-button .layer-b { transform: translateY(100%); background: #007AFF; }
+.transition-button:hover .layer-a { transform: translateY(-100%); }
+.transition-button:hover .layer-b { transform: translateY(0); }
 
-const waitingButtonPrompt = `Apply this waiting/loading button interaction to my existing button without changing its product intent or surrounding layout.
+HTML/JSX shape:
+<button className="transition-button existing-classes">
+  <span className="layer layer-a">Existing label</span>
+  <span className="layer layer-b">Existing label</span>
+</button>`;
 
-Motion/style requirements:
-- Keep my button's existing width, height, border radius, padding, layout, typography, text, click handler, accessibility labels, and disabled/loading logic unchanged.
-- Preserve the button's original default label.
+const textTransitionButtonPrompt = `Apply this character-by-character text transition to the user's existing button.
+
+Hard constraints:
+- Do not change the existing button width, height, border radius, padding, background, typography, click handler, accessibility attributes, disabled state, or loading state.
+- Preserve the original label meaning. You may duplicate the label internally for the animation.
+- Do not introduce animation libraries.
+- Keep my original classes/styles. Treat the CSS below as additive text animation CSS.
+
+Effect:
+- The visible text position must stay fixed in the center of the button.
+- Split the label into characters.
+- Render two identical character layers inside a fixed-size text slot.
+- Default character layer starts visible.
+- Second character layer starts above the slot.
+- On hover/focus/active state, default characters move down and out one by one; second-layer characters move down into place one by one.
+- Stagger duration starts at 200ms and increases by about 100ms per following character.
+- Use transform-only motion.
+
+Copy-ready core implementation:
+JSX:
+const chars = label.split('');
+<span className="text-slot">
+  <span className="text-layer text-out">{chars.map((c,i)=><span style={{transitionDuration: (200 + i * 100) + 'ms'}}>{c}</span>)}</span>
+  <span className="text-layer text-in">{chars.map((c,i)=><span style={{transitionDuration: (200 + i * 100) + 'ms'}}>{c}</span>)}</span>
+  <span className="text-measure" aria-hidden="true">{label}</span>
+</span>
+
+CSS:
+.text-slot { position: relative; display: inline-flex; height: 1.5em; overflow: hidden; align-items: center; justify-content: center; }
+.text-layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.text-layer span { display: inline-block; transition-property: transform; transition-timing-function: ease-out; }
+.text-in span { transform: translateY(-1.2em); }
+.button:hover .text-out span { transform: translateY(1.2em); }
+.button:hover .text-in span { transform: translateY(0); }
+.text-measure { visibility: hidden; }`;
+
+const iconShiftButtonPrompt = `Apply this icon displacement interaction to the user's existing icon button.
+
+Hard constraints:
+- Do not change the existing button width, height, border radius, padding, typography, label, click handler, accessibility attributes, disabled state, or loading state.
+- Preserve the original icon and label. Do not replace them unless there is no icon.
+- Do not introduce animation libraries.
+- Keep my original classes/styles. Treat the CSS below as additive icon motion CSS.
+
+Effect:
+- Default state: icon and text are a compact inline group with a small gap around 0.3em. The icon may keep its natural angled posture.
+- On hover/focus/active state: icon moves to the visual center of the button; label moves fully out of the button.
+- Icon also rotates slightly, scales to about 1.1, and has a subtle vertical float while active.
+- Use percentage-based positions for the icon and label so the animation adapts to button width changes.
+- Use transform-only motion.
+- Around 300ms ease-in-out for icon and text transforms.
+- Add press feedback: scale(0.95).
+
+Copy-ready core implementation:
+CSS:
+.icon-shift-button { --icon-offset: 1.9em; --label-offset: 0.55em; position: relative; overflow: hidden; }
+.icon-wrap { position: absolute; top: 50%; left: calc(50% - var(--icon-offset)); transform: translate(-50%, -50%); transition: left 300ms ease-in-out, transform 300ms ease-in-out; }
+.icon-label { position: absolute; top: 50%; left: calc(50% + var(--label-offset)); transform: translate(-50%, -50%); transition: left 300ms ease-in-out, transform 300ms ease-in-out; }
+.icon-glyph { transform: translateY(-0.075em) rotate(-35deg); transform-origin: center; transition: transform 300ms ease-in-out; }
+.icon-shift-button:hover .icon-wrap { left: 50%; transform: translate(-50%, -50%); }
+.icon-shift-button:hover .icon-glyph { transform: translateY(-0.075em) rotate(10deg) scale(1.1); }
+.icon-shift-button:hover .icon-label { left: 150%; }
+@keyframes icon-fly { from { transform: translateY(.1em); } to { transform: translateY(-.1em); } }`;
+
+const pressFillButtonPrompt = `Apply this press-and-hold fill interaction to the user's existing button.
+
+Hard constraints:
+- Do not change the existing button width, height, border radius, padding, layout, typography, label, click handler, accessibility attributes, disabled state, or loading state.
+- Preserve the default visual style as much as possible.
+- Do not introduce animation libraries.
+- Keep my original classes/styles. Treat the CSS below as additive press-fill CSS.
+
+Effect:
+- Add an internal fill layer behind the label.
+- Fill starts at width 0 from the left edge.
+- While the button is actively pressed/tapped, animate fill width to 100%.
+- Release returns fill width to 0.
+- Text color changes during active fill so it remains readable.
+- Duration: 1000ms.
+- Do not add scale press feedback for this effect.
+
+Copy-ready core implementation:
+CSS:
+.press-fill { position: relative; overflow: hidden; }
+.press-fill .fill-layer { position: absolute; inset-block: 0; left: 0; width: 0; border-radius: inherit; background: #212121; transition: width 1000ms; z-index: 0; }
+.press-fill .label { position: relative; z-index: 1; }
+.press-fill:active .fill-layer { width: 100%; }
+.press-fill:active { color: #fff; }`;
+
+const waitingButtonPrompt = `Apply this waiting/loading button interaction to the user's existing button.
+
+Hard constraints:
+- Do not change the existing button width, height, border radius, padding, layout, typography, default label, click handler, accessibility attributes, disabled state, or loading state.
+- Preserve the original default label.
+- Do not introduce animation libraries.
+- Keep my original classes/styles. Treat the CSS below as additive loading-state CSS.
+
+Effect:
 - On tap/click, switch the button into a loading state.
-- In loading state, show a small spinner before the label and change the label to Loading.
-- Keep the spinner inline with the text and vertically centered.
-- The spinner should rotate continuously with a linear animation.
+- In loading state, show a small inline spinner before the label and change the visible label to Loading.
+- Spinner is vertically centered with the text and rotates continuously.
 - Prevent repeated taps while loading.
-- After the async work completes, restore the original label and normal state.
-- If no async callback exists, use a 5 second timeout as a demo fallback.
-- Keep the implementation self-contained. Do not introduce animation libraries.
+- Restore original state when async work completes. If no async callback exists, use a 5 second timeout as demo fallback.
 
-Implementation shape:
-- Store a loading boolean in component state.
-- Render the spinner only when loading is true.
-- Set disabled or aria-busy while loading.
-- Use accessible hidden text inside the spinner: Loading...`;
+Copy-ready core implementation:
+JSX:
+<button disabled={loading} aria-busy={loading} onClick={handleClick}>
+  {loading && <span role="status" className="spinner"><span className="sr-only">Loading...</span></span>}
+  {loading ? 'Loading' : originalLabel}
+</button>
+
+CSS:
+.spinner { display: inline-block; width: 1em; height: 1em; margin-right: .5em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 999px; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }`;
+
+const borderGlowButtonPrompt = `Create this border-glow effect on my existing pill button.
+
+Rules:
+- Do not change my button layout, click logic, label, disabled state, or accessibility attributes.
+- Do not install dependencies.
+- Keep the button body empty for this demo. In a real button, place content above the visual layers.
+
+CSS:
+.border-glow-button {
+  position: relative;
+  width: 240px;
+  height: 58px;
+  border: 0;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background: transparent;
+  isolation: isolate;
+}
+
+.border-glow-button__svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.border-glow-button__path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.border-glow-button__path--blur {
+  filter: blur(6px);
+  opacity: 0.7;
+}
+
+.border-glow-button__shadow {
+  opacity: 0.105;
+  filter: blur(16px);
+}
+
+.border-glow-button__blocker {
+  fill: #EAEBEF;
+}
+
+.border-glow-button__inner {
+  position: absolute;
+  inset: 3px;
+  z-index: 2;
+  border-radius: inherit;
+  border: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+  pointer-events: none;
+}
+
+HTML/JSX:
+<button className="border-glow-button" type="button" aria-label="Record voice">
+  <svg className="border-glow-button__svg" viewBox="0 0 240 58" aria-hidden="true">
+    <defs>
+      <linearGradient id="borderGlowGradient" x1="0" y1="0" x2="240" y2="58" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#FFD60A" />
+        <stop offset="0.2" stopColor="#FF9F0A" />
+        <stop offset="0.4" stopColor="#FF375F" />
+        <stop offset="0.6" stopColor="#BF5AF2" />
+        <stop offset="0.8" stopColor="#0A84FF" />
+        <stop offset="1" stopColor="#FFD60A" />
+        <animateTransform attributeName="gradientTransform" type="rotate" from="0 120 29" to="360 120 29" dur="3.75s" repeatCount="indefinite" />
+      </linearGradient>
+    </defs>
+    <rect className="border-glow-button__shadow" x="-16" y="-16" width="272" height="90" rx="45" fill="url(#borderGlowGradient)" />
+    <rect className="border-glow-button__blocker" x="3" y="3" width="234" height="52" rx="26" />
+    <rect className="border-glow-button__path border-glow-button__path--blur" x="1" y="1" width="238" height="56" rx="28" pathLength="1" stroke="url(#borderGlowGradient)" strokeWidth="3" />
+    <rect className="border-glow-button__path" x="1" y="1" width="238" height="56" rx="28" pathLength="1" stroke="url(#borderGlowGradient)" strokeWidth="3" />
+  </svg>
+  <span className="border-glow-button__inner" aria-hidden="true" />
+</button>`;
 
 function CopyCodeTooltipButton({ prompt }: { prompt: string }) {
   const [copied, setCopied] = useState(false);
@@ -609,8 +753,13 @@ function PressDepthButton() {
   return (
     <button
       type="button"
-      className="w-1/2 rounded-[24px] border-0 bg-[#007AFF] px-4 py-3 text-center text-[16px] font-bold leading-[1.5] tracking-[0.02em] text-white shadow-[0_5px_0_0_#0060C8] outline-none transition-all duration-100 ease-linear active:translate-y-[5px] active:shadow-[0_0_0_0_#0060C8]"
-      style={{ textShadow: "none" }}
+      className="w-1/2 rounded-[24px] border-0 bg-[#007AFF] px-4 py-3 text-center text-[16px] font-bold leading-[1.5] tracking-[0.02em] text-white shadow-[0_var(--press-depth)_0_0_#0060C8] outline-none transition-all duration-100 ease-linear active:translate-y-[var(--press-depth)] active:shadow-[0_0_0_0_#0060C8]"
+      style={
+        {
+          "--press-depth": "5px",
+          textShadow: "none",
+        } as React.CSSProperties
+      }
     >
       Button
     </button>
@@ -696,8 +845,13 @@ function IconShiftButton() {
   return (
     <>
       <style>{`
+        .icon-shift-button {
+          --icon-offset: 1.9em;
+          --label-offset: 0.55em;
+        }
+
         .icon-shift-button .icon-wrap {
-          left: calc(50% - 34px);
+          left: calc(50% - var(--icon-offset));
           transform: translate(-50%, -50%);
           transition:
             left 300ms ease-in-out,
@@ -705,7 +859,7 @@ function IconShiftButton() {
         }
 
         .icon-shift-button .icon-label {
-          left: calc(50% + 10px);
+          left: calc(50% + var(--label-offset));
           transform: translate(-50%, -50%);
           display: inline-flex;
           align-items: center;
@@ -726,7 +880,7 @@ function IconShiftButton() {
         }
 
         .icon-shift-button .icon-glyph {
-          transform: translateY(-1.5px) rotate(-35deg) scale(1);
+          transform: translateY(-0.075em) rotate(-35deg) scale(1);
           transform-origin: center center;
           transition: transform 300ms ease-in-out;
         }
@@ -737,7 +891,7 @@ function IconShiftButton() {
         }
 
         .icon-shift-button:hover .icon-glyph {
-          transform: translateY(-1.5px) rotate(10deg) scale(1.1);
+          transform: translateY(-0.075em) rotate(10deg) scale(1.1);
         }
 
         .icon-shift-button:hover .icon-float {
@@ -745,7 +899,7 @@ function IconShiftButton() {
         }
 
         .icon-shift-button:hover .icon-label {
-          left: 125%;
+          left: 150%;
           transform: translate(-50%, -50%);
         }
       `}</style>
@@ -812,95 +966,182 @@ function WaitingButton() {
   );
 }
 
+function BorderGlowButton() {
+  return (
+    <div className="flex h-full w-full items-center justify-center rounded-[24px] bg-[#EAEBEF]">
+      <style>{`
+        .border-glow-button {
+          position: relative;
+          width: 240px;
+          height: 58px;
+          --glow-inset: 3px;
+          --glow-stroke: 3px;
+          --glow-shadow-spread: 16px;
+          border: 0;
+          padding: 0;
+          border-radius: 999px;
+          cursor: pointer;
+          background: transparent;
+          isolation: isolate;
+        }
+
+        .border-glow-button__svg {
+          position: absolute;
+          inset: 0;
+          overflow: visible;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .border-glow-button__path {
+          fill: none;
+          stroke-linecap: round;
+        }
+
+        .border-glow-button__path--blur {
+          filter: blur(6px);
+          opacity: 0.7;
+        }
+
+        .border-glow-button__blocker {
+          fill: #EAEBEF;
+        }
+
+        .border-glow-button__shadow {
+          opacity: 0.105;
+          filter: blur(16px);
+        }
+
+        .border-glow-button__inner {
+          position: absolute;
+          inset: 3px;
+          z-index: 2;
+          border-radius: inherit;
+          border: 0;
+          background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+          pointer-events: none;
+        }
+
+      `}</style>
+      <button className="border-glow-button" type="button" aria-label="Record voice">
+        <svg className="border-glow-button__svg" viewBox="0 0 240 58" aria-hidden="true">
+          <defs>
+            <linearGradient id="borderGlowGradient" x1="0" y1="0" x2="240" y2="58" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#FFD60A" />
+              <stop offset="0.2" stopColor="#FF9F0A" />
+              <stop offset="0.4" stopColor="#FF375F" />
+              <stop offset="0.6" stopColor="#BF5AF2" />
+              <stop offset="0.8" stopColor="#0A84FF" />
+              <stop offset="1" stopColor="#FFD60A" />
+              <animateTransform
+                attributeName="gradientTransform"
+                type="rotate"
+                from="0 120 29"
+                to="360 120 29"
+                dur="3.75s"
+                repeatCount="indefinite"
+              />
+            </linearGradient>
+          </defs>
+          <rect
+            className="border-glow-button__shadow"
+            x="-16"
+            y="-16"
+            width="272"
+            height="90"
+            rx="45"
+            fill="url(#borderGlowGradient)"
+          />
+          <rect
+            className="border-glow-button__blocker"
+            x="3"
+            y="3"
+            width="234"
+            height="52"
+            rx="26"
+          />
+          <rect
+            className="border-glow-button__path border-glow-button__path--blur"
+            x="1"
+            y="1"
+            width="238"
+            height="56"
+            rx="28"
+            pathLength="1"
+            stroke="url(#borderGlowGradient)"
+            strokeWidth="3"
+          />
+          <rect
+            className="border-glow-button__path"
+            x="1"
+            y="1"
+            width="238"
+            height="56"
+            rx="28"
+            pathLength="1"
+            stroke="url(#borderGlowGradient)"
+            strokeWidth="3"
+          />
+        </svg>
+        <span className="border-glow-button__inner" aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+function DemoCard({
+  title,
+  prompt,
+  children,
+}: {
+  title: string;
+  prompt: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex aspect-square flex-col gap-4 rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-[26px] shadow-[0_100px_100px_rgba(13,42,83,0.02)]">
+      <div className="flex w-full items-center justify-between">
+        <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
+          {title}
+        </div>
+        <CopyCodeTooltipButton prompt={prompt} />
+      </div>
+      <div className="min-h-0 w-full flex-1">
+        <div className="flex h-full w-full items-center justify-center rounded-[24px] bg-transparent">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function UiverseButtonDemo() {
   return (
-    <div className="docs-sidebar-scrollbar h-full w-full overflow-y-auto">
-      <div className="grid w-full grid-cols-3 gap-6 pb-24">
-      <div className="flex aspect-square flex-col justify-between rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-6 shadow-[0_24px_60px_rgba(13,42,83,0.06)]">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
-            流光
-          </div>
-          <CopyCodeTooltipButton prompt={uiverseButtonPrompt} />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <UiverseButton label="Button" includeStyle />
-        </div>
-        <div className="h-8" aria-hidden="true" />
-      </div>
-      <div className="flex aspect-square flex-col justify-between rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-6 shadow-[0_24px_60px_rgba(13,42,83,0.06)]">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
-            按压
-          </div>
-          <CopyCodeTooltipButton prompt={pressButtonPrompt} />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <PressDepthButton />
-        </div>
-        <div className="h-8" aria-hidden="true" />
-      </div>
-      <div className="flex aspect-square flex-col justify-between rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-6 shadow-[0_24px_60px_rgba(13,42,83,0.06)]">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
-            转场
-          </div>
-          <CopyCodeTooltipButton prompt={transitionButtonPrompt} />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <TransitionButton />
-        </div>
-        <div className="h-8" aria-hidden="true" />
-      </div>
-      <div className="flex aspect-square flex-col justify-between rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-6 shadow-[0_24px_60px_rgba(13,42,83,0.06)]">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
-            文字转场
-          </div>
-          <CopyCodeTooltipButton prompt={textTransitionButtonPrompt} />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <TextTransitionButton />
-        </div>
-        <div className="h-8" aria-hidden="true" />
-      </div>
-      <div className="flex aspect-square flex-col justify-between rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-6 shadow-[0_24px_60px_rgba(13,42,83,0.06)]">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
-            icon位移
-          </div>
-          <CopyCodeTooltipButton prompt={iconShiftButtonPrompt} />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <IconShiftButton />
-        </div>
-        <div className="h-8" aria-hidden="true" />
-      </div>
-      <div className="flex aspect-square flex-col justify-between rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-6 shadow-[0_24px_60px_rgba(13,42,83,0.06)]">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
-            按压填充
-          </div>
-          <CopyCodeTooltipButton prompt={pressFillButtonPrompt} />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <PressFillButton />
-        </div>
-        <div className="h-8" aria-hidden="true" />
-      </div>
-      <div className="flex aspect-square flex-col justify-between rounded-[48px] border-2 border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff] p-6 shadow-[0_24px_60px_rgba(13,42,83,0.06)]">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-[16px] font-bold leading-none tracking-[-0.6px] text-[rgba(0,0,0,0.88)]">
-            等待
-          </div>
-          <CopyCodeTooltipButton prompt={waitingButtonPrompt} />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <WaitingButton />
-        </div>
-        <div className="h-8" aria-hidden="true" />
-      </div>
-      </div>
+    <div className="grid w-full grid-cols-3 gap-6 pb-24">
+      <DemoCard title="流光" prompt={uiverseButtonPrompt}>
+        <UiverseButton label="Button" includeStyle />
+      </DemoCard>
+      <DemoCard title="按压" prompt={pressButtonPrompt}>
+        <PressDepthButton />
+      </DemoCard>
+      <DemoCard title="转场" prompt={transitionButtonPrompt}>
+        <TransitionButton />
+      </DemoCard>
+      <DemoCard title="文字转场" prompt={textTransitionButtonPrompt}>
+        <TextTransitionButton />
+      </DemoCard>
+      <DemoCard title="icon位移" prompt={iconShiftButtonPrompt}>
+        <IconShiftButton />
+      </DemoCard>
+      <DemoCard title="按压填充" prompt={pressFillButtonPrompt}>
+        <PressFillButton />
+      </DemoCard>
+      <DemoCard title="等待" prompt={waitingButtonPrompt}>
+        <WaitingButton />
+      </DemoCard>
+      <DemoCard title="Border Glow" prompt={borderGlowButtonPrompt}>
+        <BorderGlowButton />
+      </DemoCard>
     </div>
   );
 }
