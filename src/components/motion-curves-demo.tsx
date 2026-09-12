@@ -76,8 +76,8 @@ function PreviewTrack({ token, mode, large = false, showMeta = true }: { token: 
 
 function TokenRow({ token, mode }: { token: MotionCurveToken; mode: "timing" | "spring" }) {
   const spring = springFor(token);
-  const meta = mode === "spring" ? `spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass})` : token.easing;
-  return <div className="min-w-0 bg-white px-6 py-4 sm:px-7"><div className="min-w-0"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><div className="mt-1 flex min-w-0 items-center gap-3"><code className="min-w-0 truncate select-all font-mono text-[10px] text-[#98a2b3]">{meta}</code><span className="shrink-0 font-mono text-[10px] text-[#667085]">+{token.durationMs}ms <span className="uppercase tracking-[.1em] text-[#98a2b3]">duration</span></span></div></div><div className="mt-4 min-w-0"><PreviewTrack token={token} mode={mode} showMeta={false} /></div></div>;
+  const code = mode === "spring" ? `withAnimation(.spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass}))` : `transition: transform ${token.durationMs}ms ${token.easing}`;
+  return <div className="min-w-0 bg-white px-6 py-4 sm:px-7"><div className="min-w-0"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><div className="mt-1 flex min-w-0 items-center gap-3"><code className="min-w-0 truncate select-all font-mono text-[10px] text-[#98a2b3]">{code}</code><span className="shrink-0 font-mono text-[10px] text-[#667085]"><span className="uppercase tracking-[.1em] text-[#98a2b3]">duration</span> {token.durationMs}ms</span></div></div><div className="mt-4 min-w-0"><PreviewTrack token={token} mode={mode} showMeta={false} /></div></div>;
 }
 
 function Explorer({ activeKind, setActiveKind }: { activeKind: "timing" | "spring"; setActiveKind: (value: "timing" | "spring") => void }) {
