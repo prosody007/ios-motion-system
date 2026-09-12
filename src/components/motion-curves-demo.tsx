@@ -116,10 +116,24 @@ function ParameterControl({ label, value, min, max, step, suffix, onChange }: { 
   return <label className="block"><span className="flex items-center justify-between gap-3 text-[11px] font-medium text-[#344054]"><span>{label}</span><span className="font-mono text-[10px] text-[#8791a3]">{formatNumber(value)}{suffix ?? ""}</span></span><div className="mt-2 flex items-center gap-3"><input aria-label={label} type="range" min={min} max={max} step={step} value={value} onChange={(event) => update(Number(event.target.value))} className="simulator-range min-w-0 flex-1" /><input aria-label={`${label} value`} type="number" min={min} max={max} step={step} value={value} onChange={(event) => update(Number(event.target.value))} className="h-8 w-[70px] rounded-lg border border-[#e1e6ee] bg-white px-2 text-right font-mono text-[10px] text-[#111827] outline-none transition-colors focus:border-[#98a2b3]" /></div></label>;
 }
 
-function CurveGraph({ values }: { values: BezierValues }) {
+function CurveGraph({ values, onChange }: { values: BezierValues; onChange: (key: keyof BezierValues, value: number) => void }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [dragging, setDragging] = useState<"first" | "second" | null>(null);
   const y1 = 100 - values.y1 * 100;
   const y2 = 100 - values.y2 * 100;
-  return <div className="relative overflow-hidden rounded-2xl border border-[#e6eaf0] bg-[#f7f8fa] p-4"><div className="mb-3 flex items-center justify-between"><span className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Curve shape</span><code className="font-mono text-[10px] text-[#667085]">cubic-bezier({formatNumber(values.x1)}, {formatNumber(values.y1)}, {formatNumber(values.x2)}, {formatNumber(values.y2)})</code></div><svg viewBox="0 0 100 100" className="block h-[156px] w-full" role="img" aria-label="Bézier curve preview"><defs><pattern id="sim-grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e7ebf1" strokeWidth="0.7" /></pattern></defs><rect width="100" height="100" fill="url(#sim-grid)" rx="4" /><path d={`M 0 100 C ${values.x1 * 100} ${y1}, ${values.x2 * 100} ${y2}, 100 0`} fill="none" stroke="#2878f0" strokeWidth="2.5" strokeLinecap="round" /><path d={`M 0 100 L ${values.x1 * 100} ${y1} M 100 0 L ${values.x2 * 100} ${y2}`} fill="none" stroke="#b8c3d4" strokeWidth="0.8" strokeDasharray="2 2" /></svg><div className="mt-2 flex justify-between text-[10px] text-[#98a2b3]"><span>start</span><span>end</span></div></div>;
+  const updateFromPointer = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (!dragging || !svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+    const y = Math.min(1.5, Math.max(-0.5, 1 - (event.clientY - rect.top) / rect.height));
+    onChange(dragging === "first" ? "x1" : "x2", Number(x.toFixed(2)));
+    onChange(dragging === "first" ? "y1" : "y2", Number(y.toFixed(2)));
+  };
+  const startDrag = (point: "first" | "second", event: React.PointerEvent<SVGCircleElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(point);
+  };
+  return <div className="relative overflow-hidden rounded-2xl border border-[#e6eaf0] bg-[#f7f8fa] p-4"><div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><div className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Curve shape</div><div className="mt-1 text-[10px] text-[#8791a3]">拖动两个手柄调整控制点</div></div><code className="font-mono text-[10px] text-[#667085]">cubic-bezier({formatNumber(values.x1)}, {formatNumber(values.y1)}, {formatNumber(values.x2)}, {formatNumber(values.y2)})</code></div><svg ref={svgRef} viewBox="0 0 100 100" preserveAspectRatio="none" className={`block h-[190px] w-full touch-none ${dragging ? "cursor-grabbing" : "cursor-default"}`} role="img" aria-label="Bézier curve preview" onPointerMove={updateFromPointer} onPointerUp={() => setDragging(null)} onPointerCancel={() => setDragging(null)}><defs><pattern id="sim-grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e7ebf1" strokeWidth="0.7" /></pattern></defs><rect width="100" height="100" fill="url(#sim-grid)" rx="4" /><path d={`M 0 100 L ${values.x1 * 100} ${y1} M 100 0 L ${values.x2 * 100} ${y2}`} fill="none" stroke="#b8c3d4" strokeWidth="0.8" strokeDasharray="2 2" /><path d={`M 0 100 C ${values.x1 * 100} ${y1}, ${values.x2 * 100} ${y2}, 100 0`} fill="none" stroke="#2878f0" strokeWidth="2.5" strokeLinecap="round" /><circle cx={values.x1 * 100} cy={y1} r="8" fill="transparent" onPointerDown={(event) => startDrag("first", event)} /><circle cx={values.x2 * 100} cy={y2} r="8" fill="transparent" onPointerDown={(event) => startDrag("second", event)} /><circle cx={values.x1 * 100} cy={y1} r="3.5" fill="#fff" stroke="#2878f0" strokeWidth="1.8" onPointerDown={(event) => startDrag("first", event)} /><circle cx={values.x2 * 100} cy={y2} r="3.5" fill="#fff" stroke="#2878f0" strokeWidth="1.8" onPointerDown={(event) => startDrag("second", event)} /></svg><div className="mt-2 flex justify-between text-[10px] text-[#98a2b3]"><span>start</span><span>end</span></div></div>;
 }
 
 function SimulatorPreview({ mode, bezier, spring }: { mode: SimulatorMode; bezier: BezierValues; spring: SpringValues }) {
@@ -175,7 +189,46 @@ function CurveSimulator() {
   const [spring, setSpring] = useState(defaultSpring);
   const updateBezier = (key: keyof BezierValues, value: number) => setBezier((current) => ({ ...current, [key]: value }));
   const updateSpring = (key: keyof SpringValues, value: number) => setSpring((current) => ({ ...current, [key]: value }));
-  return <Panel className="overflow-hidden"><div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7"><div><h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve simulator</h2><p className="mt-1 text-[11px] text-[#8791a3]">拖动参数，实时调整曲线的节奏、惯性和回弹。</p></div><div role="tablist" aria-label="Simulator type" className="grid grid-cols-2 rounded-full bg-[#eef1f6] p-1"><button type="button" role="tab" aria-selected={mode === "bezier"} onClick={() => setMode("bezier")} className={`rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${mode === "bezier" ? "bg-white text-[#111827] shadow-[0_2px_8px_rgba(17,24,39,.12)]" : "text-[#667085]"}`}>Bézier</button><button type="button" role="tab" aria-selected={mode === "spring"} onClick={() => setMode("spring")} className={`rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${mode === "spring" ? "bg-white text-[#111827] shadow-[0_2px_8px_rgba(17,24,39,.12)]" : "text-[#667085]"}`}>Spring</button></div></div><div className="grid gap-5 p-6 sm:p-7 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)]"><div className="space-y-5">{mode === "bezier" ? <><div className="grid grid-cols-2 gap-x-4 gap-y-5"><ParameterControl label="X1" value={bezier.x1} min={0} max={1} step={0.01} onChange={(value) => updateBezier("x1", value)} /><ParameterControl label="Y1" value={bezier.y1} min={-0.5} max={1.5} step={0.01} onChange={(value) => updateBezier("y1", value)} /><ParameterControl label="X2" value={bezier.x2} min={0} max={1} step={0.01} onChange={(value) => updateBezier("x2", value)} /><ParameterControl label="Y2" value={bezier.y2} min={-0.5} max={1.5} step={0.01} onChange={(value) => updateBezier("y2", value)} /></div><ParameterControl label="Duration" value={bezier.duration} min={80} max={1200} step={10} suffix="ms" onChange={(value) => updateBezier("duration", value)} /></> : <><ParameterControl label="Stiffness" value={spring.stiffness} min={40} max={1200} step={1} onChange={(value) => updateSpring("stiffness", value)} /><ParameterControl label="Damping" value={spring.damping} min={1} max={160} step={1} onChange={(value) => updateSpring("damping", value)} /><ParameterControl label="Mass" value={spring.mass} min={0.1} max={5} step={0.1} onChange={(value) => updateSpring("mass", value)} /></>}<button type="button" onClick={() => { setBezier(defaultBezier); setSpring(defaultSpring); }} className="text-left text-[11px] font-medium text-[#667085] underline decoration-[#d3d9e3] underline-offset-4 transition-colors hover:text-[#111827]">Restore defaults</button></div><div className="min-w-0 space-y-4">{mode === "bezier" ? <CurveGraph values={bezier} /> : <div className="flex min-h-[226px] flex-col justify-between rounded-2xl border border-[#e6eaf0] bg-[#f7f8fa] p-4"><div className="flex items-center justify-between"><span className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Spring response</span><span className="font-mono text-[10px] text-[#667085]">{formatNumber(spring.stiffness)} · {formatNumber(spring.damping)} · {formatNumber(spring.mass)}</span></div><div className="grid grid-cols-3 gap-3"><div className="rounded-xl bg-white p-3"><div className="font-mono text-[10px] text-[#98a2b3]">stiffness</div><div className="mt-1 text-[16px] font-semibold tracking-[-.04em] text-[#111827]">{formatNumber(spring.stiffness)}</div></div><div className="rounded-xl bg-white p-3"><div className="font-mono text-[10px] text-[#98a2b3]">damping</div><div className="mt-1 text-[16px] font-semibold tracking-[-.04em] text-[#111827]">{formatNumber(spring.damping)}</div></div><div className="rounded-xl bg-white p-3"><div className="font-mono text-[10px] text-[#98a2b3]">mass</div><div className="mt-1 text-[16px] font-semibold tracking-[-.04em] text-[#111827]">{formatNumber(spring.mass)}</div></div></div><div className="flex items-center gap-2 text-[11px] text-[#667085]"><span className="h-2 w-2 rounded-full bg-[#2878f0]" />阻尼越低，回弹越明显；质量越高，惯性感越强。</div></div>}<SimulatorPreview key={mode} mode={mode} bezier={bezier} spring={spring} /></div></div></Panel>;
+  const restoreDefaults = () => {
+    setBezier(defaultBezier);
+    setSpring(defaultSpring);
+  };
+  return <Panel className="overflow-hidden">
+    <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7">
+      <div>
+        <h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve simulator</h2>
+        <p className="mt-1 text-[11px] text-[#8791a3]">拖动参数，实时调整曲线的节奏、惯性和回弹。</p>
+      </div>
+      <div role="tablist" aria-label="Simulator type" className="grid grid-cols-2 rounded-full bg-[#eef1f6] p-1">
+        <button type="button" role="tab" aria-selected={mode === "bezier"} onClick={() => setMode("bezier")} className={`rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${mode === "bezier" ? "bg-white text-[#111827] shadow-[0_2px_8px_rgba(17,24,39,.12)]" : "text-[#667085]"}`}>Bézier</button>
+        <button type="button" role="tab" aria-selected={mode === "spring"} onClick={() => setMode("spring")} className={`rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${mode === "spring" ? "bg-white text-[#111827] shadow-[0_2px_8px_rgba(17,24,39,.12)]" : "text-[#667085]"}`}>Spring</button>
+      </div>
+    </div>
+    <div className="grid gap-5 p-6 sm:p-7 lg:grid-cols-[250px_minmax(0,1fr)] lg:items-start">
+      <aside className="rounded-2xl border border-[#e6eaf0] bg-[#f7f8fa] p-4">
+        <div className="flex items-center justify-between"><span className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Parameters</span><button type="button" onClick={restoreDefaults} className="text-[10px] font-medium text-[#667085] underline decoration-[#d3d9e3] underline-offset-4 transition-colors hover:text-[#111827]">Restore</button></div>
+        <div className="mt-5 space-y-5">
+          {mode === "bezier" ? <>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <ParameterControl label="X1" value={bezier.x1} min={0} max={1} step={0.01} onChange={(value) => updateBezier("x1", value)} />
+              <ParameterControl label="Y1" value={bezier.y1} min={-0.5} max={1.5} step={0.01} onChange={(value) => updateBezier("y1", value)} />
+              <ParameterControl label="X2" value={bezier.x2} min={0} max={1} step={0.01} onChange={(value) => updateBezier("x2", value)} />
+              <ParameterControl label="Y2" value={bezier.y2} min={-0.5} max={1.5} step={0.01} onChange={(value) => updateBezier("y2", value)} />
+            </div>
+            <ParameterControl label="Duration" value={bezier.duration} min={80} max={1200} step={10} suffix="ms" onChange={(value) => updateBezier("duration", value)} />
+          </> : <>
+            <ParameterControl label="Stiffness" value={spring.stiffness} min={40} max={1200} step={1} onChange={(value) => updateSpring("stiffness", value)} />
+            <ParameterControl label="Damping" value={spring.damping} min={1} max={160} step={1} onChange={(value) => updateSpring("damping", value)} />
+            <ParameterControl label="Mass" value={spring.mass} min={0.1} max={5} step={0.1} onChange={(value) => updateSpring("mass", value)} />
+          </>}
+        </div>
+      </aside>
+      <div className="grid min-w-0 gap-4 2xl:grid-cols-[minmax(0,1.1fr)_minmax(280px,.9fr)] 2xl:items-start">
+        {mode === "bezier" ? <CurveGraph values={bezier} onChange={updateBezier} /> : <div className="flex min-h-[274px] flex-col justify-between rounded-2xl border border-[#e6eaf0] bg-[#f7f8fa] p-4"><div className="flex items-center justify-between"><span className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Spring response</span><span className="font-mono text-[10px] text-[#667085]">{formatNumber(spring.stiffness)} · {formatNumber(spring.damping)} · {formatNumber(spring.mass)}</span></div><div className="grid grid-cols-3 gap-3"><div className="rounded-xl bg-white p-3"><div className="font-mono text-[10px] text-[#98a2b3]">stiffness</div><div className="mt-1 text-[16px] font-semibold tracking-[-.04em] text-[#111827]">{formatNumber(spring.stiffness)}</div></div><div className="rounded-xl bg-white p-3"><div className="font-mono text-[10px] text-[#98a2b3]">damping</div><div className="mt-1 text-[16px] font-semibold tracking-[-.04em] text-[#111827]">{formatNumber(spring.damping)}</div></div><div className="rounded-xl bg-white p-3"><div className="font-mono text-[10px] text-[#98a2b3]">mass</div><div className="mt-1 text-[16px] font-semibold tracking-[-.04em] text-[#111827]">{formatNumber(spring.mass)}</div></div></div><div className="flex items-center gap-2 text-[11px] text-[#667085]"><span className="h-2 w-2 shrink-0 rounded-full bg-[#2878f0]" />阻尼越低，回弹越明显；质量越高，惯性感越强。</div></div>}
+        <SimulatorPreview key={mode} mode={mode} bezier={bezier} spring={spring} />
+      </div>
+    </div>
+  </Panel>;
 }
 
 function RulesCard() {
