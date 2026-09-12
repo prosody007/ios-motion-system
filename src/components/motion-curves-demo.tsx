@@ -106,5 +106,5 @@ function IosSpringExamples() {
 
 export function MotionCurvesDemo() {
   const [activeKind, setActiveKind] = useState<"timing" | "spring">("timing");
-  return <div className="w-full pb-24"><header className="mb-8"><h1 className="text-[clamp(2.2rem,4vw,3.6rem)] font-semibold leading-none tracking-[-.065em] text-[#111827]">A better sense of motion.</h1><p className="mt-3 max-w-[620px] text-[13px] leading-6 text-[#667085]">用一致的曲线和物理参数，让每个界面状态变化都更自然、更可控。</p></header><div className="mb-5"><RulesCard /></div><Explorer activeKind={activeKind} setActiveKind={setActiveKind} /><div className="mt-5"><BezierUsage /></div><div className="mt-5"><SpringSelection /></div><div className="mt-5"><IosSpringExamples /></div></div>;
+  return <div className="w-full pb-24"><header className="mb-8"><h1 className="text-[clamp(2.2rem,4vw,3.6rem)] font-semibold leading-none tracking-[-.065em] text-[#111827]">A better sense of motion.</h1><p className="mt-3 max-w-[620px] text-[13px] leading-6 text-[#667085]">用一致的曲线和物理参数，让每个界面状态变化都更自然、更可控。</p></header><div className="mb-5"><RulesCard /></div><Explorer activeKind={activeKind} setActiveKind={setActiveKind} />{activeKind === "timing" ? <div className="mt-5"><BezierUsage /></div> : <><div className="mt-5"><SpringSelection /></div><div className="mt-5"><IosSpringExamples /></div></>}</div>;
 }
