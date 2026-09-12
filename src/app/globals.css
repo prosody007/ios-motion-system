@@ -89,6 +89,24 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --motion-duration-instant: 100ms;
+  --motion-duration-fast: 160ms;
+  --motion-duration-normal: 240ms;
+  --motion-duration-slow: 420ms;
+  --motion-duration-slower: 560ms;
+  --motion-ease-linear: linear;
+  --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --motion-ease-in: cubic-bezier(0.42, 0, 1, 1);
+  --motion-ease-out: cubic-bezier(0, 0, 0.58, 1);
+  --motion-ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-spring-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-spring-snappy: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-spring-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-spring-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion-spring-playful: cubic-bezier(0.18, 1.7, 0.32, 1);
+  --motion-spring-interactive: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .dark {
@@ -148,5 +166,16 @@
 
   .docs-sidebar-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
   }
 }

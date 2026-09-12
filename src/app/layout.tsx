@@ -18,7 +18,7 @@ export default function RootLayout({
         <div className="flex h-[100svh] w-full">
           <AppSidebar />
           <main
-            className="docs-sidebar-scrollbar flex h-full min-w-0 flex-1 flex-col overflow-y-auto bg-[#f3f4f9] px-10 pb-8 pt-10"
+            className="docs-sidebar-scrollbar flex h-full min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto bg-[#f3f4f9] px-5 pb-8 pt-6 lg:px-10 lg:pt-10"
             style={{
               WebkitOverflowScrolling: "touch",
               overscrollBehavior: "contain",

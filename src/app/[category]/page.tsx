@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { CardDemoGrid } from "@/components/card-demo-grid";
 import { categories } from "@/data/categories";
 import { LoadingDemoGrid } from "@/components/loading-demo-grid";
+import { MotionCurvesDemo } from "@/components/motion-curves-demo";
 import { UiverseButtonDemo } from "@/components/uiverse-button-demo";
 
 export function generateStaticParams() {
@@ -17,6 +18,10 @@ export default async function CategoryPage({
   const exists = categories.some((item) => item.slug === category);
 
   if (!exists) notFound();
+
+  if (category === "curves") {
+    return <MotionCurvesDemo />;
+  }
 
   if (category === "button") {
     return <UiverseButtonDemo />;

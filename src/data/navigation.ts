@@ -10,7 +10,7 @@ export type DocsNavMeta = {
 };
 
 export const docsNavGroups: DocsNavGroup[] = [
-  { label: "基础", slugs: ["button", "card", "loading"] },
+  { label: "基础", slugs: ["curves", "button", "card", "loading"] },
   {
     label: "转场",
     slugs: [
@@ -34,6 +34,7 @@ export const docsNavGroups: DocsNavGroup[] = [
 ];
 
 export const docsNavMetaMap: Record<string, DocsNavMeta> = {
+  curves: { primary: "Curves", secondary: "" },
   button: { primary: "Button", secondary: "" },
   card: { primary: "Card", secondary: "" },
   loading: { primary: "Loading", secondary: "" },

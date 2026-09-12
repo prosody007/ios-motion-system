@@ -6,6 +6,7 @@ export interface Category {
 }
 
 export const categories: Category[] = [
+  { slug: "curves", title: "Curves", icon: "〜", description: "动画曲线" },
   { slug: "button", title: "Button", icon: "👆", description: "按钮动效" },
   { slug: "card", title: "Card", icon: "▣", description: "卡片动效" },
   { slug: "loading", title: "Loading", icon: "⏳", description: "加载动效" },
