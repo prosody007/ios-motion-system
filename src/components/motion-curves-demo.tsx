@@ -18,8 +18,8 @@ function Panel({ children, className = "" }: { children: React.ReactNode; classN
   return <section className={`rounded-[28px] border-2 border-white bg-gradient-to-b from-[#f7f8fa] to-white shadow-[0_30px_70px_rgba(13,42,83,.04)] ${className}`}>{children}</section>;
 }
 
-function Pill({ children, active = false, onClick }: { children: React.ReactNode; active?: boolean; onClick?: () => void }) {
-  return <button type="button" aria-pressed={active} onClick={onClick} className={`rounded-full px-3.5 py-2 text-[11px] font-semibold transition-colors ${active ? "bg-[#2878f0] text-white" : "bg-[#eef1f6] text-[#667085] hover:bg-[#e4eaf4]"}`}>{children}</button>;
+function KindSwitch({ activeKind, onChange }: { activeKind: "timing" | "spring"; onChange: (value: "timing" | "spring") => void }) {
+  return <div role="tablist" aria-label="Curve kind" className="relative grid grid-cols-2 rounded-full bg-[#eef1f6] p-1"><span aria-hidden className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#2878f0] shadow-[0_4px_10px_rgba(40,120,240,.18)] transition-transform duration-200 ease-out ${activeKind === "spring" ? "translate-x-full" : "translate-x-0"}`} /><button type="button" role="tab" aria-selected={activeKind === "timing"} onClick={() => onChange("timing")} className={`relative z-10 rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${activeKind === "timing" ? "text-white" : "text-[#667085]"}`}>Timing · {timingTokens.length}</button><button type="button" role="tab" aria-selected={activeKind === "spring"} onClick={() => onChange("spring")} className={`relative z-10 rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${activeKind === "spring" ? "text-white" : "text-[#667085]"}`}>Spring · {springTokens.length}</button></div>;
 }
 
 function PlayButton({ label, ariaLabel, onClick }: { label: string; ariaLabel?: string; onClick: () => void }) {
@@ -85,7 +85,7 @@ function TokenRow({ token }: { token: MotionCurveToken }) {
 
 function Explorer({ activeKind, setActiveKind }: { activeKind: "timing" | "spring"; setActiveKind: (value: "timing" | "spring") => void }) {
   const tokens = activeKind === "timing" ? timingTokens : springTokens;
-  return <Panel className="overflow-hidden"><div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7"><div><h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve explorer</h2><p className="mt-1 text-[11px] text-[#8791a3]">浏览每个 token 的实际手感与参数。</p></div><div className="flex gap-1.5"><Pill active={activeKind === "timing"} onClick={() => { setActiveKind("timing"); }}>Timing · {timingTokens.length}</Pill><Pill active={activeKind === "spring"} onClick={() => { setActiveKind("spring"); }}>Spring · {springTokens.length}</Pill></div></div><div>{tokens.map((token) => <TokenRow key={token.id} token={token} />)}</div></Panel>;
+  return <Panel className="overflow-hidden"><div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7"><div><h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve explorer</h2><p className="mt-1 text-[11px] text-[#8791a3]">浏览每个 token 的实际手感与参数。</p></div><KindSwitch activeKind={activeKind} onChange={setActiveKind} /></div><div>{tokens.map((token) => <TokenRow key={token.id} token={token} />)}</div></Panel>;
 }
 
 function RulesCard() {
