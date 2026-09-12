@@ -160,6 +160,33 @@
 }
 
 @layer utilities {
+  .simulator-range {
+    height: 4px;
+    appearance: none;
+    border-radius: 999px;
+    background: #dfe5ee;
+    accent-color: #111827;
+  }
+
+  .simulator-range::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+    appearance: none;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #111827;
+    box-shadow: 0 1px 4px rgb(17 24 39 / 18%);
+  }
+
+  .simulator-range::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #111827;
+    box-shadow: 0 1px 4px rgb(17 24 39 / 18%);
+  }
+
   .docs-sidebar-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
