@@ -119,13 +119,24 @@ function ParameterControl({ label, value, min, max, step, suffix, onChange }: { 
 function CurveGraph({ values, onChange }: { values: BezierValues; onChange: (key: keyof BezierValues, value: number) => void }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dragging, setDragging] = useState<"first" | "second" | null>(null);
-  const y1 = 100 - values.y1 * 100;
-  const y2 = 100 - values.y2 * 100;
+  const width = 240;
+  const inset = 8;
+  const displayMin = Math.min(-0.1, values.y1 - 0.1, values.y2 - 0.1);
+  const displayMax = Math.max(1.1, values.y1 + 0.1, values.y2 + 0.1);
+  const displayRange = displayMax - displayMin;
+  const toSvgX = (value: number) => inset + value * (width - inset * 2);
+  const toSvgY = (value: number) => inset + (1 - (value - displayMin) / displayRange) * (100 - inset * 2);
+  const x1 = toSvgX(values.x1);
+  const x2 = toSvgX(values.x2);
+  const y1 = toSvgY(values.y1);
+  const y2 = toSvgY(values.y2);
   const updateFromPointer = (event: React.PointerEvent<SVGSVGElement>) => {
     if (!dragging || !svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-    const y = Math.min(1.5, Math.max(-0.5, 1 - (event.clientY - rect.top) / rect.height));
+    const xCoordinate = ((event.clientX - rect.left) / rect.width) * width;
+    const yCoordinate = ((event.clientY - rect.top) / rect.height) * 100;
+    const x = Math.min(1, Math.max(0, (xCoordinate - inset) / (width - inset * 2)));
+    const y = Math.min(1.5, Math.max(-0.5, displayMin + (1 - (yCoordinate - inset) / (100 - inset * 2)) * displayRange));
     onChange(dragging === "first" ? "x1" : "x2", Number(x.toFixed(2)));
     onChange(dragging === "first" ? "y1" : "y2", Number(y.toFixed(2)));
   };
@@ -133,8 +144,7 @@ function CurveGraph({ values, onChange }: { values: BezierValues; onChange: (key
     event.currentTarget.setPointerCapture(event.pointerId);
     setDragging(point);
   };
-  const width = 240;
-  return <div className="relative overflow-hidden rounded-2xl border border-[#e6eaf0] bg-[#f7f8fa] p-4"><div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><div className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Curve shape</div><div className="mt-1 text-[10px] text-[#8791a3]">拖动两个手柄调整控制点</div></div><code className="font-mono text-[10px] text-[#667085]">cubic-bezier({formatNumber(values.x1)}, {formatNumber(values.y1)}, {formatNumber(values.x2)}, {formatNumber(values.y2)})</code></div><svg ref={svgRef} viewBox={`0 0 ${width} 100`} className={`block aspect-[2.4] h-auto w-full touch-none ${dragging ? "cursor-grabbing" : "cursor-default"}`} role="img" aria-label="Bézier curve preview" onPointerMove={updateFromPointer} onPointerUp={() => setDragging(null)} onPointerCancel={() => setDragging(null)}><defs><pattern id="sim-grid" width="20" height="10" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 10" fill="none" stroke="#e7ebf1" strokeWidth="0.7" /></pattern></defs><rect width={width} height="100" fill="url(#sim-grid)" rx="4" /><path d={`M 0 100 L ${values.x1 * width} ${y1} M ${width} 0 L ${values.x2 * width} ${y2}`} fill="none" stroke="#b8c3d4" strokeWidth="0.8" strokeDasharray="2 2" /><path d={`M 0 100 C ${values.x1 * width} ${y1}, ${values.x2 * width} ${y2}, ${width} 0`} fill="none" stroke="#2878f0" strokeWidth="2.5" strokeLinecap="round" /><circle cx={values.x1 * width} cy={y1} r="8" fill="transparent" onPointerDown={(event) => startDrag("first", event)} /><circle cx={values.x2 * width} cy={y2} r="8" fill="transparent" onPointerDown={(event) => startDrag("second", event)} /><circle cx={values.x1 * width} cy={y1} r="3.5" fill="#fff" stroke="#2878f0" strokeWidth="1.8" onPointerDown={(event) => startDrag("first", event)} /><circle cx={values.x2 * width} cy={y2} r="3.5" fill="#fff" stroke="#2878f0" strokeWidth="1.8" onPointerDown={(event) => startDrag("second", event)} /></svg><div className="mt-2 flex justify-between text-[10px] text-[#98a2b3]"><span>start</span><span>end</span></div></div>;
+  return <div className="relative overflow-hidden rounded-2xl border border-[#e6eaf0] bg-[#f7f8fa] p-4"><div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><div className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Curve shape</div><div className="mt-1 text-[10px] text-[#8791a3]">拖动两个手柄调整控制点</div></div><code className="font-mono text-[10px] text-[#667085]">cubic-bezier({formatNumber(values.x1)}, {formatNumber(values.y1)}, {formatNumber(values.x2)}, {formatNumber(values.y2)})</code></div><svg ref={svgRef} viewBox={`0 0 ${width} 100`} className={`block aspect-[2.4] h-auto w-full touch-none ${dragging ? "cursor-grabbing" : "cursor-default"}`} role="img" aria-label="Bézier curve preview" onPointerMove={updateFromPointer} onPointerUp={() => setDragging(null)} onPointerCancel={() => setDragging(null)}><defs><pattern id="sim-grid" width="20" height="10" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 10" fill="none" stroke="#e7ebf1" strokeWidth="0.7" /></pattern></defs><rect width={width} height="100" fill="url(#sim-grid)" rx="4" /><path d={`M 0 100 L ${x1} ${y1} M ${width} 0 L ${x2} ${y2}`} fill="none" stroke="#b8c3d4" strokeWidth="0.8" strokeDasharray="2 2" /><path d={`M 0 100 C ${x1} ${y1}, ${x2} ${y2}, ${width} 0`} fill="none" stroke="#2878f0" strokeWidth="2.5" strokeLinecap="round" /><circle cx={x1} cy={y1} r="8" fill="transparent" onPointerDown={(event) => startDrag("first", event)} /><circle cx={x2} cy={y2} r="8" fill="transparent" onPointerDown={(event) => startDrag("second", event)} /><circle cx={x1} cy={y1} r="3.5" fill="#fff" stroke="#2878f0" strokeWidth="1.8" onPointerDown={(event) => startDrag("first", event)} /><circle cx={x2} cy={y2} r="3.5" fill="#fff" stroke="#2878f0" strokeWidth="1.8" onPointerDown={(event) => startDrag("second", event)} /></svg><div className="mt-2 flex justify-between text-[10px] text-[#98a2b3]"><span>start</span><span>end</span></div></div>;
 }
 
 function SimulatorPreview({ mode, bezier, spring }: { mode: SimulatorMode; bezier: BezierValues; spring: SpringValues }) {
@@ -180,8 +190,7 @@ function SimulatorPreview({ mode, bezier, spring }: { mode: SimulatorMode; bezie
   };
 
   const progress = mode === "spring" ? springProgress : timingRun ? 1 : 0;
-  const code = mode === "spring" ? `withAnimation(.spring(stiffness: ${formatNumber(spring.stiffness)}, damping: ${formatNumber(spring.damping)}, mass: ${formatNumber(spring.mass)}))` : `transition: transform ${formatNumber(bezier.duration)}ms cubic-bezier(${formatNumber(bezier.x1)}, ${formatNumber(bezier.y1)}, ${formatNumber(bezier.x2)}, ${formatNumber(bezier.y2)})`;
-  return <div className="rounded-2xl border border-[#e6eaf0] bg-white p-4 sm:p-5"><div className="flex items-center justify-between gap-3"><div><div className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#98a2b3]">Live preview</div><div className="mt-1 text-[12px] text-[#667085]">点击 Run 播放一次，观察速度与回弹。</div></div><button type="button" onClick={reset} className="text-[11px] font-medium text-[#667085] underline decoration-[#d3d9e3] underline-offset-4 transition-colors hover:text-[#111827]">Reset</button></div><div className="mt-5 flex items-center gap-4"><div className="relative h-12 min-w-0 flex-1 overflow-hidden rounded-full bg-[#edf1f7]"><div className="absolute left-[8%] top-1/2 h-7 w-7 rounded-full bg-[#2878f0] shadow-[0_10px_24px_rgba(40,120,240,.28)]" style={{ left: `${8 + progress * 84}%`, transform: "translate(-50%, -50%)", transition: mode === "bezier" ? `left ${bezier.duration}ms cubic-bezier(${bezier.x1}, ${bezier.y1}, ${bezier.x2}, ${bezier.y2})` : undefined }} /></div><button type="button" onClick={() => mode === "spring" ? runSpring() : setTimingRun((value) => !value)} className="h-9 rounded-full bg-[#111827] px-4 text-[11px] font-semibold text-white transition-transform active:scale-95">Run</button></div><code className="mt-4 block whitespace-normal break-words rounded-xl bg-[#111827] px-3.5 py-3 font-mono text-[10px] leading-5 text-[#eef2f8]">{code}</code></div>;
+  return <div className="rounded-2xl border border-[#e6eaf0] bg-white p-4 sm:p-5"><div className="flex items-center gap-4"><div className="relative h-12 min-w-0 flex-1 overflow-hidden rounded-full bg-[#edf1f7]"><div className="absolute left-[8%] top-1/2 h-7 w-7 rounded-full bg-[#2878f0] shadow-[0_10px_24px_rgba(40,120,240,.28)]" style={{ left: `${8 + progress * 84}%`, transform: "translate(-50%, -50%)", transition: mode === "bezier" ? `left ${bezier.duration}ms cubic-bezier(${bezier.x1}, ${bezier.y1}, ${bezier.x2}, ${bezier.y2})` : undefined }} /></div><button type="button" aria-label="Run preview" onClick={() => mode === "spring" ? runSpring() : setTimingRun((value) => !value)} className="h-9 rounded-full bg-[#111827] px-4 text-[11px] font-semibold text-white transition-transform active:scale-95">Run</button></div><button type="button" onClick={reset} className="sr-only">Reset preview</button></div>;
 }
 
 function CurveSimulator() {
