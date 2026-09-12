@@ -69,9 +69,9 @@ function PreviewTrack({ token, large = false, showMeta = true }: { token: Motion
   useEffect(() => () => { if (frameRef.current !== null) cancelAnimationFrame(frameRef.current); }, [token.id]);
 
   const size = large ? "h-10 w-10" : "h-4 w-4";
-  const inset = large ? 52 : 28;
+  const inset = 16;
   const progress = isSpring ? springProgress : runId % 2 === 1 ? 1 : 0;
-  const springTravel = Math.max(trackWidth - (large ? 104 : 56), 0);
+  const springTravel = Math.max(trackWidth - inset * 2, 0);
   const start = inset;
   const end = inset;
   const position = isSpring ? start + progress * springTravel : runId % 2 === 1 ? Math.max(trackWidth - end, start) : start;
