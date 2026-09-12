@@ -3,32 +3,35 @@
 import { useEffect, useRef, useState } from "react";
 import { motionCurveTokens, motionPrinciples, type MotionCurveToken } from "@/data/motion-tokens";
 
-const timingTokens = motionCurveTokens.filter((token) => token.kind === "timing");
 const springTokens = motionCurveTokens.filter((token) => token.kind === "spring");
+const timingSpringEquivalents: Record<string, { stiffness: number; damping: number; mass: number }> = {
+  linear: { stiffness: 62, damping: 16, mass: 1 }, standard: { stiffness: 686, damping: 52, mass: 1 }, enter: { stiffness: 584, damping: 46, mass: 1 }, exit: { stiffness: 1215, damping: 67, mass: 1 }, "ease-in": { stiffness: 686, damping: 52, mass: 1 }, "ease-out": { stiffness: 584, damping: 46, mass: 1 }, "ease-in-out": { stiffness: 385, damping: 38, mass: 1 },
+};
+function springFor(token: MotionCurveToken) { return token.spring ?? timingSpringEquivalents[token.id] ?? { stiffness: 220, damping: 30, mass: 1 }; }
 
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <section className={`rounded-[28px] border-2 border-white bg-gradient-to-b from-[#f7f8fa] to-white shadow-[0_30px_70px_rgba(13,42,83,.04)] ${className}`}>{children}</section>;
 }
 
 function KindSwitch({ activeKind, onChange }: { activeKind: "timing" | "spring"; onChange: (value: "timing" | "spring") => void }) {
-  return <div role="tablist" aria-label="Curve kind" className="relative grid grid-cols-2 rounded-full bg-[#eef1f6] p-1"><span aria-hidden className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-white shadow-[0_2px_8px_rgba(17,24,39,.12)] transition-transform duration-200 ease-out ${activeKind === "spring" ? "translate-x-full" : "translate-x-0"}`} /><button type="button" role="tab" aria-selected={activeKind === "timing"} onClick={() => onChange("timing")} className={`relative z-10 rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${activeKind === "timing" ? "text-[#111827]" : "text-[#667085]"}`}>Timing · {timingTokens.length}</button><button type="button" role="tab" aria-selected={activeKind === "spring"} onClick={() => onChange("spring")} className={`relative z-10 rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${activeKind === "spring" ? "text-[#111827]" : "text-[#667085]"}`}>Spring · {springTokens.length}</button></div>;
+  return <div role="tablist" aria-label="Curve kind" className="relative grid grid-cols-2 rounded-full bg-[#eef1f6] p-1"><span aria-hidden className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-white shadow-[0_2px_8px_rgba(17,24,39,.12)] transition-transform duration-200 ease-out ${activeKind === "spring" ? "translate-x-full" : "translate-x-0"}`} /><button type="button" role="tab" aria-selected={activeKind === "timing"} onClick={() => onChange("timing")} className={`relative z-10 rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${activeKind === "timing" ? "text-[#111827]" : "text-[#667085]"}`}>Timing · {motionCurveTokens.length}</button><button type="button" role="tab" aria-selected={activeKind === "spring"} onClick={() => onChange("spring")} className={`relative z-10 rounded-full px-4 py-2 text-[11px] font-semibold transition-colors ${activeKind === "spring" ? "text-[#111827]" : "text-[#667085]"}`}>Spring · {motionCurveTokens.length}</button></div>;
 }
 
 function PlayButton({ label, ariaLabel, onClick }: { label: string; ariaLabel?: string; onClick: () => void }) {
   return <button type="button" aria-label={ariaLabel ?? label} title={ariaLabel ?? label} onClick={onClick} className="h-8 rounded-full bg-[#111827] px-3.5 text-[11px] font-semibold text-white transition-transform active:scale-95">{label}</button>;
 }
 
-function PreviewTrack({ token, large = false, showMeta = true }: { token: MotionCurveToken; large?: boolean; showMeta?: boolean }) {
+function PreviewTrack({ token, mode, large = false, showMeta = true }: { token: MotionCurveToken; mode: "timing" | "spring"; large?: boolean; showMeta?: boolean }) {
   const [runId, setRunId] = useState(0);
   const [springProgress, setSpringProgress] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const progressRef = useRef(0);
   const [trackWidth, setTrackWidth] = useState(0);
-  const isSpring = token.kind === "spring";
+  const isSpring = mode === "spring";
+  const spring = springFor(token);
 
   function runSpring() {
-    if (!token.spring) return;
     if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
     const target = progressRef.current < 0.5 ? 1 : 0;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { progressRef.current = target; setSpringProgress(target); return; }
@@ -38,8 +41,8 @@ function PreviewTrack({ token, large = false, showMeta = true }: { token: Motion
     const tick = (now: number) => {
       const delta = Math.min((now - last) / 1000, .032); last = now;
       const displacement = progress - target;
-      const force = -token.spring!.stiffness * displacement - token.spring!.damping * velocity;
-      velocity += force / token.spring!.mass * delta;
+      const force = -spring.stiffness * displacement - spring.damping * velocity;
+      velocity += force / spring.mass * delta;
       progress += velocity * delta;
       progressRef.current = progress;
       setSpringProgress(progress);
@@ -58,7 +61,7 @@ function PreviewTrack({ token, large = false, showMeta = true }: { token: Motion
     observer.observe(node);
     return () => observer.disconnect();
   }, [large]);
-  useEffect(() => () => { if (frameRef.current !== null) cancelAnimationFrame(frameRef.current); }, [token.id]);
+  useEffect(() => () => { if (frameRef.current !== null) cancelAnimationFrame(frameRef.current); }, [token.id, mode]);
 
   const size = large ? "h-10 w-10" : "h-4 w-4";
   const inset = 16;
@@ -68,17 +71,18 @@ function PreviewTrack({ token, large = false, showMeta = true }: { token: Motion
   const end = inset;
   const position = isSpring ? start + progress * springTravel : runId % 2 === 1 ? Math.max(trackWidth - end, start) : start;
 
-  return <div className="min-w-0"><div className="flex min-w-0 items-center gap-4"><div ref={trackRef} className={`relative isolate h-8 min-w-0 flex-1 overflow-hidden rounded-full bg-[#e9edf5] ${large ? "h-8" : ""}`}><div className={`pointer-events-none absolute top-1/2 rounded-full ${size} bg-[#2878f0] shadow-[0_10px_20px_rgba(40,120,240,.3)]`} style={{ left: position, transform: "translate(-50%, -50%)", ...(!isSpring ? { transition: `left ${token.durationMs}ms var(${token.cssVar})` } : {}) }} /></div><PlayButton label="Run" ariaLabel="Run preview" onClick={() => isSpring ? runSpring() : setRunId((value) => value + 1)} /></div>{showMeta ? <div className="mt-3 min-w-0"><code className="block truncate font-mono text-[10px] text-[#8791a3]">{isSpring ? `stiff ${token.spring?.stiffness} · damp ${token.spring?.damping} · mass ${token.spring?.mass}` : token.cssVar}</code></div> : null}</div>;
+  return <div className="min-w-0"><div className="flex min-w-0 items-center gap-4"><div ref={trackRef} className={`relative isolate h-8 min-w-0 flex-1 overflow-hidden rounded-full bg-[#e9edf5] ${large ? "h-8" : ""}`}><div className={`pointer-events-none absolute top-1/2 rounded-full ${size} bg-[#2878f0] shadow-[0_10px_20px_rgba(40,120,240,.3)]`} style={{ left: position, transform: "translate(-50%, -50%)", ...(!isSpring ? { transition: `left ${token.durationMs}ms var(${token.cssVar})` } : {}) }} /></div><PlayButton label="Run" ariaLabel="Run preview" onClick={() => isSpring ? runSpring() : setRunId((value) => value + 1)} /></div>{showMeta ? <div className="mt-3 min-w-0"><code className="block truncate font-mono text-[10px] text-[#8791a3]">{isSpring ? `spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass})` : token.easing}</code></div> : null}</div>;
 }
 
-function TokenRow({ token }: { token: MotionCurveToken }) {
-  const meta = token.kind === "spring" && token.spring ? `spring(stiffness: ${token.spring.stiffness}, damping: ${token.spring.damping}, mass: ${token.spring.mass})` : token.easing;
-  return <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3 border-b border-[#edf0f4] px-6 py-4 last:border-0 sm:grid-cols-[220px_minmax(200px,1fr)_80px] sm:items-center sm:gap-4 sm:px-7"><div className="col-start-1 row-start-1 min-w-0 sm:col-auto sm:row-auto"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><code className="mt-1 block select-all truncate font-mono text-[10px] text-[#98a2b3]">{meta}</code></div><div className="col-span-2 row-start-2 min-w-0 sm:col-auto sm:row-auto"><PreviewTrack token={token} showMeta={false} /></div><div className="col-start-2 row-start-1 whitespace-nowrap text-right sm:col-auto sm:row-auto"><div className="font-mono text-[11px] text-[#475467]">{token.durationMs}ms</div><div className="mt-1 text-[9px] uppercase tracking-[.1em] text-[#98a2b3]">duration</div></div></div>;
+function TokenRow({ token, mode }: { token: MotionCurveToken; mode: "timing" | "spring" }) {
+  const spring = springFor(token);
+  const meta = mode === "spring" ? `spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass})` : token.easing;
+  return <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3 border-b border-[#edf0f4] px-6 py-4 last:border-0 sm:grid-cols-[220px_minmax(200px,1fr)_80px] sm:items-center sm:gap-4 sm:px-7"><div className="col-start-1 row-start-1 min-w-0 sm:col-auto sm:row-auto"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><code className="mt-1 block select-all truncate font-mono text-[10px] text-[#98a2b3]">{meta}</code></div><div className="col-span-2 row-start-2 min-w-0 sm:col-auto sm:row-auto"><PreviewTrack token={token} mode={mode} showMeta={false} /></div><div className="col-start-2 row-start-1 whitespace-nowrap text-right sm:col-auto sm:row-auto"><div className="font-mono text-[11px] text-[#475467]">{token.durationMs}ms</div><div className="mt-1 text-[9px] uppercase tracking-[.1em] text-[#98a2b3]">duration</div></div></div>;
 }
 
 function Explorer({ activeKind, setActiveKind }: { activeKind: "timing" | "spring"; setActiveKind: (value: "timing" | "spring") => void }) {
-  const tokens = activeKind === "timing" ? timingTokens : springTokens;
-  return <Panel className="overflow-hidden"><div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7"><div><h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve explorer</h2><p className="mt-1 text-[11px] text-[#8791a3]">浏览每个 token 的实际手感与参数。</p></div><KindSwitch activeKind={activeKind} onChange={setActiveKind} /></div><div>{tokens.map((token) => <TokenRow key={token.id} token={token} />)}</div></Panel>;
+  const tokens = motionCurveTokens;
+  return <Panel className="overflow-hidden"><div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7"><div><h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve explorer</h2><p className="mt-1 text-[11px] text-[#8791a3]">浏览每个 token 的实际手感与参数。</p></div><KindSwitch activeKind={activeKind} onChange={setActiveKind} /></div><div>{tokens.map((token) => <TokenRow key={token.id} token={token} mode={activeKind} />)}</div></Panel>;
 }
 
 function RulesCard() {
