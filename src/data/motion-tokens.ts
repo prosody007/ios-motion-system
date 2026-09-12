@@ -96,6 +96,17 @@ export const motionCurveTokens: MotionCurveToken[] = [
     boundary: "不要用于强调方向的移动，容易缺少重点。",
   },
   {
+    id: "ease",
+    name: "Ease",
+    kind: "timing",
+    cssVar: "--motion-ease",
+    easing: "ease",
+    durationMs: 240,
+    use: "自然过渡",
+    note: "浏览器默认缓动，适合轻量、非关键的状态变化。",
+    boundary: "需要明确节奏或方向时，优先选择命名曲线。",
+  },
+  {
     id: "smooth",
     name: "Spring Smooth",
     kind: "spring",
