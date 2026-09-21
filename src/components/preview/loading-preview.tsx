@@ -429,8 +429,8 @@ export function ImageGenerationPreview() {
         const primaryField = Math.exp(-primaryDistance * primaryDistance * 2.2);
         const secondaryField = Math.exp(-secondaryDistance * secondaryDistance * 2.8) * 0.45;
         const field = Math.min(1, primaryField + secondaryField);
-        const scale = 0.42 + field * 1.85;
-        const opacity = 0.11 + field * 0.76;
+        const scale = 0.78 + field * 1.62;
+        const opacity = 0.2 + field * 0.7;
 
         dot.style.transform = `scale(${scale})`;
         dot.style.opacity = String(opacity);
@@ -465,7 +465,7 @@ export function ImageGenerationPreview() {
             ref={(node) => {
               dotRefs.current[index] = node;
             }}
-            className="size-[clamp(1.5px,0.75cqmin,3px)] rounded-full bg-[#4F8DEB] opacity-20 will-change-transform"
+            className="size-[clamp(2px,0.75cqmin,3px)] rounded-full bg-[#4F8DEB] opacity-20 will-change-transform"
           />
         ))}
       </div>

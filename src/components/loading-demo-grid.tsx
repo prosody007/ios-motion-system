@@ -496,7 +496,8 @@ Visual spec:
 - Each dot is blue; vary its scale and opacity to create a soft moving image-generation field.
 - Move the field through the matrix over 13.433s with smooth interpolation between these normalized centers, then return to the first center for a seamless loop: (0.52, 0.74), (0.78, 0.28), (0.62, 0.66), (0.18, 0.50), (0.20, 0.22), (0.52, 0.74).
 - Blend a smaller secondary field into the primary field so the dot density feels like a soft image rather than a single spotlight.
-- Use container-relative dot sizing so dots remain visible without overflowing when the container is very narrow or short.
+- Use container-relative dot sizing so the quiet dots stay visible without overflowing when the container is very narrow or short.
+- Keep every quiet dot at roughly 20% opacity and 0.78× scale; the active field may rise to about 90% opacity and 2.4× scale.
 
 Copy-ready React implementation:
 const DOTS = Array.from({ length: 29 * 29 }, (_, index) => ({
@@ -526,8 +527,8 @@ useEffect(() => {
         (dot.y / 28 - center.y) / 0.42,
       );
       const field = Math.exp(-distance * distance * 2.2);
-      dotRefs.current[index].style.transform = \`scale(\${0.42 + field * 1.85})\`;
-      dotRefs.current[index].style.opacity = String(0.11 + field * 0.76);
+      dotRefs.current[index].style.transform = \`scale(\${0.78 + field * 1.62})\`;
+      dotRefs.current[index].style.opacity = String(0.2 + field * 0.7);
     });
   frameId = requestAnimationFrame(tick);
   };
