@@ -482,7 +482,7 @@ HTML/JSX:
   <div className="skeleton-card" />
 </div>`;
 
-const imageGenerationPrompt = `Create this “generating” loading animation in my existing UI.
+const imageGenerationPrompt = `Create this “Generating” loading animation in my existing UI.
 
 Hard constraints:
 - Do not change my surrounding layout, container size, spacing, data flow, or generation logic.
@@ -491,9 +491,11 @@ Hard constraints:
 - Loop the animation continuously, like a Skeleton loading state.
 
 Visual spec:
-- Fill the entire existing loading container with the dot animation and inherit its background. Do not add an aspect-ratio, max-width, fixed width, fixed height, or background color.
+- Fill the entire existing loading container with the dot animation. The light surface is #F6F8FA and the dark surface is #252D3E; expose the mode as a prop or state so the preview can switch between them.
+- Do not add an aspect-ratio, max-width, fixed width, or fixed height.
 - Render a 29 × 29 dot matrix that is absolutely inset to 0 so it adapts to any container ratio, including landscape and portrait containers.
-- Each dot is blue; vary its scale and opacity to create a soft moving image-generation field.
+- Use #4F8DEB dots on the light surface and #8FB8FF dots on the dark surface; vary scale and opacity to create a soft moving image-generation field.
+- Transition background and dot colors over 300ms when switching modes. Preserve the mounted animation and its timeline when the mode changes.
 - Move the field through the matrix over 11.681s with smooth interpolation between these normalized centers, then return to the first center for a seamless loop: (0.52, 0.74), (0.78, 0.28), (0.62, 0.66), (0.18, 0.50), (0.20, 0.22), (0.52, 0.74).
 - Blend a smaller secondary field into the primary field so the dot density feels like a soft image rather than a single spotlight.
 - Use container-relative dot sizing so the quiet dots stay visible without overflowing when the container is very narrow or short.
@@ -510,7 +512,21 @@ const PATH = [
   { x: 0.62, y: 0.66 },
   { x: 0.18, y: 0.50 },
   { x: 0.20, y: 0.22 },
+  { x: 0.52, y: 0.74 },
 ];
+
+function interpolatePath(path, progress) {
+  const position = progress * (path.length - 1);
+  const index = Math.min(Math.floor(position), path.length - 2);
+  const t = position - index;
+  const eased = t * t * (3 - 2 * t);
+  const start = path[index];
+  const end = path[index + 1];
+  return {
+    x: start.x + (end.x - start.x) * eased,
+    y: start.y + (end.y - start.y) * eased,
+  };
+}
 
 const dotRefs = useRef([]);
 useEffect(() => {
@@ -519,22 +535,47 @@ useEffect(() => {
   const duration = 11681;
   const tick = time => {
     if (startTime === null) startTime = time;
-  const progress = ((time - startTime) % duration) / duration;
+    const progress = ((time - startTime) % duration) / duration;
     const center = interpolatePath(PATH, progress);
+    const secondaryCenter = { x: 0.76 - center.x * 0.34, y: 0.2 + center.y * 0.38 };
     DOTS.forEach((dot, index) => {
+      const element = dotRefs.current[index];
+      if (!element) return;
       const distance = Math.hypot(
         (dot.x / 28 - center.x) / 0.46,
         (dot.y / 28 - center.y) / 0.42,
       );
-      const field = Math.exp(-distance * distance * 2.2);
-      dotRefs.current[index].style.transform = \`scale(\${0.78 + field * 1.62})\`;
-      dotRefs.current[index].style.opacity = String(0.2 + field * 0.7);
+      const secondaryDistance = Math.hypot(
+        (dot.x / 28 - secondaryCenter.x) / 0.36,
+        (dot.y / 28 - secondaryCenter.y) / 0.34,
+      );
+      const field = Math.min(1, Math.exp(-distance * distance * 2.2)
+        + Math.exp(-secondaryDistance * secondaryDistance * 2.8) * 0.45);
+      element.style.transform = 'scale(' + (0.78 + field * 1.62) + ')';
+      element.style.opacity = String(0.2 + field * 0.7);
     });
-  frameId = requestAnimationFrame(tick);
+    frameId = requestAnimationFrame(tick);
   };
   frameId = requestAnimationFrame(tick);
   return () => cancelAnimationFrame(frameId);
-}, []);`;
+}, []);
+
+Render this inside the component; dark is a boolean prop or state:
+<div className="generating-surface" data-mode={dark ? 'dark' : 'light'} role="status" aria-label="Generating image">
+  <div className="generating-grid" aria-hidden="true">
+    {DOTS.map((_, index) => (
+      <span key={index} className="generating-dot" ref={node => { dotRefs.current[index] = node; }} />
+    ))}
+  </div>
+</div>
+
+CSS (the parent owns the dimensions and radius):
+.generating-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: inherit; container-type: size; background: #F6F8FA; --dot-color: #4F8DEB; transition: background-color 300ms; }
+.generating-surface[data-mode="dark"] { background: #252D3E; --dot-color: #8FB8FF; }
+.generating-grid { position: absolute; inset: 0; display: grid; grid-template: repeat(29, minmax(0, 1fr)) / repeat(29, minmax(0, 1fr)); place-items: center; }
+.generating-dot { width: clamp(2px, .75cqmin, 3px); height: clamp(2px, .75cqmin, 3px); border-radius: 50%; background: var(--dot-color); opacity: .2; transition: background-color 300ms; }
+
+Use the project's existing theme state or mode control. Change only the dark prop; do not key or remount the animation on a theme change.`;
 
 function CopyCodeTooltipButton({
   prompt,
@@ -760,6 +801,43 @@ function LoadingShinyTextCard() {
   );
 }
 
+function LoadingGeneratingCard() {
+  const [dark, setDark] = useState(false);
+
+  return (
+    <div
+      className={`flex aspect-square flex-col gap-4 rounded-[48px] border-2 p-[26px] shadow-[0_100px_100px_rgba(13,42,83,0.02)] transition-[background,border-color,color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        dark
+          ? "border-[rgba(255,255,255,0.5)] bg-gradient-to-b from-[#26282c] to-[#32353a]"
+          : "border-white bg-gradient-to-b from-[#f4f5f7] to-[#fafcff]"
+      }`}
+    >
+      <div className="flex w-full items-center justify-between">
+        <div
+          className={`text-[16px] font-bold leading-none tracking-[-0.6px] transition-colors duration-300 ${
+            dark ? "text-white" : "text-[rgba(0,0,0,0.88)]"
+          }`}
+        >
+          Generating
+        </div>
+        <div className="flex items-center gap-4">
+          <ShinyModeToggle dark={dark} onToggle={() => setDark((value) => !value)} />
+          <CopyCodeTooltipButton prompt={imageGenerationPrompt} dark={dark} />
+        </div>
+      </div>
+      <div className="min-h-0 w-full flex-1">
+        <div
+          className={`h-full w-full overflow-hidden rounded-[24px] transition-colors duration-300 ${
+            dark ? "bg-[#252D3E]" : "bg-[#F6F8FA]"
+          }`}
+        >
+          <ImageGenerationPreview dark={dark} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LoadingDemoGrid() {
   return (
     <div className="grid w-full grid-cols-3 gap-6 pb-24">
@@ -779,12 +857,7 @@ export function LoadingDemoGrid() {
       `}</style>
       <LoadingSkeletonCard />
       <LoadingShinyTextCard />
-      <LoadingDemoCard
-        title="Generating"
-        prompt={imageGenerationPrompt}
-      >
-        <ImageGenerationPreview />
-      </LoadingDemoCard>
+      <LoadingGeneratingCard />
       {loadingDemos
         .filter((demo) => demo.title !== "Skeleton" && demo.title !== "Shiny Text" && demo.title !== "Shiny Text Dark")
         .map(({ title, prompt, Preview, dark }) => (

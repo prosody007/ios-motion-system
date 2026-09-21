@@ -397,7 +397,7 @@ function interpolateImageGenerationPath(progress: number) {
   };
 }
 
-export function ImageGenerationPreview() {
+export function ImageGenerationPreview({ dark = false }: { dark?: boolean }) {
   const dotRefs = useRef<Array<HTMLSpanElement | null>>([]);
 
   useEffect(() => {
@@ -465,7 +465,9 @@ export function ImageGenerationPreview() {
             ref={(node) => {
               dotRefs.current[index] = node;
             }}
-            className="size-[clamp(2px,0.75cqmin,3px)] rounded-full bg-[#4F8DEB] opacity-20 will-change-transform"
+            className={`size-[clamp(2px,0.75cqmin,3px)] rounded-full opacity-20 transition-colors duration-300 will-change-transform ${
+              dark ? "bg-[#8FB8FF]" : "bg-[#4F8DEB]"
+            }`}
           />
         ))}
       </div>
