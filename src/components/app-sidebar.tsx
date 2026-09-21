@@ -2,23 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { docsNavGroups, getDocsNavMeta } from "@/data/navigation";
 
 function LogoMark() {
   return (
-    <svg
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
-      fill="none"
+    <Image
+      src="/brand/motion-system-logo.svg"
+      alt=""
+      width={32}
+      height={32}
       className="h-8 w-8 shrink-0"
       aria-hidden="true"
-    >
-      <path d="M14.2 3.5L21.1 10.4L16 15.5L9.1 8.6L14.2 3.5Z" fill="#111111" />
-      <path d="M22.4 11.7L28.5 17.8L23.4 22.9L17.3 16.8L22.4 11.7Z" fill="#111111" />
-      <path d="M8.6 9.1L15.5 16L10.4 21.1L3.5 14.2L8.6 9.1Z" fill="#111111" />
-      <path d="M16.8 17.3L22.9 23.4L17.8 28.5L11.7 22.4L16.8 17.3Z" fill="#111111" />
-    </svg>
+      priority
+    />
   );
 }
 
