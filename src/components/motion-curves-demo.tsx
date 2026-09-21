@@ -9,6 +9,37 @@ const timingSpringEquivalents: Record<string, { stiffness: number; damping: numb
 };
 function springFor(token: MotionCurveToken) { return token.spring ?? timingSpringEquivalents[token.id] ?? { stiffness: 220, damping: 30, mass: 1 }; }
 
+function copyTextForToken(token: MotionCurveToken, mode: "timing" | "spring") {
+  const spring = springFor(token);
+  const timingCode = `transition: transform ${token.durationMs}ms ${token.easing};`;
+  const springCode = `withAnimation(.spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass})) {\n  // update the animated property\n}`;
+  const modeName = mode === "timing" ? "CSS timing" : "Spring physics";
+  const implementation = mode === "timing" ? `CSS:\n${timingCode}\n\nAdapt the easing syntax to the current framework while keeping the same curve and duration.` : `SwiftUI:\n${springCode}\n\nPhysics values:\nstiffness: ${spring.stiffness}\ndamping: ${spring.damping}\nmass: ${spring.mass}\n\nAdapt the spring API to the current framework while keeping the same physical relationship.`;
+  return `Apply this motion token in the current project.\n\nName: ${token.name}\nMode: ${modeName}\nUse: ${token.use}\nDuration: ${token.durationMs}ms\nToken: ${token.cssVar}\nParameters: ${mode === "timing" ? token.easing : `stiffness ${spring.stiffness}, damping ${spring.damping}, mass ${spring.mass}`}\n\nImplementation:\n${implementation}\n\nGuidance: ${token.note}\nAvoid: ${token.boundary}`;
+}
+
+function CopyButton({ token, mode }: { token: MotionCurveToken; mode: "timing" | "spring" }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    const text = copyTextForToken(token, mode);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1400);
+  };
+  return <button type="button" aria-label={`Copy ${token.name} parameters`} onClick={copy} className={`shrink-0 rounded-full border px-2.5 py-1 font-mono text-[10px] transition-colors ${copied ? "border-[#b7e3c5] bg-[#f0fbf3] text-[#267a3d]" : "border-[#e1e6ee] bg-white text-[#667085] hover:border-[#c8d0dc] hover:text-[#111827]"}`}>{copied ? "Copied" : "Copy"}</button>;
+}
+
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <section className={`rounded-[28px] border-2 border-white bg-gradient-to-b from-[#f7f8fa] to-white shadow-[0_30px_70px_rgba(13,42,83,.04)] ${className}`}>{children}</section>;
 }
@@ -77,7 +108,7 @@ function PreviewTrack({ token, mode, large = false, showMeta = true }: { token: 
 function TokenRow({ token, mode }: { token: MotionCurveToken; mode: "timing" | "spring" }) {
   const spring = springFor(token);
   const code = mode === "spring" ? `withAnimation(.spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass}))` : `transition: transform ${token.durationMs}ms ${token.easing}`;
-  return <div className="min-w-0 bg-white px-6 py-4 sm:px-7"><div className="min-w-0"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><div className="mt-1 flex min-w-0 items-center gap-3"><code className="min-w-0 truncate select-all font-mono text-[10px] text-[#98a2b3]">{code}</code><span className="shrink-0 font-mono text-[10px] text-[#667085]"><span className="uppercase tracking-[.1em] text-[#98a2b3]">duration</span> {token.durationMs}ms</span></div></div><div className="mt-4 min-w-0"><PreviewTrack token={token} mode={mode} showMeta={false} /></div></div>;
+  return <div className="min-w-0 bg-white px-6 py-4 sm:px-7"><div className="min-w-0"><div className="flex min-w-0 items-center justify-between gap-3"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><CopyButton token={token} mode={mode} /></div><div className="mt-1 flex min-w-0 items-center gap-3"><code className="min-w-0 truncate select-all font-mono text-[10px] text-[#98a2b3]">{code}</code><span className="shrink-0 font-mono text-[10px] text-[#667085]"><span className="uppercase tracking-[.1em] text-[#98a2b3]">duration</span> {token.durationMs}ms</span></div></div><div className="mt-4 min-w-0"><PreviewTrack token={token} mode={mode} showMeta={false} /></div></div>;
 }
 
 function Explorer({ activeKind, setActiveKind }: { activeKind: "timing" | "spring"; setActiveKind: (value: "timing" | "spring") => void }) {
