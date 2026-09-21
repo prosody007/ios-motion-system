@@ -403,7 +403,7 @@ export function ImageGenerationPreview() {
   useEffect(() => {
     let frameId = 0;
     let startTime: number | null = null;
-    const duration = 13433;
+    const duration = 11681;
 
     const updateDots = (progress: number) => {
       const center = interpolateImageGenerationPath(progress);
