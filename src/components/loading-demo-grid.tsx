@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
+  ImageGenerationPreview,
   LoadingGrowPreview,
   LoadingPercentRingPreview,
   LoadingPreview,
@@ -481,6 +482,57 @@ HTML/JSX:
   <div className="skeleton-card" />
 </div>`;
 
+const imageGenerationPrompt = `Create this AI image generation loading state in my existing UI.
+
+Hard constraints:
+- Do not change my surrounding layout, container size, spacing, data flow, or generation logic.
+- Do not install dependencies or animation libraries.
+- Keep the loading sequence finite and replayable; do not loop after completion.
+- Use the existing image-generation result once it is available instead of replacing it with a mock image.
+
+Visual spec:
+- Use an image preview surface with a subtle scan highlight while the image is being generated.
+- Show these sequential states: Building composition, Refining details, Balancing light, Ready to use.
+- Progress values: 18%, 48%, 78%, 100%.
+- Total demo duration: 3.1s.
+- Use a smooth progress curve: cubic-bezier(0.16, 1, 0.3, 1).
+- After completion, show a compact Run again button so the demo can be replayed.
+
+Copy-ready React + CSS implementation:
+const [phase, setPhase] = useState(0);
+const [runId, setRunId] = useState(0);
+
+useEffect(() => {
+  const timers = [
+    window.setTimeout(() => setPhase(1), 900),
+    window.setTimeout(() => setPhase(2), 1900),
+    window.setTimeout(() => setPhase(3), 3100),
+  ];
+  return () => timers.forEach(window.clearTimeout);
+}, [runId]);
+
+const progress = [18, 48, 78, 100][phase];
+
+<div className="image-generation">
+  <div className="image-generation__surface">
+    <img src={generatedImageUrl} alt="" />
+    {phase < 3 && <span className="image-generation__scan" />}
+  </div>
+  <div className="image-generation__meta">
+    <span>{['Building composition', 'Refining details', 'Balancing light', 'Ready to use'][phase]}</span>
+    <span>{progress}%</span>
+  </div>
+  <div className="image-generation__track">
+    <span style={{ width: progress + '%' }} />
+  </div>
+  {phase === 3 && <button onClick={() => setRunId(value => value + 1)}>Run again</button>}
+</div>
+
+@keyframes image-generation-scan {
+  from { transform: translateX(0); }
+  to { transform: translateX(400%); }
+}`;
+
 function CopyCodeTooltipButton({
   prompt,
   dark = false,
@@ -724,6 +776,12 @@ export function LoadingDemoGrid() {
       `}</style>
       <LoadingSkeletonCard />
       <LoadingShinyTextCard />
+      <LoadingDemoCard
+        title="Image Synthesis"
+        prompt={imageGenerationPrompt}
+      >
+        <ImageGenerationPreview />
+      </LoadingDemoCard>
       {loadingDemos
         .filter((demo) => demo.title !== "Skeleton" && demo.title !== "Shiny Text" && demo.title !== "Shiny Text Dark")
         .map(({ title, prompt, Preview, dark }) => (
