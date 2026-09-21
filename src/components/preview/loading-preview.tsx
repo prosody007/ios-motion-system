@@ -364,95 +364,120 @@ export function LoadingPercentRingPreview() {
   );
 }
 
-export function ImageGenerationPreview() {
-  const [runId, setRunId] = useState(0);
+const IMAGE_GENERATION_DOT_COLUMNS = 29;
+const IMAGE_GENERATION_DOT_ROWS = 29;
+const IMAGE_GENERATION_DOTS = Array.from(
+  { length: IMAGE_GENERATION_DOT_COLUMNS * IMAGE_GENERATION_DOT_ROWS },
+  (_, index) => ({
+    x: index % IMAGE_GENERATION_DOT_COLUMNS,
+    y: Math.floor(index / IMAGE_GENERATION_DOT_COLUMNS),
+  }),
+);
 
-  return <ImageGenerationRun key={runId} onRestart={() => setRunId((value) => value + 1)} />;
+const IMAGE_GENERATION_PATH = [
+  { x: 0.52, y: 0.74 },
+  { x: 0.78, y: 0.28 },
+  { x: 0.62, y: 0.66 },
+  { x: 0.18, y: 0.5 },
+  { x: 0.2, y: 0.22 },
+];
+
+function interpolateImageGenerationPath(progress: number) {
+  const position = progress * (IMAGE_GENERATION_PATH.length - 1);
+  const index = Math.min(Math.floor(position), IMAGE_GENERATION_PATH.length - 2);
+  const localProgress = position - index;
+  const eased = localProgress * localProgress * (3 - 2 * localProgress);
+  const start = IMAGE_GENERATION_PATH[index];
+  const end = IMAGE_GENERATION_PATH[index + 1];
+
+  return {
+    x: start.x + (end.x - start.x) * eased,
+    y: start.y + (end.y - start.y) * eased,
+  };
 }
 
-function ImageGenerationRun({ onRestart }: { onRestart: () => void }) {
-  const [phase, setPhase] = useState(0);
-  const [completed, setCompleted] = useState(false);
+export function ImageGenerationPreview() {
+  const dotRefs = useRef<Array<HTMLSpanElement | null>>([]);
 
   useEffect(() => {
-    const phaseOne = window.setTimeout(() => setPhase(1), 900);
-    const phaseTwo = window.setTimeout(() => setPhase(2), 1900);
-    const finish = window.setTimeout(() => {
-      setPhase(3);
-      setCompleted(true);
-    }, 3100);
+    let frameId = 0;
+    let startTime: number | null = null;
+    const duration = 13433;
+
+    const updateDots = (progress: number) => {
+      const center = interpolateImageGenerationPath(progress);
+      const secondaryCenter = {
+        x: 0.76 - center.x * 0.34,
+        y: 0.2 + center.y * 0.38,
+      };
+
+      dotRefs.current.forEach((dot, index) => {
+        if (!dot) return;
+
+        const point = IMAGE_GENERATION_DOTS[index];
+        const x = point.x / (IMAGE_GENERATION_DOT_COLUMNS - 1);
+        const y = point.y / (IMAGE_GENERATION_DOT_ROWS - 1);
+        const primaryDistance = Math.hypot(
+          (x - center.x) / 0.46,
+          (y - center.y) / 0.42,
+        );
+        const secondaryDistance = Math.hypot(
+          (x - secondaryCenter.x) / 0.36,
+          (y - secondaryCenter.y) / 0.34,
+        );
+        const primaryField = Math.exp(-primaryDistance * primaryDistance * 2.2);
+        const secondaryField = Math.exp(-secondaryDistance * secondaryDistance * 2.8) * 0.45;
+        const field = Math.min(1, primaryField + secondaryField);
+        const scale = 0.42 + field * 1.85;
+        const opacity = 0.11 + field * 0.76;
+
+        dot.style.transform = `scale(${scale})`;
+        dot.style.opacity = String(opacity);
+      });
+    };
+
+    const tick = (time: number) => {
+      if (startTime === null) startTime = time;
+      const progress = Math.min((time - startTime) / duration, 1);
+      updateDots(progress);
+
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(tick);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(tick);
 
     return () => {
-      window.clearTimeout(phaseOne);
-      window.clearTimeout(phaseTwo);
-      window.clearTimeout(finish);
+      window.cancelAnimationFrame(frameId);
     };
   }, []);
 
-  const progress = [18, 48, 78, 100][phase];
-  const status = [
-    "Building composition",
-    "Refining details",
-    "Balancing light",
-    "Ready to use",
-  ][phase];
-
   return (
-    <div className="flex h-full w-full items-center justify-center px-6 py-5">
-      <div className="w-full max-w-[280px] rounded-[22px] border border-[rgba(0,0,0,0.08)] bg-white/80 p-3 shadow-[0_18px_40px_rgba(27,45,74,0.10)] backdrop-blur-sm">
+    <div className="flex h-full w-full items-start justify-center overflow-hidden rounded-[24px] bg-white px-5 pt-4">
+      <div className="w-full max-w-[300px]">
+        <div className="text-[13px] font-normal leading-[1.4] tracking-[-0.15px] text-[rgba(0,0,0,0.46)]">
+          正在思考
+        </div>
+        <div className="mt-4 text-[13px] font-normal leading-[1.4] tracking-[-0.15px] text-[rgba(0,0,0,0.46)]">
+          正在生成更详细的图片，请稍等。
+        </div>
         <div
-          className="relative aspect-[4/3] overflow-hidden rounded-[16px] bg-[radial-gradient(circle_at_78%_20%,rgba(255,255,255,0.95),transparent_24%),radial-gradient(circle_at_22%_72%,rgba(255,194,146,0.85),transparent_28%),linear-gradient(135deg,#b8c8f3_0%,#d9d4ef_45%,#f3c1a4_100%)]"
+          className="mt-5 grid aspect-square w-full grid-cols-[repeat(29,minmax(0,1fr))] grid-rows-[repeat(29,minmax(0,1fr))] items-center justify-items-center"
+          role="status"
+          aria-label="正在生成图片，请稍等"
         >
-          <div className="absolute inset-x-0 bottom-0 h-[48%] bg-[linear-gradient(180deg,transparent,rgba(55,42,73,0.22))]" />
-          <div className="absolute left-[12%] top-[19%] h-[37%] w-[24%] rounded-[48%_52%_44%_56%] bg-[rgba(255,250,232,0.72)] blur-[1px]" />
-          <div className="absolute bottom-[14%] right-[12%] h-[34%] w-[29%] rounded-[50%_50%_42%_58%] bg-[rgba(107,78,142,0.48)] blur-[2px]" />
-          {phase < 3 ? (
-            <div
-              className="absolute inset-y-0 -left-1/2 w-1/2 animate-[image-generation-scan_1.15s_cubic-bezier(0.16,1,0.3,1)_both] bg-gradient-to-r from-transparent via-white/45 to-transparent"
+          {IMAGE_GENERATION_DOTS.map((_, index) => (
+            <span
+              key={index}
+              ref={(node) => {
+                dotRefs.current[index] = node;
+              }}
+              className="h-[3px] w-[3px] rounded-full bg-[#4F8DEB] opacity-20 will-change-transform"
             />
-          ) : null}
-          <div className="absolute left-3 top-3 rounded-full bg-black/20 px-2.5 py-1 text-[9px] font-semibold tracking-[0.12em] text-white/90 backdrop-blur-sm">
-            AI IMAGE
-          </div>
+          ))}
         </div>
-
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="truncate text-[12px] font-medium tracking-[-0.1px] text-[rgba(0,0,0,0.78)]">
-              {status}
-            </div>
-            <div className="mt-1 text-[10px] text-[rgba(0,0,0,0.42)]">
-              {completed ? "3.1s render time" : "Creating your visual"}
-            </div>
-          </div>
-          <span className="shrink-0 text-[12px] font-semibold tabular-nums text-[rgba(0,0,0,0.55)]">
-            {progress}%
-          </span>
-        </div>
-
-        <div className="mt-3 h-1 overflow-hidden rounded-full bg-[rgba(0,0,0,0.08)]">
-          <div
-            className="h-full rounded-full bg-[rgba(0,0,0,0.72)] transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        {completed ? (
-          <button
-            type="button"
-            className="mt-3 w-full cursor-pointer rounded-[10px] border-0 bg-[rgba(0,0,0,0.06)] py-2 text-[11px] font-medium text-[rgba(0,0,0,0.72)] transition-colors duration-150 hover:bg-[rgba(0,0,0,0.1)] active:bg-[rgba(0,0,0,0.14)]"
-            onClick={onRestart}
-          >
-            Run again
-          </button>
-        ) : null}
       </div>
-      <style>{`
-        @keyframes image-generation-scan {
-          from { transform: translateX(0); }
-          to { transform: translateX(400%); }
-        }
-      `}</style>
     </div>
   );
 }

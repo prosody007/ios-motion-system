@@ -487,51 +487,53 @@ const imageGenerationPrompt = `Create this AI image generation loading state in 
 Hard constraints:
 - Do not change my surrounding layout, container size, spacing, data flow, or generation logic.
 - Do not install dependencies or animation libraries.
-- Keep the loading sequence finite and replayable; do not loop after completion.
-- Use the existing image-generation result once it is available instead of replacing it with a mock image.
+- Do not show a progress number, progress bar, percentage, or replay control.
+- Keep the animation finite rather than looping; let the final dot field remain visible.
 
 Visual spec:
-- Use an image preview surface with a subtle scan highlight while the image is being generated.
-- Show these sequential states: Building composition, Refining details, Balancing light, Ready to use.
-- Progress values: 18%, 48%, 78%, 100%.
-- Total demo duration: 3.1s.
-- Use a smooth progress curve: cubic-bezier(0.16, 1, 0.3, 1).
-- After completion, show a compact Run again button so the demo can be replayed.
+- Use a white surface with two muted gray Chinese status lines: “正在思考” and “正在生成更详细的图片，请稍等。”
+- Under the copy, render a square 29 × 29 dot matrix.
+- Each dot is blue; vary its scale and opacity to create a soft moving image-generation field.
+- Move the field through the matrix over 13.433s with smooth interpolation between these normalized centers: (0.52, 0.74), (0.78, 0.28), (0.62, 0.66), (0.18, 0.50), (0.20, 0.22).
+- Blend a smaller secondary field into the primary field so the dot density feels like a soft image rather than a single spotlight.
+- Base dot size: 3px; base opacity: 0.11; peak opacity: about 0.87.
 
-Copy-ready React + CSS implementation:
-const [phase, setPhase] = useState(0);
-const [runId, setRunId] = useState(0);
+Copy-ready React implementation:
+const DOTS = Array.from({ length: 29 * 29 }, (_, index) => ({
+  x: index % 29,
+  y: Math.floor(index / 29),
+}));
+const PATH = [
+  { x: 0.52, y: 0.74 },
+  { x: 0.78, y: 0.28 },
+  { x: 0.62, y: 0.66 },
+  { x: 0.18, y: 0.50 },
+  { x: 0.20, y: 0.22 },
+];
 
+const [dotRefs] = useState(() => ({ current: [] }));
 useEffect(() => {
-  const timers = [
-    window.setTimeout(() => setPhase(1), 900),
-    window.setTimeout(() => setPhase(2), 1900),
-    window.setTimeout(() => setPhase(3), 3100),
-  ];
-  return () => timers.forEach(window.clearTimeout);
-}, [runId]);
-
-const progress = [18, 48, 78, 100][phase];
-
-<div className="image-generation">
-  <div className="image-generation__surface">
-    <img src={generatedImageUrl} alt="" />
-    {phase < 3 && <span className="image-generation__scan" />}
-  </div>
-  <div className="image-generation__meta">
-    <span>{['Building composition', 'Refining details', 'Balancing light', 'Ready to use'][phase]}</span>
-    <span>{progress}%</span>
-  </div>
-  <div className="image-generation__track">
-    <span style={{ width: progress + '%' }} />
-  </div>
-  {phase === 3 && <button onClick={() => setRunId(value => value + 1)}>Run again</button>}
-</div>
-
-@keyframes image-generation-scan {
-  from { transform: translateX(0); }
-  to { transform: translateX(400%); }
-}`;
+  let startTime = null;
+  let frameId = 0;
+  const duration = 13433;
+  const tick = time => {
+    if (startTime === null) startTime = time;
+    const progress = Math.min((time - startTime) / duration, 1);
+    const center = interpolatePath(PATH, progress);
+    DOTS.forEach((dot, index) => {
+      const distance = Math.hypot(
+        (dot.x / 28 - center.x) / 0.46,
+        (dot.y / 28 - center.y) / 0.42,
+      );
+      const field = Math.exp(-distance * distance * 2.2);
+      dotRefs.current[index].style.transform = \`scale(\${0.42 + field * 1.85})\`;
+      dotRefs.current[index].style.opacity = String(0.11 + field * 0.76);
+    });
+    if (progress < 1) frameId = requestAnimationFrame(tick);
+  };
+  frameId = requestAnimationFrame(tick);
+  return () => cancelAnimationFrame(frameId);
+}, []);`;
 
 function CopyCodeTooltipButton({
   prompt,
