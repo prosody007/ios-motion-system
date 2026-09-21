@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motionCurveTokens, motionPrinciples, type MotionCurveToken } from "@/data/motion-tokens";
 
 const springTokens = motionCurveTokens.filter((token) => token.kind === "spring");
@@ -20,6 +21,13 @@ function copyTextForToken(token: MotionCurveToken, mode: "timing" | "spring") {
 
 function CopyButton({ token, mode }: { token: MotionCurveToken; mode: "timing" | "spring" }) {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 1200);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
+
   const copy = async () => {
     const text = copyTextForToken(token, mode);
     try {
@@ -35,9 +43,8 @@ function CopyButton({ token, mode }: { token: MotionCurveToken; mode: "timing" |
       textarea.remove();
     }
     setCopied(true);
-    window.setTimeout(() => setCopied(false), 1400);
   };
-  return <button type="button" aria-label={`Copy ${token.name} parameters`} onClick={copy} className={`shrink-0 rounded-full border px-2.5 py-1 font-mono text-[10px] transition-colors ${copied ? "border-[#b7e3c5] bg-[#f0fbf3] text-[#267a3d]" : "border-[#e1e6ee] bg-white text-[#667085] hover:border-[#c8d0dc] hover:text-[#111827]"}`}>{copied ? "Copied" : "Copy"}</button>;
+  return <button type="button" aria-label={`Copy ${token.name} parameters`} onClick={copy} className="group relative flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border-0 bg-transparent p-0 text-[rgba(0,0,0,0.88)] transition-colors duration-150 hover:bg-[rgba(0,0,0,0.06)] active:bg-[rgba(0,0,0,0.08)]"><Image src="/figma/button/copy-code-icon@3x.png" alt="" width={32} height={32} className="h-8 w-8" /><span className={`copy-tooltip pointer-events-none absolute bottom-10 left-1/2 z-10 whitespace-nowrap rounded-[10px] bg-[rgba(17,17,17,0.92)] px-3 py-2 text-[12px] font-medium leading-none text-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] ${copied ? "is-copied" : ""}`}>{copied ? <><span className="text-[#34C759]">✓</span> Done</> : "Copy code snippet"}</span></button>;
 }
 
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -108,7 +115,7 @@ function PreviewTrack({ token, mode, large = false, showMeta = true }: { token: 
 function TokenRow({ token, mode }: { token: MotionCurveToken; mode: "timing" | "spring" }) {
   const spring = springFor(token);
   const code = mode === "spring" ? `withAnimation(.spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass}))` : `transition: transform ${token.durationMs}ms ${token.easing}`;
-  return <div className="min-w-0 bg-white px-6 py-4 sm:px-7"><div className="min-w-0"><div className="flex min-w-0 items-center justify-between gap-3"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><CopyButton token={token} mode={mode} /></div><div className="mt-1 flex min-w-0 items-center gap-3"><code className="min-w-0 truncate select-all font-mono text-[10px] text-[#98a2b3]">{code}</code><span className="shrink-0 font-mono text-[10px] text-[#667085]"><span className="uppercase tracking-[.1em] text-[#98a2b3]">duration</span> {token.durationMs}ms</span></div></div><div className="mt-4 min-w-0"><PreviewTrack token={token} mode={mode} showMeta={false} /></div></div>;
+  return <div className="min-w-0 bg-white px-6 py-4 sm:px-7"><div className="min-w-0"><div className="truncate text-[13px] font-semibold text-[#111827]">{token.name.replace("Spring ", "")}</div><div className="mt-1 flex min-w-0 items-center gap-2"><code className="min-w-0 flex-1 truncate select-all font-mono text-[10px] text-[#98a2b3]">{code}</code><span className="shrink-0 font-mono text-[10px] text-[#667085]"><span className="uppercase tracking-[.1em] text-[#98a2b3]">duration</span> {token.durationMs}ms</span><CopyButton token={token} mode={mode} /></div></div><div className="mt-4 min-w-0"><PreviewTrack token={token} mode={mode} showMeta={false} /></div></div>;
 }
 
 function Explorer({ activeKind, setActiveKind }: { activeKind: "timing" | "spring"; setActiveKind: (value: "timing" | "spring") => void }) {
@@ -130,5 +137,5 @@ function SpringSelection() {
 
 export function MotionCurvesDemo() {
   const [activeKind, setActiveKind] = useState<"timing" | "spring">("timing");
-  return <div className="w-full pb-24"><header className="mb-8"><h1 className="text-[clamp(2.2rem,4vw,3.6rem)] font-semibold leading-none tracking-[-.065em] text-[#111827]">A better sense of motion.</h1><p className="mt-3 max-w-[620px] text-[13px] leading-6 text-[#667085]">用一致的曲线和物理参数，让每个界面状态变化都更自然、更可控。</p></header><div className="mb-5"><RulesCard /></div><Explorer activeKind={activeKind} setActiveKind={setActiveKind} />{activeKind === "timing" ? <div className="mt-5"><BezierUsage /></div> : <div className="mt-5"><SpringSelection /></div>}</div>;
+  return <div className="w-full pb-24"><style>{`.copy-tooltip{visibility:hidden;transform:translate(-50%,-8px);transition:none}.group:hover .copy-tooltip,.copy-tooltip.is-copied{visibility:visible;transform:translate(-50%,0);transition:transform 320ms cubic-bezier(0.16,1,0.3,1)}`}</style><header className="mb-8"><h1 className="text-[clamp(2.2rem,4vw,3.6rem)] font-semibold leading-none tracking-[-.065em] text-[#111827]">A better sense of motion.</h1><p className="mt-3 max-w-[620px] text-[13px] leading-6 text-[#667085]">用一致的曲线和物理参数，让每个界面状态变化都更自然、更可控。</p></header><div className="mb-5"><RulesCard /></div><Explorer activeKind={activeKind} setActiveKind={setActiveKind} />{activeKind === "timing" ? <div className="mt-5"><BezierUsage /></div> : <div className="mt-5"><SpringSelection /></div>}</div>;
 }
