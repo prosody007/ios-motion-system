@@ -482,21 +482,21 @@ HTML/JSX:
   <div className="skeleton-card" />
 </div>`;
 
-const imageGenerationPrompt = `Create this AI image generation loading state in my existing UI.
+const imageGenerationPrompt = `Create this “generating” loading animation in my existing UI.
 
 Hard constraints:
 - Do not change my surrounding layout, container size, spacing, data flow, or generation logic.
 - Do not install dependencies or animation libraries.
-- Do not show a progress number, progress bar, percentage, or replay control.
+- Do not show status copy, a progress number, a progress bar, a percentage, or a replay control.
 - Keep the animation finite rather than looping; let the final dot field remain visible.
 
 Visual spec:
-- Use a white surface with two muted gray Chinese status lines: “正在思考” and “正在生成更详细的图片，请稍等。”
-- Under the copy, render a square 29 × 29 dot matrix.
+- Fill the entire existing loading container with a white surface. Do not add an aspect-ratio, max-width, fixed width, or fixed height.
+- Render a 29 × 29 dot matrix that is absolutely inset to 0 so it adapts to any container ratio, including landscape and portrait containers.
 - Each dot is blue; vary its scale and opacity to create a soft moving image-generation field.
 - Move the field through the matrix over 13.433s with smooth interpolation between these normalized centers: (0.52, 0.74), (0.78, 0.28), (0.62, 0.66), (0.18, 0.50), (0.20, 0.22).
 - Blend a smaller secondary field into the primary field so the dot density feels like a soft image rather than a single spotlight.
-- Base dot size: 3px; base opacity: 0.11; peak opacity: about 0.87.
+- Use container-relative dot sizing so dots remain visible without overflowing when the container is very narrow or short.
 
 Copy-ready React implementation:
 const DOTS = Array.from({ length: 29 * 29 }, (_, index) => ({
@@ -511,7 +511,7 @@ const PATH = [
   { x: 0.20, y: 0.22 },
 ];
 
-const [dotRefs] = useState(() => ({ current: [] }));
+const dotRefs = useRef([]);
 useEffect(() => {
   let startTime = null;
   let frameId = 0;
@@ -779,7 +779,7 @@ export function LoadingDemoGrid() {
       <LoadingSkeletonCard />
       <LoadingShinyTextCard />
       <LoadingDemoCard
-        title="Image Synthesis"
+        title="generating"
         prompt={imageGenerationPrompt}
       >
         <ImageGenerationPreview />

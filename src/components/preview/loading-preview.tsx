@@ -454,29 +454,21 @@ export function ImageGenerationPreview() {
   }, []);
 
   return (
-    <div className="flex h-full w-full items-start justify-center overflow-hidden rounded-[24px] bg-white px-5 pt-4">
-      <div className="w-full max-w-[300px]">
-        <div className="text-[13px] font-normal leading-[1.4] tracking-[-0.15px] text-[rgba(0,0,0,0.46)]">
-          正在思考
-        </div>
-        <div className="mt-4 text-[13px] font-normal leading-[1.4] tracking-[-0.15px] text-[rgba(0,0,0,0.46)]">
-          正在生成更详细的图片，请稍等。
-        </div>
-        <div
-          className="mt-5 grid aspect-square w-full grid-cols-[repeat(29,minmax(0,1fr))] grid-rows-[repeat(29,minmax(0,1fr))] items-center justify-items-center"
-          role="status"
-          aria-label="正在生成图片，请稍等"
-        >
-          {IMAGE_GENERATION_DOTS.map((_, index) => (
-            <span
-              key={index}
-              ref={(node) => {
-                dotRefs.current[index] = node;
-              }}
-              className="h-[3px] w-[3px] rounded-full bg-[#4F8DEB] opacity-20 will-change-transform"
-            />
-          ))}
-        </div>
+    <div
+      className="relative h-full w-full overflow-hidden rounded-[24px] bg-white [container-type:size]"
+      role="status"
+      aria-label="正在生成图片"
+    >
+      <div className="absolute inset-0 grid grid-cols-[repeat(29,minmax(0,1fr))] grid-rows-[repeat(29,minmax(0,1fr))] items-center justify-items-center">
+        {IMAGE_GENERATION_DOTS.map((_, index) => (
+          <span
+            key={index}
+            ref={(node) => {
+              dotRefs.current[index] = node;
+            }}
+            className="size-[clamp(1.5px,0.75cqmin,3px)] rounded-full bg-[#4F8DEB] opacity-20 will-change-transform"
+          />
+        ))}
       </div>
     </div>
   );
