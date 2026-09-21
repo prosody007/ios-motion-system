@@ -11,12 +11,11 @@ const timingSpringEquivalents: Record<string, { stiffness: number; damping: numb
 function springFor(token: MotionCurveToken) { return token.spring ?? timingSpringEquivalents[token.id] ?? { stiffness: 220, damping: 30, mass: 1 }; }
 
 function copyTextForToken(token: MotionCurveToken, mode: "timing" | "spring") {
+  if (mode === "timing") {
+    return `transition-duration: ${token.durationMs}ms;\ntransition-timing-function: ${token.easing};`;
+  }
   const spring = springFor(token);
-  const timingCode = `transition: transform ${token.durationMs}ms ${token.easing};`;
-  const springCode = `withAnimation(.spring(stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass})) {\n  // update the animated property\n}`;
-  const modeName = mode === "timing" ? "CSS timing" : "Spring physics";
-  const implementation = mode === "timing" ? `CSS:\n${timingCode}\n\nAdapt the easing syntax to the current framework while keeping the same curve and duration.` : `SwiftUI:\n${springCode}\n\nPhysics values:\nstiffness: ${spring.stiffness}\ndamping: ${spring.damping}\nmass: ${spring.mass}\n\nAdapt the spring API to the current framework while keeping the same physical relationship.`;
-  return `Apply this motion token in the current project.\n\nName: ${token.name}\nMode: ${modeName}\nUse: ${token.use}\nDuration: ${token.durationMs}ms\nToken: ${token.cssVar}\nParameters: ${mode === "timing" ? token.easing : `stiffness ${spring.stiffness}, damping ${spring.damping}, mass ${spring.mass}`}\n\nImplementation:\n${implementation}\n\nGuidance: ${token.note}\nAvoid: ${token.boundary}`;
+  return `{ stiffness: ${spring.stiffness}, damping: ${spring.damping}, mass: ${spring.mass} }`;
 }
 
 function CopyButton({ token, mode }: { token: MotionCurveToken; mode: "timing" | "spring" }) {
@@ -44,7 +43,7 @@ function CopyButton({ token, mode }: { token: MotionCurveToken; mode: "timing" |
     }
     setCopied(true);
   };
-  return <button type="button" aria-label={`Copy ${token.name} parameters`} onClick={copy} className="group relative flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border-0 bg-transparent p-0 text-[rgba(0,0,0,0.88)] transition-colors duration-150 hover:bg-[rgba(0,0,0,0.06)] active:bg-[rgba(0,0,0,0.08)]"><Image src="/figma/button/copy-code-icon@3x.png" alt="" width={32} height={32} className="h-8 w-8" /><span className={`copy-tooltip pointer-events-none absolute bottom-10 left-1/2 z-10 whitespace-nowrap rounded-[10px] bg-[rgba(17,17,17,0.92)] px-3 py-2 text-[12px] font-medium leading-none text-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] ${copied ? "is-copied" : ""}`}>{copied ? <><span className="text-[#34C759]">✓</span> Done</> : "Copy code snippet"}</span></button>;
+  return <button type="button" aria-label={`Copy ${token.name} parameters`} onClick={copy} className="group relative flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border-0 bg-transparent p-0 text-[rgba(0,0,0,0.88)] transition-colors duration-150 hover:bg-[rgba(0,0,0,0.06)] active:bg-[rgba(0,0,0,0.08)]"><Image src="/figma/button/copy-code-icon@3x.png" alt="" width={24} height={24} className="h-6 w-6" /><span className={`copy-tooltip pointer-events-none absolute bottom-10 left-1/2 z-10 whitespace-nowrap rounded-[10px] bg-[rgba(17,17,17,0.92)] px-3 py-2 text-[12px] font-medium leading-none text-white shadow-[0_8px_24px_rgba(0,0,0,0.16)] ${copied ? "is-copied" : ""}`}>{copied ? <><span className="text-[#34C759]">✓</span> Done</> : "Copy parameters"}</span></button>;
 }
 
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
