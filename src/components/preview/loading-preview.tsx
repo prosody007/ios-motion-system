@@ -380,6 +380,7 @@ const IMAGE_GENERATION_PATH = [
   { x: 0.62, y: 0.66 },
   { x: 0.18, y: 0.5 },
   { x: 0.2, y: 0.22 },
+  { x: 0.52, y: 0.74 },
 ];
 
 function interpolateImageGenerationPath(progress: number) {
@@ -438,12 +439,10 @@ export function ImageGenerationPreview() {
 
     const tick = (time: number) => {
       if (startTime === null) startTime = time;
-      const progress = Math.min((time - startTime) / duration, 1);
+      const progress = ((time - startTime) % duration) / duration;
       updateDots(progress);
 
-      if (progress < 1) {
-        frameId = window.requestAnimationFrame(tick);
-      }
+      frameId = window.requestAnimationFrame(tick);
     };
 
     frameId = window.requestAnimationFrame(tick);
@@ -455,7 +454,7 @@ export function ImageGenerationPreview() {
 
   return (
     <div
-      className="relative h-full w-full overflow-hidden rounded-[24px] bg-white [container-type:size]"
+      className="relative h-full w-full overflow-hidden rounded-[24px] [container-type:size]"
       role="status"
       aria-label="正在生成图片"
     >

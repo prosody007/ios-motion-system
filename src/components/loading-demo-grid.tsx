@@ -488,13 +488,13 @@ Hard constraints:
 - Do not change my surrounding layout, container size, spacing, data flow, or generation logic.
 - Do not install dependencies or animation libraries.
 - Do not show status copy, a progress number, a progress bar, a percentage, or a replay control.
-- Keep the animation finite rather than looping; let the final dot field remain visible.
+- Loop the animation continuously, like a Skeleton loading state.
 
 Visual spec:
-- Fill the entire existing loading container with a white surface. Do not add an aspect-ratio, max-width, fixed width, or fixed height.
+- Fill the entire existing loading container with the dot animation and inherit its background. Do not add an aspect-ratio, max-width, fixed width, fixed height, or background color.
 - Render a 29 × 29 dot matrix that is absolutely inset to 0 so it adapts to any container ratio, including landscape and portrait containers.
 - Each dot is blue; vary its scale and opacity to create a soft moving image-generation field.
-- Move the field through the matrix over 13.433s with smooth interpolation between these normalized centers: (0.52, 0.74), (0.78, 0.28), (0.62, 0.66), (0.18, 0.50), (0.20, 0.22).
+- Move the field through the matrix over 13.433s with smooth interpolation between these normalized centers, then return to the first center for a seamless loop: (0.52, 0.74), (0.78, 0.28), (0.62, 0.66), (0.18, 0.50), (0.20, 0.22), (0.52, 0.74).
 - Blend a smaller secondary field into the primary field so the dot density feels like a soft image rather than a single spotlight.
 - Use container-relative dot sizing so dots remain visible without overflowing when the container is very narrow or short.
 
@@ -518,7 +518,7 @@ useEffect(() => {
   const duration = 13433;
   const tick = time => {
     if (startTime === null) startTime = time;
-    const progress = Math.min((time - startTime) / duration, 1);
+  const progress = ((time - startTime) % duration) / duration;
     const center = interpolatePath(PATH, progress);
     DOTS.forEach((dot, index) => {
       const distance = Math.hypot(
@@ -529,7 +529,7 @@ useEffect(() => {
       dotRefs.current[index].style.transform = \`scale(\${0.42 + field * 1.85})\`;
       dotRefs.current[index].style.opacity = String(0.11 + field * 0.76);
     });
-    if (progress < 1) frameId = requestAnimationFrame(tick);
+  frameId = requestAnimationFrame(tick);
   };
   frameId = requestAnimationFrame(tick);
   return () => cancelAnimationFrame(frameId);
