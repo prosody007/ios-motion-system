@@ -1,8 +1,9 @@
-// Keep this standalone reference aligned with ImageGenerationPreview and LoadingGeneratingCard.
+// Match ImageGenerationPreview; gallery backgrounds belong only to LoadingGeneratingCard.
 export const generatingPrompt = `Implement the “Generating” animation below in my existing project. Match the supplied reference implementation exactly; use its code and equations as the source of truth. This prompt is self-contained and does not require a screenshot, video, or access to the original project.
 
 Scope and integration
-- Add only the loading surface and animated dots. Preserve the host layout, content, loading lifecycle, and business logic. Do not add a demo card, heading, status text, progress display, copy button, replay button, glow, blur, random motion, or extra padding.
+- Add only a transparent animation layer and animated dots. Preserve the host layout, content, background, loading lifecycle, and business logic. Do not add a demo card, heading, status text, progress display, copy button, replay button, glow, blur, random motion, or extra padding.
+- The background belongs entirely to the host. Leave its existing solid color, gradient, image, and theme behavior untouched. Do not copy the gallery preview backgrounds, set a replacement background, or use background: inherit on the animation layer. Keep the animation wrappers transparent so the original host background shows through in both modes.
 - Use the project's existing framework and theme state. The React + TypeScript and plain CSS files below are the complete reference; they require no Tailwind, Next.js APIs, images, or animation library. In a non-React project, port the exact layout, time equations, colors, and formulas to its native rendering API instead of substituting a similar animation.
 - The parent owns the actual width and height. Fill its available area with 100% width and height; do not impose a square, fixed dimensions, max-width, min-height, or additional aspect ratio. The host must already have a resolved height. If it does not, resolve the intended loading bounds from the existing layout rather than inventing dimensions. For an overlay, the host can provide a positioned wrapper with inset: 0.
 - The reference radius is 24 CSS pixels. Keep that default for an exact demo match; pass the existing host radius (or "inherit") only when integrating with a different container. Do not copy the gallery's outer card or controls.
@@ -11,9 +12,9 @@ Scope and integration
 Exact spatial and color contract
 - Render 841 circles in row-major order, 29 columns by 29 rows, with zero grid gap. Each circle is centered in its cell. For host width W and height H, center positions are ((column + 0.5) * W / 29, (row + 0.5) * H / 29). Keep the count fixed across landscape, portrait, and square hosts; horizontal and vertical spacing may differ, but dots remain circular.
 - Base diameter is clamp(2 CSS px, 0.0075 * min(W, H), 3 CSS px), BEFORE animated scaling. It is based on the container's short side, not the viewport. The full range of displayed diameter is this base multiplied by 0.78 to 2.4. Do not replace container query units with viewport units or stretch a square bitmap.
-- Light: surface #F6F8FA, dot fill #4F8DEB. Dark: surface #252D3E, dot fill #8FB8FF. The same scale and opacity formulas apply in both modes.
+- Light-mode dot fill: #4F8DEB. Dark-mode dot fill: #8FB8FF. Both modes use a transparent animation layer over the host's own background. The same scale and opacity formulas apply in both modes.
 - Resting dots remain present at scale >= 0.78 and opacity >= 0.20. Active dots reach scale 2.4 and opacity 0.90. Use ordinary alpha compositing; no masks, blend modes, cutoff thresholds, or filtering.
-- Background and dot colors transition for 300ms with cubic-bezier(0.4, 0, 0.2, 1). Do not apply a CSS transition to transform or opacity: those are assigned directly every animation frame. The supplied reduced-motion rule matches the reference's color-transition behavior; it does not alter the dot-field timeline.
+- Only dot colors transition for 300ms with cubic-bezier(0.4, 0, 0.2, 1). The animation must not change or animate the host background. Do not apply a CSS transition to transform or opacity: those are assigned directly every animation frame. The supplied reduced-motion rule matches the reference's dot-color transition behavior; it does not alter the dot-field timeline.
 
 Exact time and field contract
 - Start time is the first requestAnimationFrame callback. Every cycle is exactly 11681ms, already including the requested 15% speed increase. Use elapsed time, not frame count or a timer increment. Loop indefinitely: progress = ((time - startTime) % 11681) / 11681.
@@ -159,13 +160,10 @@ File 2: generating.css
   box-sizing: border-box;
   padding: 0;
   border: 0;
-  background-color: #F6F8FA;
   --generating-dot-color: #4F8DEB;
-  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .generating-surface[data-mode="dark"] {
-  background-color: #252D3E;
   --generating-dot-color: #8FB8FF;
 }
 
@@ -211,7 +209,6 @@ File 2: generating.css
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .generating-surface,
   .generating-dot {
     transition-duration: 1ms;
   }
@@ -230,10 +227,10 @@ import { Generating } from "./Generating";
 The host owns isDarkMode. Use its existing theme control; only add a toggle if the host needs one. Put any toggle outside the animation surface. In Next.js, keep the component client-side; if the project centralizes global CSS imports, import generating.css there instead of importing it twice.
 
 Verification before finishing
-1. Confirm exactly 841 circles, no visible copy or progress, and a surface fully covering the existing loading area.
+1. Confirm exactly 841 circles, no visible copy or progress, and a transparent layer fully covering the existing loading area. Test over the host's own solid color, gradient, or image; it must remain visible and unchanged when the animation mounts or switches modes.
 2. Check square, wide, tall, and small host sizes (for example 320x320, 520x180, 180x520, and 80x40 CSS pixels). These are verification fixtures, not production dimensions. Confirm circular dots, per-cell centers, the exact diameter clamp, inherited bounds, and no size changes to the host.
 3. At fixed elapsed times 0, 1168.1, 2336.2, 5840.5, 11680, 11681, and 23362ms, compare every dot's scale and opacity to the reference equations. At 11681 and 23362ms the values repeat time 0. Observe beyond two cycles to verify it does not stop or jump.
-4. Switch between light and dark during playback. Verify the exact four colors, 300ms color transition, stable dimensions and dot nodes, and uninterrupted timeline. Small dots must remain visible in both modes.
+4. Switch between light and dark during playback. Verify the two exact dot colors, 300ms dot-color transition, transparent wrappers, unchanged host background, stable dimensions and dot nodes, and uninterrupted timeline. Small dots must remain visible in both modes.
 5. Verify unmounting stops its frame loop and remounting starts one fresh loop, without duplicate animation callbacks.
 Deliver the working animation and report actual validation results. If the target platform cannot reproduce a rule, identify the specific difference; do not silently approximate it or claim unverified pixel equality.
 `;
