@@ -82,7 +82,7 @@ function TokenRow({ token, mode }: { token: MotionCurveToken; mode: "timing" | "
 
 function Explorer({ activeKind, setActiveKind }: { activeKind: "timing" | "spring"; setActiveKind: (value: "timing" | "spring") => void }) {
   const tokens = motionCurveTokens;
-  return <Panel className="overflow-hidden"><div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7"><div><h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve explorer</h2><p className="mt-1 text-[11px] text-[#8791a3]">浏览每个 token 的实际手感与参数。</p></div><KindSwitch activeKind={activeKind} onChange={setActiveKind} /></div><div className="grid gap-px bg-[#edf0f4] md:grid-cols-2">{tokens.map((token) => <TokenRow key={token.id} token={token} mode={activeKind} />)}</div></Panel>;
+  return <Panel className="overflow-hidden"><div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e7ebf1] px-6 py-6 sm:px-7"><div><h2 className="text-[21px] font-semibold tracking-[-.04em] text-[#111827]">Curve explorer</h2><p className="mt-1 text-[11px] text-[#8791a3]">查看运动效果，复制参数</p></div><KindSwitch activeKind={activeKind} onChange={setActiveKind} /></div><div className="grid gap-px bg-[#edf0f4] md:grid-cols-2">{tokens.map((token) => <TokenRow key={token.id} token={token} mode={activeKind} />)}</div></Panel>;
 }
 
 function RulesCard() {
