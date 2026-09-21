@@ -780,7 +780,7 @@ export function LoadingDemoGrid() {
       <LoadingSkeletonCard />
       <LoadingShinyTextCard />
       <LoadingDemoCard
-        title="generating"
+        title="Generating"
         prompt={imageGenerationPrompt}
       >
         <ImageGenerationPreview />
